@@ -240,31 +240,31 @@ namespace generator1.Core
 
         public override string ToString()
         {
-            return $"UserAgent: {UserAgent}\n" +
-                   $"Browser Type: {BrowserTypeType}\n" +
-                   $"OS Version: {OsVersion}\n" +
-                   $"Is 64-bit: {IsX64}\n" +
-                   $"Platform: {Platform}\n" +
-                   $"CPU Status: {CpuStatus}\n" +
-                   $"CPU Concurrency: {CpuConcurrency}\n" +
-                   $"Memory Status: {MemStatus}\n" +
-                   $"Memory Available: {MemoryAvailable}\n" +
-                   $"Send Do Not Track: {IsSendDoNotTrack}\n" +
-                   $"Is Mac: {IsMac}\n" +
-                   $"Hide Canvas: {HideCanvas}\n" +
-                   $"Canvas Fingerprint Hash: {CanvasFingerPrintHash}\n" +
-                   $"Base Latency: {BaseLatency}\n" +
-                   $"Channel Data Delta: {ChannelDataDelta}\n" +
-                   $"Channel Data Index Delta: {ChannelDataIndexDelta}\n" +
-                   $"Float Frequency Data Delta: {FloatFrequencyDataDelta}\n" +
-                   $"Float Frequency Data Index Delta: {FloatFrequencyDataIndexDelta}\n" +
-                   $"Screen Size: {ScreenSize}\n" +
-                   $"Hide Fonts: {HideFonts}\n" +
-                   $"Fonts Count: {FontsCount}\n" +
-                   $"WebGL: {WebGL}\n" +
-                   $"Media Devices Settings: {MediaDevicesSettings}\n" +
-                   $"WebRTC Settings: {WebRtcSettings}\n" +
-                   $"Geo Settings: {GeoSettings}\n" +
+            return $"UserAgent: {UserAgent}{Environment.NewLine}" +
+                   $"Browser Type: {BrowserTypeType}{Environment.NewLine}" +
+                   $"OS Version: {OsVersion}{Environment.NewLine}" +
+                   $"Is 64-bit: {IsX64}{Environment.NewLine}" +
+                   $"Platform: {Platform}{Environment.NewLine}" +
+                   $"CPU Status: {CpuStatus}{Environment.NewLine}" +
+                   $"CPU Concurrency: {CpuConcurrency}{Environment.NewLine}" +
+                   $"Memory Status: {MemStatus}{Environment.NewLine}" +
+                   $"Memory Available: {MemoryAvailable}{Environment.NewLine}" +
+                   $"Send Do Not Track: {IsSendDoNotTrack}{Environment.NewLine}" +
+                   $"Is Mac: {IsMac}{Environment.NewLine}" +
+                   $"Hide Canvas: {HideCanvas}{Environment.NewLine}" +
+                   $"Canvas Fingerprint Hash: {CanvasFingerPrintHash}{Environment.NewLine}" +
+                   $"Base Latency: {BaseLatency}{Environment.NewLine}" +
+                   $"Channel Data Delta: {ChannelDataDelta}{Environment.NewLine}" +
+                   $"Channel Data Index Delta: {ChannelDataIndexDelta}{Environment.NewLine}" +
+                   $"Float Frequency Data Delta: {FloatFrequencyDataDelta}{Environment.NewLine}" +
+                   $"Float Frequency Data Index Delta: {FloatFrequencyDataIndexDelta}{Environment.NewLine}" +
+                   $"Screen Size: {ScreenSize}{Environment.NewLine}" +
+                   $"Hide Fonts: {HideFonts}{Environment.NewLine}" +
+                   $"Fonts Count: {FontsCount}{Environment.NewLine}" +
+                   $"WebGL: {WebGL}{Environment.NewLine}" +
+                   $"Media Devices Settings: {MediaDevicesSettings}{Environment.NewLine}" +
+                   $"WebRTC Settings: {WebRtcSettings}{Environment.NewLine}" +
+                   $"Geo Settings: {GeoSettings}{Environment.NewLine}" +
                    $"Timezone Setting: {TimezoneSetting}";
         }
     }
