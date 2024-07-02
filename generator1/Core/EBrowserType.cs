@@ -2,7 +2,6 @@
 public enum EBrowserType
 {
     Chrome = 1,
-    Opera = 2,
-    Safari = 3,
-    Yandex = 4,
+    Firefox = 2,
+    Webkit = 3
 }
