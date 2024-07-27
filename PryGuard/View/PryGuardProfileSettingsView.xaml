@@ -1,0 +1,1579 @@
+﻿<Window x:Class="PryGuard.View.PryGuardProfileSettingsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:PryGuard.ViewModel"
+        
+        xmlns:local="clr-namespace:PryGuard.View"
+        xmlns:converters="clr-namespace:PryGuard.Services.UI.Converters"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        mc:Ignorable="d"
+        Title="Settings" Height="1100" Width="800"
+        Background="#1E1E1E"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        MouseDown="Window_MouseDown"
+        WindowState="{Binding WindowState}"
+        BorderBrush="#d8281b"
+        BorderThickness="1">
+    <!--550-->
+    <Window.DataContext>
+        <vm:PryGuardProfileSettingsViewModel/>
+    </Window.DataContext>
+    <Window.Resources>
+        <ResourceDictionary>
+            <converters:EnumToComboBoxItemConverter x:Key="EnumToComboBoxItemConverter" />
+            <BooleanToVisibilityConverter x:Key="b2v" />
+            <converters:EnumBooleanConverter x:Key="EnumBooleanConverter" />
+            <converters:ValueToStringConverter x:Key="ValueToStringConverter" />
+            <converters:StringToDoubleConverter x:Key="StringToDoubleConverter" />
+            <converters:StringToIntParamConverter x:Key="StringToIntParamConverter" />
+            <converters:StringToIntInputConverter x:Key="StringToIntInputConverter" />
+            <converters:BoolToValueConverter x:Key="BoolToValueConverter" FalseValue="OFF" TrueValue="ON"/>
+            <converters:BoolRadioConverter x:Key="BoolRadioConverter"/>
+            <converters:BoolRadioConverter x:Key="InverseBoolRadioConverter" Inverse="True"/>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Services/UI/Styles/DrawImageStyles.xaml" />
+                <ResourceDictionary Source="/Services/UI/Styles/UIElementStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid HorizontalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="500"/>
+            <ColumnDefinition Width="300"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel
+            Grid.Row="0"
+            Grid.Column="2"
+            HorizontalAlignment="Right" 
+            VerticalAlignment="Top" Orientation="Horizontal">
+
+            <Border 
+                Height="16" Width="16"
+                CornerRadius="8"  Margin="5"
+                Background="{StaticResource ThemeBrushGreen}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDown">
+                        <i:InvokeCommandAction Command="{Binding ChangeWindowStateCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="0" Color="{StaticResource ThemeColorGreen}"/>
+                </Border.Effect>
+            </Border>
+            <Border
+                Height="16" Width="16"
+                CornerRadius="8" Margin="5"
+                Background="{StaticResource ThemeBrushRed}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDown">
+                        <i:InvokeCommandAction Command="{Binding CloseProfileSettingsCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="0" Color="{StaticResource ThemeColorRed}"/>
+                </Border.Effect>
+            </Border>
+
+        </StackPanel>
+        <StackPanel 
+            Margin="0,24,0,0"
+            Grid.ColumnSpan="2"
+            Height="25"
+            Width="Auto"
+            Orientation="Horizontal"
+            Background="#1c1c1c">
+            <Button
+                Content="New Fingerprint"
+                Width="100"
+                Height="22"
+                Margin="500,0,20,0"
+                Style="{StaticResource ButtonEnableDisableProfileStyle}" Command="{Binding NewFingerprintCommand}"/>
+            <Button
+                Content="{Binding SaveProfileButtonContent}"
+                Width="60"
+                Height="22"
+                Margin="0,0,0,0"
+                Style="{StaticResource ButtonEnableDisableProfileStyle}"
+                Command="{Binding SaveProfileCommand}"/>
+        </StackPanel>
+        <ScrollViewer
+            VerticalScrollBarVisibility="Visible"
+            Grid.Column="0"
+            Grid.Row="1">
+            <Grid >
+                <!-- Set a design-time height for the Grid -->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition MinHeight="40" Height="Auto"/>
+                    <RowDefinition Height="120"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition MinHeight="40" Height="Auto"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition MinHeight="40" Height="Auto"/>
+                    <RowDefinition MinHeight="40" Height="Auto"/>
+                    <RowDefinition MinHeight="40" Height="Auto"/>
+                    <RowDefinition MinHeight="40" Height="Auto"/>
+                    <RowDefinition MinHeight="40" Height="Auto"/>
+                    <RowDefinition MinHeight="40" Height="Auto"/>
+                    <RowDefinition MinHeight="40" Height="Auto"/>
+                    <RowDefinition MinHeight="40" Height="Auto"/>
+                    <RowDefinition MinHeight="40" Height="Auto"/>
+                    <RowDefinition MinHeight="40" Height="Auto"/>
+                    <RowDefinition MinHeight="40" Height="Auto"/>
+                    <RowDefinition MinHeight="40" Height="Auto"/>
+                    <RowDefinition MinHeight="40" Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!--#region Name-->
+                <TextBox
+                    Grid.Row="0"
+                    Style="{StaticResource ThemeTextbox}"
+                    Width="250"
+                    Height="22"
+                    Text="{Binding PryGuardProf.Name}"
+                    Margin="67,0,0,0"
+                    HorizontalAlignment="Left"
+                    Tag="Name"/>
+                <ComboBox
+                    Grid.Row="0"
+                    Text="{Binding PryGuardProf.Status, Mode=TwoWay}"
+                    Style="{StaticResource ThemeCombobox}"
+                    Width="110"
+                    Height="22"
+                    HorizontalAlignment="Right"
+                    Margin="0,0,53,0">
+                    <ComboBoxItem>READY</ComboBoxItem>
+                    <ComboBoxItem>BAN</ComboBoxItem>
+                    <ComboBoxItem>NEW</ComboBoxItem>
+                </ComboBox>
+                <!--#endregion-->
+
+                <!--#region Tags-->
+                <TextBox
+                    Grid.Row="1"
+                    Style="{StaticResource ThemeTextbox}"
+                    Margin="14,0,0,0"
+                    Width="363"
+                    Height="22"
+                    Text="{Binding PryGuardProf.Tags}"
+                    HorizontalAlignment="Center"
+                    Tag="Tags" Background="White"/>
+                <!--#endregion-->
+
+                <!--#region Choose OS-->
+                <RadioButton 
+                    Grid.Row="2"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="WINDOWS"
+                    IsChecked="True"
+                    GroupName="ChooseOS"
+                    HorizontalAlignment="Left"
+                    Margin="128,0,0,0"/>
+                <RadioButton 
+                    Grid.Row="2"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="MACOS"
+                    IsEnabled="False"
+                    HorizontalAlignment="Center"
+                    Margin="10,0,0,0"
+                    GroupName="ChooseOS"/>
+                <RadioButton 
+                    Grid.Row="2"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="LINUX"
+                    IsEnabled="False"
+                    GroupName="ChooseOS"
+                    HorizontalAlignment="Right"
+                    Margin="0,0,118,0"/>
+
+                <!--#endregion-->
+
+                <!--#region Proxy-->
+                <RadioButton 
+                    Grid.Row="3"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="NO PROXY"
+                    GroupName="Proxy"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Margin="128,10,0,0"/>
+                <RadioButton 
+                    Grid.Row="3"
+                    x:Name="rbNewProxy"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="NEW PROXY"
+                    GroupName="Proxy"
+                    IsChecked="True"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    Margin="10,10,0,0"/>
+                <RadioButton 
+                    Grid.Row="3"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="SAVED PROXIES"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="0,10,118,0"
+                    GroupName="Proxy"/>
+                <StackPanel 
+                    Grid.Row="3"
+                    Width="363"
+                    Height="45"
+                    Orientation="Horizontal"
+                    Margin="14,35,0,0"
+                    Visibility="{Binding IsChecked,ElementName=rbNewProxy,Converter={StaticResource b2v}}">
+                    <RadioButton 
+                        Grid.Row="3"
+                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                        Content="HTTP"
+                        Height="16"
+                        Width="30"
+                        IsChecked="{Binding PryGuardProf.Proxy.IsHTTP}"
+                        GroupName="ProxyType"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Margin="119,0,0,0"/>
+                    <RadioButton 
+                        Grid.Row="3"
+                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                        Content="SOCKS4"
+                        Height="16"
+                        Width="43"
+                        IsEnabled="False"
+                        IsChecked="False"
+                        GroupName="ProxyType"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Margin="0,0,0,0"/>
+                    <RadioButton 
+                        Grid.Row="3"
+                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                        Content="SOCKS5"
+                        Height="16"
+                        Width="43"
+                        IsEnabled="False"
+                        IsChecked="False"
+                        GroupName="ProxyType"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"/>
+                    <TextBox
+                        Grid.Row="3"
+                        Height="22"
+                        Width="363"
+                        Margin="-235,20,0,0"
+                        Tag="Proxy"
+                        Foreground="{Binding TbProxyBrush}"
+                        Text="{Binding PryGuardProf.Proxy.ProxyLine}"
+                        Style="{StaticResource ThemeTextbox}"/>
+                    <TextBlock 
+                        Grid.Row="3"
+                        Width="17"
+                        Height="17"
+                        HorizontalAlignment="Right"
+                        Margin="-100,22,5,0"
+                        Cursor="Help">
+                        <TextBlock.ToolTip>
+                            <ToolTip Width="160" Height="60">
+                                <StackPanel>
+                                    <TextBlock
+                                        TextWrapping="Wrap"
+                                        Text="Valid proxy formats: 
+                                        ● host:port 
+                                        ● host:port:login:password"/>
+                                </StackPanel>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+                    <StackPanel>
+                        <Image 
+                            Margin="0,0,0,0"
+                            Source="{StaticResource ProxyInfoHelpImage}" 
+                            Height="15" Width="15"/>
+                    </StackPanel>
+                    </TextBlock>
+                    <Button
+                        Grid.Row="3"
+                        Width="22"
+                        Style="{StaticResource ThemeButtonProfilesWork}"
+                        Margin="-75,22,0,0"
+                        Height="20"
+                        Command="{Binding CheckProxyCommand}">
+                        <StackPanel>
+                            <Image 
+                                Margin="-1,1,0,0"
+                                Source="{StaticResource CheckConnectionImage}" 
+                                Height="18" Width="18"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+                <!--#endregion-->
+
+                <!--#region Cookie-->
+                <TextBox
+                    Grid.Row="4"
+                    Style="{StaticResource ThemeTextbox}"
+                    Width="363"
+                    Height="100"
+                    Margin="14,0,0,0"
+                    IsEnabled="False"
+                    HorizontalAlignment="Center"
+                    Tag="Cookie"
+                    HorizontalContentAlignment="Left"/>
+                <!--#endregion-->
+
+                <!--#region Useragent-->
+                <TextBlock
+                    Grid.Row="5"
+                    Style="{StaticResource ThemeTextBlock}"
+                    Text="Useragent"
+                    Margin="70,0,0,0"
+                    HorizontalAlignment="Left"
+                    FontSize="13"/>
+                <TextBox
+                    Grid.Row="5"
+                    Style="{StaticResource ThemeTextbox}"
+                    Width="280"
+                    Margin="0,0,53,0"
+                    Text="{Binding PryGuardProf.FakeProfile.UserAgent}"
+                    HorizontalAlignment="Right"
+                    Tag=""/>
+                <!--#endregion-->
+
+                <!--#region OS Version-->
+                <TextBlock
+                    Grid.Row="6"
+                    Style="{StaticResource ThemeTextBlock}"
+                    Text="OS Version"
+                    Margin="70,12,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    FontSize="13"/>
+                <ComboBox
+                    Grid.Row="6"
+                    Style="{StaticResource ThemeCombobox}"
+                    Width="150"
+                    Margin="210,5,0,0"
+                    SelectedIndex="0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    Visibility="{Binding IsChecked,ElementName=rbScreen,Converter={StaticResource b2v}}" SelectionChanged="ComboBox_SelectionChanged">
+                    <ComboBoxItem>Windows 7</ComboBoxItem>
+                    <ComboBoxItem>Windows 8</ComboBoxItem>
+                    <ComboBoxItem>Windows 8.1</ComboBoxItem>
+                    <ComboBoxItem>Windows 10</ComboBoxItem>
+                    <ComboBoxItem>Windows 11</ComboBoxItem>
+                </ComboBox>
+                <!--#endregion-->
+                <!--#region Do not track -->
+                <TextBlock
+                    Grid.Row="7"
+                    Style="{StaticResource ThemeTextBlock}"
+                    Text="Do not track"
+                    Margin="70,12,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    FontSize="13"/>
+                <RadioButton 
+                    Grid.Row="7"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    IsChecked="{Binding PryGuardProf.FakeProfile.IsSendDoNotTrack,
+                    Converter={StaticResource InverseBoolRadioConverter}}"
+                    Content="OFF"
+                    GroupName="DoNotTrack"
+                    Margin="210,10,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"/>
+                <RadioButton 
+                    Grid.Row="7"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="ON"
+                    IsChecked="{Binding PryGuardProf.FakeProfile.IsSendDoNotTrack,
+                    Converter={StaticResource BoolRadioConverter}}"
+                    GroupName="DoNotTrack"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Margin="0,10,114,0"/>
+                <!--#endregion-->
+
+                <!--#region IsLoadCacheInMemory-->
+                <TextBlock
+                    Grid.Row="8"
+                    Style="{StaticResource ThemeTextBlock}"
+                    Text="Save Cache"
+                    Margin="70,12,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    FontSize="13"/>
+                <RadioButton 
+                    Grid.Row="8"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="OFF"
+                    IsChecked="{Binding PryGuardProf.IsLoadCacheInMemory,
+                    Converter={StaticResource InverseBoolRadioConverter}}"
+                    GroupName="IsLoadCache"
+                    Margin="210,10,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"/>
+                <RadioButton 
+                    Grid.Row="8"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="ON"
+                    IsChecked="{Binding PryGuardProf.IsLoadCacheInMemory,
+                    Converter={StaticResource BoolRadioConverter}}"
+                    GroupName="IsLoadCache"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Margin="0,10,114,0"/>
+                <!--#endregion-->
+
+                <!--#region IsLoadImage-->
+                <TextBlock
+                    Grid.Row="9"
+                    Style="{StaticResource ThemeTextBlock}"
+                    Text="Load image"
+                    Margin="70,12,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    FontSize="13"/>
+                <RadioButton 
+                    Grid.Row="9"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    IsChecked="{Binding PryGuardProf.IsLoadImage,
+                    Converter={StaticResource InverseBoolRadioConverter}}"
+                    Content="OFF"
+                    GroupName="IsLoadImage"
+                    Margin="210,10,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"/>
+                <RadioButton 
+                    Grid.Row="9"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="ON"
+                    IsChecked="{Binding PryGuardProf.IsLoadImage,
+                    Converter={StaticResource BoolRadioConverter}}"
+                    GroupName="IsLoadImage"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Margin="0,10,114,0"/>
+                <!--#endregion-->
+
+                <!--#region IsAdblock-->
+                <TextBlock
+                    Grid.Row="10"
+                    Style="{StaticResource ThemeTextBlock}"
+                    Text="Adblock"
+                    Margin="70,12,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    FontSize="13"/>
+                <RadioButton 
+                    Grid.Row="10"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="OFF"
+                    IsChecked="{Binding PryGuardProf.IsAdBlock,
+                    Converter={StaticResource InverseBoolRadioConverter}}"
+                    GroupName="IsAdblock"
+                    Margin="210,10,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"/>
+                <RadioButton 
+                    Grid.Row="10"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="ON"
+                    IsChecked="{Binding PryGuardProf.IsAdBlock,
+                    Converter={StaticResource BoolRadioConverter}}"
+                    GroupName="IsAdblock"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Margin="0,10,114,0"/>
+                <!--#endregion-->
+
+                <!--#region Hide Canvas-->
+                <TextBlock
+                    Grid.Row="11"
+                    Style="{StaticResource ThemeTextBlock}"
+                    Text="Hide Canvas"
+                    Margin="70,12,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    FontSize="13"/>
+                <RadioButton 
+                    Grid.Row="11"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="OFF"
+                    IsChecked="{Binding PryGuardProf.FakeProfile.HideCanvas,
+                    Converter={StaticResource InverseBoolRadioConverter}}"
+                    GroupName="Canvas"
+                    Margin="210,10,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"/>
+                <RadioButton 
+                    Grid.Row="11"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="ON"
+                    IsChecked="{Binding PryGuardProf.FakeProfile.HideCanvas,
+                    Converter={StaticResource BoolRadioConverter}}"
+                    GroupName="Canvas"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Margin="0,10,114,0"/>
+                <!--#endregion-->
+
+                <!--#region WebRTC-->
+                <TextBlock
+                    Grid.Row="12"
+                    Style="{StaticResource ThemeTextBlock}"
+                    Text="WebRTC"
+                    Margin="70,12,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    FontSize="13"/>
+                <RadioButton 
+                    Grid.Row="12"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="OFF"
+                    GroupName="WebRTC"
+                    Margin="210,10,0,0"
+                    IsChecked="{Binding PryGuardProf.FakeProfile.WebRtcSettings.WebRtcStatus,
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=OFF}"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"/>
+                <RadioButton 
+                    Grid.Row="12"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="REAL"
+                    GroupName="WebRTC"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    IsChecked="{Binding PryGuardProf.FakeProfile.WebRtcSettings.WebRtcStatus,
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=REAL}"
+                    Margin="0,10,114,0"/>
+                <RadioButton 
+                    Grid.Row="12"
+                    IsEnabled="False"
+                    Visibility="Hidden"
+                    x:Name="rbWebRTC"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="MANUAL"
+                    GroupName="WebRTC"
+                    Margin="0,10,74,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    CommandParameter="MANUAL"/>
+                <TextBox
+                    Grid.Row="12"
+                    IsEnabled="False"
+                    Style="{StaticResource ThemeTextbox}"
+                    Width="239"
+                    Margin="96,40,0,10"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Center"
+                    Tag="IP Address"
+                    Text="{Binding PryGuardProf.FakeProfile.WebRtcSettings.PublicIp}"
+                    Visibility="{Binding IsChecked,ElementName=rbWebRTC,Converter={StaticResource b2v}}"/>
+                <!--#endregion-->
+
+
+
+                <!--#region WebGL-->
+                <TextBlock
+                    Grid.Row="13"
+                    Style="{StaticResource ThemeTextBlock}"
+                    Text="WebGL"
+                    Margin="70,12,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    FontSize="13"/>
+                <RadioButton 
+                    Grid.Row="13"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="OFF"
+                    GroupName="WebGL"
+                    Margin="210,10,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    IsChecked="{Binding PryGuardProf.FakeProfile.WebGL.Status,
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=OFF}"/>
+                <RadioButton 
+                    Grid.Row="13"
+                    x:Name="rbWebGlNoise"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="NOISE"
+                    GroupName="WebGL"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Margin="0,10,114,0"
+                    IsChecked="{Binding PryGuardProf.FakeProfile.WebGL.Status,
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=NOISE}"/>
+                <ComboBox
+                    Grid.Row="13"
+                    Style="{StaticResource ThemeCombobox}"
+                    Width="180"
+                    Height="22"
+                    SelectedIndex="0"
+                    Margin="65,40,0,10"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    Visibility="{Binding IsChecked,ElementName=rbWebGlNoise,Converter={StaticResource b2v}}">
+                    <ComboBoxItem>Google inc.</ComboBoxItem>
+                </ComboBox>
+                <ComboBox
+                    Grid.Row="13"
+                    Style="{StaticResource ThemeCombobox}"
+                    Width="180"
+                    Height="22"
+                    SelectedIndex="0"
+                    Margin="0,40,55,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Visibility="{Binding IsChecked,ElementName=rbWebGlNoise,Converter={StaticResource b2v}}">
+                    <ComboBoxItem>ANGLE (NVIDIA GeForce GTX 1050 ti Direct3D11 vs_5_0 ps_5_0)</ComboBoxItem>
+                </ComboBox>
+                <!--#endregion-->
+
+                <!--#region Timezone-->
+                <TextBlock
+                    Grid.Row="14"
+                    Style="{StaticResource ThemeTextBlock}"
+                    Text="Timezone"
+                    Margin="70,12,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    FontSize="13"/>
+                <RadioButton 
+                    Grid.Row="14"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="AUTO"
+                    IsChecked="True"
+                    GroupName="TimeZone"
+                    Margin="210,10,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"/>
+                <RadioButton 
+                    Grid.Row="14"
+                    x:Name="rbTimeZone"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="MANUAL"
+                    GroupName="TimeZone"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Margin="0,10,114,0"/>
+                <ComboBox
+                    Grid.Row="14"
+                    Style="{StaticResource ThemeCombobox}"
+                    Width="239"
+                    SelectedIndex="0"
+                    Margin="96,40,0,10"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Center"
+                    Visibility="{Binding IsChecked,ElementName=rbTimeZone,Converter={StaticResource b2v}}">
+                    <ComboBoxItem>Europe</ComboBoxItem>
+                </ComboBox>
+                <!--#endregion-->
+
+                <!--#region Language-->
+                <TextBlock
+                    Grid.Row="15"
+                    Style="{StaticResource ThemeTextBlock}"
+                    Text="Language"
+                    Margin="70,12,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    FontSize="13"/>
+                <RadioButton 
+                    Grid.Row="15"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="AUTO"
+                   
+                    GroupName="Lang"
+                    Margin="210,10,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"/>
+                <RadioButton 
+                    Grid.Row="15"
+                    x:Name="rbLang"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="MANUAL"
+                    IsChecked="True"
+                    GroupName="Lang"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Margin="0,10,114,0"/>
+                <ComboBox
+                    Grid.Row="15"
+                    Style="{StaticResource ThemeCombobox}"
+                    Width="239"
+                    SelectedIndex="0"
+                    Margin="96,40,0,10"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Center"
+                    Visibility="{Binding IsChecked,ElementName=rbLang,Converter={StaticResource b2v}}">
+                    <ComboBoxItem>English(USA)</ComboBoxItem>
+                    <ComboBoxItem>English(UK)</ComboBoxItem>
+                    <ComboBoxItem>Russian</ComboBoxItem>
+                </ComboBox>
+                <!--#endregion-->
+
+                <!--#region Geolocation-->
+                <TextBlock
+                    Grid.Row="16"
+                    Style="{StaticResource ThemeTextBlock}"
+                    Text="Geolocation"
+                    Margin="70,12,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    FontSize="13"/>
+                <RadioButton 
+                    Grid.Row="16"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="AUTO"
+                    GroupName="Geo"
+                    Margin="210,10,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    IsChecked="{Binding PryGuardProf.FakeProfile.GeoSettings.Status,
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=AUTO}"/>
+                <RadioButton 
+                    Grid.Row="16"
+                    x:Name="rbGeo"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="MANUAL"
+                    GroupName="Geo"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Margin="0,10,114,0"
+                    IsChecked="{Binding PryGuardProf.FakeProfile.GeoSettings.Status,
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=MANUAL}"/>
+                <TextBox
+                    Grid.Row="16"
+                    Height="22"
+                    Width="118"
+                    Margin="170,40,0,10"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    Tag="Latitude"
+                    Style="{StaticResource ThemeTextbox}"
+                    Visibility="{Binding IsChecked,ElementName=rbGeo,Converter={StaticResource b2v}}"
+                    Text="{Binding PryGuardProf.FakeProfile.GeoSettings.Latitude}"/>
+                <TextBox
+                    Grid.Row="16"
+                    Height="22"
+                    Width="118"
+                    Margin="0,40,73,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Tag="Longitude"
+                    Style="{StaticResource ThemeTextbox}"
+                    Visibility="{Binding IsChecked,ElementName=rbGeo,Converter={StaticResource b2v}}"
+                    Text="{Binding PryGuardProf.FakeProfile.GeoSettings.Longitude}"/>
+                <!--#endregion-->
+
+                <!--#region Processor-->
+                <TextBlock
+                    Grid.Row="18"
+                    Style="{StaticResource ThemeTextBlock}"
+                    Text="Processor"
+                    Margin="67,10,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    FontSize="13"/>
+                <RadioButton 
+                    Grid.Row="17"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="AUTO"
+                    GroupName="Proc"
+                    Margin="210,10,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    IsChecked="{Binding PryGuardProf.FakeProfile.CpuStatus,
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=AUTO}"/>
+                <RadioButton 
+                    Grid.Row="17"
+                    x:Name="rbProc"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="MANUAL"
+                    GroupName="Proc"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Margin="0,10,114,0"
+                    IsChecked="{Binding PryGuardProf.FakeProfile.CpuStatus,
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=MANUAL}"/>
+
+                <!--#region StackPanel Cores-->
+                <StackPanel
+                    Grid.Row="17"
+                    Width="180"
+                    Height="16"
+                    Orientation="Horizontal"
+                    Visibility="{Binding IsChecked,ElementName=rbProc,Converter={StaticResource b2v}}"
+                    Margin="96,40,0,10">
+                    <RadioButton 
+                        Grid.Row="17"
+                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                        Content="2"
+                        Height="16"
+                        Width="30"
+                        GroupName="Core"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Margin="0,0,0,0"
+                        IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
+                        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=2}"/>
+                    <RadioButton 
+                        Grid.Row="16"
+                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                        Content="4"
+                        Height="16"
+                        Width="30"
+                        GroupName="Core"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Margin="0,0,0,0"
+                        IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
+                        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=4}"/>
+                    <RadioButton 
+                        Grid.Row="16"
+                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                        Content="6"
+                        Height="16"
+                        Width="30"
+                        GroupName="Core"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Margin="0,0,0,0"
+                        IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
+                        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=6}"/>
+                    <RadioButton 
+                        Grid.Row="16"
+                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                        Content="8"
+                        Height="16"
+                        Width="30"
+                        GroupName="Core"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Margin="0,0,0,0"
+                        IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
+                        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=8}"/>
+                    <RadioButton 
+                        Grid.Row="16"
+                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                        Content="12"
+                        Height="16"
+                        Width="30"
+                        GroupName="Core"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Margin="0,0,0,0"
+                        IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
+                        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=12}"/>
+                    <RadioButton 
+                        Grid.Row="16"
+                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                        Content="16"
+                        Height="16"
+                        Width="30"
+                        GroupName="Core"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Margin="0,0,0,0"
+                        IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
+                        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=16}"/>
+                </StackPanel>
+                <!--#endregion-->
+                <!--#endregion-->
+
+                <!--#region Memory-->
+                <TextBlock
+                    Grid.Row="17"
+                    Style="{StaticResource ThemeTextBlock}"
+                    Text="Memory"
+                    Margin="70,12,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    FontSize="13"/>
+                <RadioButton 
+                    Grid.Row="18"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="AUTO"
+                    GroupName="Mem"
+                    Margin="210,6,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    IsChecked="{Binding PryGuardProf.FakeProfile.MemStatus,
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=AUTO}"/>
+                <RadioButton 
+                    Grid.Row="18"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    x:Name="rbMem"
+                    Content="MANUAL"
+                    GroupName="Mem"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Margin="0,6,113,0"
+                    IsChecked="{Binding PryGuardProf.FakeProfile.MemStatus,
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=MANUAL}" Checked="rbMem_Checked"/>
+
+                <!--#region StackPanel Memory-->
+                <StackPanel
+                    Grid.Row="18"
+                    Width="90"
+                    Height="16"
+                    Orientation="Horizontal"
+                    Visibility="{Binding IsChecked,ElementName=rbMem,Converter={StaticResource b2v}}"
+                    Margin="96,40,0,10">
+                    <RadioButton 
+                        Grid.Row="18"
+                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                        Content="2"
+                        Height="16"
+                        Width="30"
+                        GroupName="MemSize"
+                        IsChecked="{Binding PryGuardProf.FakeProfile.MemoryAvailable,
+                        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=2}"/>
+                    <RadioButton 
+                        Grid.Row="18"
+                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                        Content="4"
+                        Height="16"
+                        Width="30"
+                        GroupName="MemSize"
+                        IsChecked="{Binding PryGuardProf.FakeProfile.MemoryAvailable,
+                        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=4}"/>
+                    <RadioButton 
+                        Grid.Row="18"
+                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                        Content="8"
+                        Height="16"
+                        Width="30"
+                        GroupName="MemSize"
+                        IsChecked="{Binding PryGuardProf.FakeProfile.MemoryAvailable,
+                        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=8}"/>
+                </StackPanel>
+                <!--#endregion-->
+
+                <!--#endregion-->
+
+                <!--#region Screen-->
+                <TextBlock
+                    Grid.Row="19"
+                    Style="{StaticResource ThemeTextBlock}"
+                    Text="Screen"
+                    Margin="70,12,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    FontSize="13"/>
+                <RadioButton 
+                    Grid.Row="19"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="REAL"
+                    IsChecked="False"
+                    IsEnabled="False"
+                    GroupName="Screen"
+                    Margin="210,10,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"/>
+                <RadioButton 
+                    Grid.Row="19"
+                    x:Name="rbScreen"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="MANUAL"
+                    IsChecked="True"
+                    GroupName="Screen"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Margin="0,10,114,0"/>
+                <ComboBox
+                    Grid.Row="19"
+                    Style="{StaticResource ThemeCombobox}"
+                    Width="239"
+                    Margin="96,40,0,10"
+                    SelectedIndex="0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Center"
+                    Visibility="{Binding IsChecked,ElementName=rbScreen,Converter={StaticResource b2v}}">
+                    <ComboBoxItem>1920x1080</ComboBoxItem>
+                </ComboBox>
+                <!--#endregion-->
+
+                <!--#region Media-->
+                <TextBlock
+                    Grid.Row="20"
+                    Style="{StaticResource ThemeTextBlock}"
+                    Text="Media"
+                    Margin="70,12,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    FontSize="13"/>
+                <RadioButton 
+                    Grid.Row="20"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="AUTO"
+                    GroupName="Media"
+                    Margin="210,10,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    IsChecked="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.Status,
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=AUTO}"/>
+                <RadioButton 
+                    Grid.Row="20"
+                    x:Name="rbMedia"
+                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+                    Content="MANUAL"
+                    GroupName="Media"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Margin="0,10,114,0"
+                    IsChecked="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.Status,
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=MANUAL}"/>
+                <!--#region StackPanel Media-->
+                <StackPanel
+                    Grid.Row="20"
+                    Width="120"
+                    Height="60"
+                    Orientation="Vertical"
+                    Visibility="{Binding IsChecked,ElementName=rbMedia,Converter={StaticResource b2v}}"
+                    Margin="96,40,0,10">
+                    <TextBlock
+                        Grid.Row="20"
+                        Style="{StaticResource ThemeTextBlock}"
+                        Text="Audio inputs"
+                        Margin="0,1,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        FontSize="10"/>
+                    <TextBlock
+                        Grid.Row="20"
+                        Style="{StaticResource ThemeTextBlock}"
+                        Text="Audio outputs"
+                        Margin="0,8,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        FontSize="10"/>
+                    <TextBlock
+                        Grid.Row="20"
+                        Style="{StaticResource ThemeTextBlock}"
+                        Text="Video inputs"
+                        Margin="0,7,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        FontSize="10"/>
+                    <TextBox
+                        x:Name="tbAudioIn"
+                        Grid.Row="20"
+                        Style="{StaticResource ThemeTextbox}"
+                        Width="30"
+                        Height="16"
+                        HorizontalAlignment="Right"
+                        Margin="0,-88,0,0"
+                        Text="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.AudioInputs,
+                        Converter={StaticResource StringToIntInputConverter}}"/>
+                    <TextBox
+                        Grid.Row="20"
+                        Style="{StaticResource ThemeTextbox}"
+                        Width="30"
+                        Height="16"
+                        HorizontalAlignment="Right"
+                        Margin="0,-48,0,0"
+                        Text="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.AudioOutputs}"/>
+                    <TextBox
+                        Grid.Row="20"
+                        Style="{StaticResource ThemeTextbox}"
+                        Width="30"
+                        Height="16"
+                        HorizontalAlignment="Right"
+                        Margin="0,-13,0,0"
+                        Text="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.VideoInputs}"/>
+
+                </StackPanel>
+                <!--#endregion-->
+                <!--#endregion-->
+            </Grid>
+        </ScrollViewer>
+
+        <ScrollViewer
+            VerticalScrollBarVisibility="Hidden" 
+            Grid.Column="1"
+            Grid.Row="1"
+            Padding="0,0,10,0">
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!--#region Name-->
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="Name:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="{Binding PryGuardProf.Name}"/>
+                <Line
+                    Grid.Row="0"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}"/>
+                <!--#endregion-->
+
+                <!--#region Status-->
+                <TextBlock
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="Status:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="{Binding PryGuardProf.Status,Mode=TwoWay}"/>
+                <Line
+                    Grid.Row="1"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}"/>
+                <!--#endregion-->
+
+                <!--#region Tags-->
+                <TextBlock
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="Tags:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="{Binding PryGuardProf.Tags}"/>
+                <Line
+                    Grid.Row="2"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}"/>
+                <!--#endregion-->
+
+                <!--#region Platform-->
+                <TextBlock
+                    Grid.Row="3"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="Platform:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="{Binding PryGuardProf.FakeProfile.OsVersion}"/>
+                <Line
+                    Grid.Row="3"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}"/>
+                <!--#endregion-->
+
+                <!--#region Proxy-->
+                <TextBlock
+                    Grid.Row="4"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="Proxy:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="4"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="{Binding PryGuardProf.Proxy.ProxyLine}"/>
+                <Line
+                    Grid.Row="4"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}"/>
+                <!--#endregion-->
+
+                <!--#region UserAgent-->
+                <TextBlock
+                    Grid.Row="5"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="UserAgent:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="5"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="{Binding PryGuardProf.FakeProfile.UserAgent}"/>
+                <Line
+                    Grid.Row="5"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}" />
+                <!--#endregion-->
+
+                <!--#region DoNotTrack-->
+                <TextBlock
+                    Grid.Row="6"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="Do not track:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    x:Name="tbDoNotTrack"
+                    Grid.Row="6"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="{Binding PryGuardProf.FakeProfile.IsSendDoNotTrack, 
+                    Converter={StaticResource BoolToValueConverter}}"/>
+                <Line
+                    Grid.Row="6"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}" />
+                <!--#endregion-->
+
+                <!--#region LoadCache-->
+                <TextBlock
+                    Grid.Row="7"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="Load Cache:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="7"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="{Binding PryGuardProf.IsLoadCacheInMemory, 
+                    Converter={StaticResource BoolToValueConverter}}"/>
+                <Line
+                    Grid.Row="7"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}"/>
+                <!--#endregion-->
+
+                <!--#region LoadImage-->
+                <TextBlock
+                    Grid.Row="8"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="Load Image:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="8"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="{Binding PryGuardProf.IsLoadImage, 
+                    Converter={StaticResource BoolToValueConverter}}"/>
+                <Line
+                    Grid.Row="8"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}" />
+                <!--#endregion-->
+
+                <!--#region IsAdBlock-->
+                <TextBlock
+                    Grid.Row="9"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="AdBlock:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="9"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="{Binding PryGuardProf.IsAdBlock, 
+                    Converter={StaticResource BoolToValueConverter}}"/>
+                <Line
+                    Grid.Row="9"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}"/>
+                <!--#endregion-->
+
+                <!--#region Canvas-->
+                <TextBlock
+                    Grid.Row="10"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="Hide Canvas:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="10"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="{Binding PryGuardProf.FakeProfile.HideCanvas, 
+                    Converter={StaticResource BoolToValueConverter}}"/>
+                <Line
+                    Grid.Row="10"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}"/>
+                <!--#endregion-->
+
+                <!--#region WebRTC-->
+                <TextBlock
+                    Grid.Row="11"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="WebRTC:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="11"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="{Binding PryGuardProf.FakeProfile.WebRtcSettings.WebRtcStatus,
+                    Converter={StaticResource ValueToStringConverter}}"/>
+                <Line
+                    Grid.Row="11"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}"/>
+                <!--#endregion-->
+
+                <!--#region WebGL-->
+                <TextBlock
+                    Grid.Row="12"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="WebGL:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="12"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="{Binding PryGuardProf.FakeProfile.WebGL.Status,
+                    Converter={StaticResource ValueToStringConverter}}"/>
+                <Line
+                    Grid.Row="12"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}"/>
+                <!--#endregion-->
+
+                <!--#region WebGL Info-->
+                <TextBlock
+                    Grid.Row="13"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="WebGL Info:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="13"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="Google Inc.  ANGLE (NVIDIA GeForce GTX 1050 ti Direct3D11 vs_5_0 ps_5_0)"/>
+                <Line
+                    Grid.Row="13"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}" />
+                <!--#endregion-->
+
+                <!--#region Timezone-->
+                <TextBlock
+                    Grid.Row="14"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="Timezone:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="14"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="AUTO"/>
+                <Line
+                    Grid.Row="14"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}" />
+                <!--#endregion-->
+
+                <!--#region Language-->
+                <TextBlock
+                    Grid.Row="15"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="Language:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="15"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="{Binding PryGuardProf.FakeProfile.ChromeLanguageInfo.Name}"/>
+                <Line
+                    Grid.Row="15"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}"/>
+                <!--#endregion-->
+
+                <!--#region Geolocation-->
+                <TextBlock
+                    Grid.Row="16"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="Geolocation:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="16"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="{Binding PryGuardProf.FakeProfile.GeoSettings.Status,
+                    Converter={StaticResource ValueToStringConverter}}"/>
+                <Line
+                    Grid.Row="16"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}"/>
+                <!--#endregion-->
+
+                <!--#region CPU-->
+                <TextBlock
+                    Grid.Row="17"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="CPU:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="17"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}">
+                    <Run Text="{Binding PryGuardProf.FakeProfile.CpuConcurrency}"/>
+                    <Run Text=" Cores"/>
+                </TextBlock>
+                <Line
+                    Grid.Row="17"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}"/>
+                <!--#endregion-->
+
+                <!--#region Memory-->
+                <TextBlock
+                    Grid.Row="18"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="Memory:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="18"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}">
+                    <Run Text="{Binding PryGuardProf.FakeProfile.MemoryAvailable}"/>
+                    <Run Text=" GB"/>
+                </TextBlock>
+                <Line
+                    Grid.Row="18"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}"/>
+                <!--#endregion-->
+
+                <!--#region Screen-->
+                <TextBlock
+                    Grid.Row="19"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="Screen:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="19"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                   Text="{Binding PryGuardProf.FakeProfile.ScreenSize}"
+                    >
+                </TextBlock>
+                    
+                <Line
+                    Grid.Row="19"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}"/>
+                <!--#endregion-->
+
+                <!--#region Media devices-->
+                <TextBlock
+                    Grid.Row="20"
+                    Grid.Column="0"
+                    Style="{StaticResource ProfileSettingsSummary}"
+                    Text="Media devices:"
+                    FontWeight="SemiBold"
+                    Margin="10,0,0,0"/>
+                <TextBlock
+                    Grid.Row="20"
+                    Grid.Column="1"
+                    Style="{StaticResource ProfileSettingsSummary}">
+                    
+                    <Run Text="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.AudioInputs}"/>
+                    <Run Text="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.AudioOutputs}"/>
+                    <Run Text="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.VideoInputs}"/>
+                </TextBlock>
+                <Line
+                    Grid.Row="20"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource ProfileSettingsSummaryLine}"/>
+                <!--#endregion-->
+            </Grid>
+        </ScrollViewer>
+        <TextBlock
+            FontFamily="Roboto"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Left"
+            FontSize="20"
+            Height="27"
+            Margin="5,0,0,0">
+            <TextBlock.Foreground>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <LinearGradientBrush.RelativeTransform>
+                        <TransformGroup>
+                            <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                            <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                            <RotateTransform CenterY="0.5" CenterX="0.5" Angle="45"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </LinearGradientBrush.RelativeTransform>
+                    <GradientStop x:Name="GradientStop1" Color="#7d3328"/>
+                    <GradientStop Offset="1" x:Name="GradientStop2" Color="#d8281b"/>
+                </LinearGradientBrush>
+            </TextBlock.Foreground><Run Text="PryGuard"/><Run Text=" "/><Run Text="{Binding PryGuardProf.Name}"/></TextBlock>
+    </Grid>
+</Window>
