@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using PryGuard.Services.Commands;
 using PryGuard.Core.ChromeApi.Model.Configs;
 using System.Windows.Input;
+using PryGuard.Core.ChromeApi.Settings;
+using System.Windows.Controls;
+using System;
 
 namespace PryGuard.ViewModel;
 public class PryGuardProfileSettingsViewModel : BaseViewModel
@@ -20,6 +23,31 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     #endregion
 
     #region Properties
+    private PryGuardProfile _pryGuardProf;
+
+    public PryGuardProfile PryGuardProf
+    {
+        get => _pryGuardProf;
+        set
+        {
+            _pryGuardProf = value;
+            OnPropertyChanged(nameof(PryGuardProf));
+            OnPropertyChanged(nameof(SelectedLanguage));
+        }
+    }
+
+    public EChromeLanguage SelectedLanguage
+    {
+        get => PryGuardProf?.FakeProfile?.ChromeLanguageInfo?.Language ?? EChromeLanguage.EnUsa;
+        set
+        {
+            if (PryGuardProf?.FakeProfile?.ChromeLanguageInfo != null && PryGuardProf.FakeProfile.ChromeLanguageInfo.Language != value)
+            {
+                PryGuardProf.FakeProfile.ChromeLanguageInfo.Language = value;
+                OnPropertyChanged(nameof(SelectedLanguage));
+            }
+        }
+    }
     private WindowState _windowState;
     public WindowState WindowState
     {
@@ -29,9 +57,11 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
 
     private PryGuardProfilesViewModel _PryGuardProfilesVM;
     public PryGuardProfilesViewModel PryGuardProfilesVM
+
     {
         get => _PryGuardProfilesVM;
         set => Set(ref _PryGuardProfilesVM, value);
+       
     }
 
 
@@ -49,12 +79,12 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         set => Set(ref _tbProxyBrush, value);
     }
 
-    private PryGuardProfile _PryGuardProf;
-    public PryGuardProfile PryGuardProf
-    {
-        get => _PryGuardProf;
-        set => Set(ref _PryGuardProf, value);
-    }
+    //private PryGuardProfile _PryGuardProf;
+    //public PryGuardProfile PryGuardProf
+    //{
+    //    get => _PryGuardProf;
+    //    set => Set(ref _PryGuardProf, value);
+    //}
     #endregion
 
     #region Ctor
@@ -132,6 +162,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             TbProxyBrush = Brushes.White;
         }
     }
+   
     private void CloseProfileSettings(object arg)
     {
         ViewManager.Close(this);

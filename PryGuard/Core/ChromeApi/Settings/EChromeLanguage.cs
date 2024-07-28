@@ -13,7 +13,7 @@ namespace PryGuard.Core.ChromeApi.Settings
         It,
         Kz,
     }
-
+    
     public static class EChromeLanguageExtensions
     {
         private static Random random = new Random();

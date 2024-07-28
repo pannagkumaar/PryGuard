@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:PryGuard.ViewModel"
         
-        xmlns:local="clr-namespace:PryGuard.View"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:PryGuard.Core.ChromeApi.Settings"
+        xmlns:configs="clr-namespace:PryGuard.Core.ChromeApi.Model.Configs"
         xmlns:converters="clr-namespace:PryGuard.Services.UI.Converters"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
@@ -25,6 +27,19 @@
     <Window.Resources>
         <ResourceDictionary>
             <converters:EnumToComboBoxItemConverter x:Key="EnumToComboBoxItemConverter" />
+            <ObjectDataProvider MethodName="GetValues"
+                            ObjectType="{x:Type sys:Enum}"
+                            x:Key="EOSVersionDataProvider">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="configs:EOSVersion" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider><ObjectDataProvider MethodName="GetValues"
+                            ObjectType="{x:Type sys:Enum}"
+                            x:Key="EChromeLanguageDataProvider">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="local:EChromeLanguage" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
             <BooleanToVisibilityConverter x:Key="b2v" />
             <converters:EnumBooleanConverter x:Key="EnumBooleanConverter" />
             <converters:ValueToStringConverter x:Key="ValueToStringConverter" />
@@ -317,7 +332,7 @@
                 </StackPanel>
                 <!--#endregion-->
 
-                <!--#region Cookie-->
+                <!--#region Cookie--><!--
                 <TextBox
                     Grid.Row="4"
                     Style="{StaticResource ThemeTextbox}"
@@ -328,7 +343,7 @@
                     HorizontalAlignment="Center"
                     Tag="Cookie"
                     HorizontalContentAlignment="Left"/>
-                <!--#endregion-->
+                --><!--#endregion-->
 
                 <!--#region Useragent-->
                 <TextBlock
@@ -365,12 +380,10 @@
                     SelectedIndex="0"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left"
-                    Visibility="{Binding IsChecked,ElementName=rbScreen,Converter={StaticResource b2v}}" SelectionChanged="ComboBox_SelectionChanged">
-                    <ComboBoxItem>Windows 7</ComboBoxItem>
-                    <ComboBoxItem>Windows 8</ComboBoxItem>
-                    <ComboBoxItem>Windows 8.1</ComboBoxItem>
-                    <ComboBoxItem>Windows 10</ComboBoxItem>
-                    <ComboBoxItem>Windows 11</ComboBoxItem>
+                    Visibility="{Binding IsChecked, ElementName=rbScreen, Converter={StaticResource b2v}}"
+                    SelectionChanged="ComboBox_SelectionChanged"
+                    ItemsSource="{Binding Source={StaticResource EOSVersionDataProvider}}"
+                    SelectedItem="{Binding PryGuardProf.FakeProfile.OsVersion, Mode=TwoWay}">
                 </ComboBox>
                 <!--#endregion-->
                 <!--#region Do not track -->
@@ -716,11 +729,13 @@
                     Margin="96,40,0,10"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Center"
-                    Visibility="{Binding IsChecked,ElementName=rbLang,Converter={StaticResource b2v}}">
-                    <ComboBoxItem>English(USA)</ComboBoxItem>
-                    <ComboBoxItem>English(UK)</ComboBoxItem>
-                    <ComboBoxItem>Russian</ComboBoxItem>
+                    Visibility="{Binding IsChecked, ElementName=rbScreen, Converter={StaticResource b2v}}"
+                    SelectionChanged="ComboBoxlang_SelectionChanged"
+                    ItemsSource="{Binding Source={StaticResource EChromeLanguageDataProvider}}"
+                    SelectedItem="{Binding Path=SelectedLanguage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <!--SelectedItem="{Binding Path=SelectedLanguage, Mode=TwoWay}">-->
                 </ComboBox>
+                
                 <!--#endregion-->
 
                 <!--#region Geolocation-->

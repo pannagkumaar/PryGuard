@@ -2,28 +2,29 @@
 using System.Globalization;
 using System.Windows.Data;
 
-
-namespace PryGuard.Services.UI.Converters;
-public class EnumToComboBoxItemConverter : IValueConverter
+namespace PryGuard.Services.UI.Converters
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public class EnumToComboBoxItemConverter : IValueConverter
     {
-        if (value == null || !value.GetType().IsEnum)
-            return null;
-
-        var enumValues = Enum.GetValues(value.GetType());
-        var comboBoxItems = new System.Collections.Generic.List<string>();
-
-        foreach (var enumValue in enumValues)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            comboBoxItems.Add(enumValue.ToString());
+            if (value == null || !value.GetType().IsEnum)
+                return null;
+
+            var enumValues = Enum.GetValues(value.GetType());
+            var comboBoxItems = new System.Collections.Generic.List<string>();
+
+            foreach (var enumValue in enumValues)
+            {
+                comboBoxItems.Add(enumValue.ToString());
+            }
+
+            return comboBoxItems;
         }
 
-        return comboBoxItems;
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
