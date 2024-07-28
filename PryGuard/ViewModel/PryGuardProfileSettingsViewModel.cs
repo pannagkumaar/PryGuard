@@ -9,6 +9,7 @@ using System.Windows.Input;
 using PryGuard.Core.ChromeApi.Settings;
 using System.Windows.Controls;
 using System;
+using System.Collections.Generic;
 
 namespace PryGuard.ViewModel;
 public class PryGuardProfileSettingsViewModel : BaseViewModel
@@ -48,6 +49,14 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             }
         }
     }
+    public List<ScreenSize> ScreenSizes { get; } = new List<ScreenSize>()
+        {
+            new ScreenSize(1280, 768),
+            new ScreenSize(1366, 768),
+            new ScreenSize(1440, 900),
+            new ScreenSize(1920, 1080),
+            new ScreenSize(1280, 1024)
+        };
     private WindowState _windowState;
     public WindowState WindowState
     {

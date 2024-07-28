@@ -333,7 +333,7 @@
                 </StackPanel>
                 <!--#endregion-->
 
-                <!--#region Cookie--><!--
+                <!--#region Cookie-->
                 <TextBox
                     Grid.Row="4"
                     Style="{StaticResource ThemeTextbox}"
@@ -344,7 +344,7 @@
                     HorizontalAlignment="Center"
                     Tag="Cookie"
                     HorizontalContentAlignment="Left"/>
-                --><!--#endregion-->
+                <!--#endregion-->
 
                 <!--#region Useragent-->
                 <TextBlock
@@ -997,7 +997,7 @@
                     GroupName="Screen"
                     Margin="210,10,0,0"
                     VerticalAlignment="Top"
-                    HorizontalAlignment="Left"/>
+                    HorizontalAlignment="Left" Checked="RadioButton_Checked"/>
                 <RadioButton 
                     Grid.Row="19"
                     x:Name="rbScreen"
@@ -1016,9 +1016,16 @@
                     SelectedIndex="0"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Center"
-                    Visibility="{Binding IsChecked,ElementName=rbScreen,Converter={StaticResource b2v}}">
-                    <ComboBoxItem>1920x1080</ComboBoxItem>
+                    Visibility="{Binding IsChecked,ElementName=rbScreen,Converter={StaticResource b2v}}"
+                    ItemsSource="{Binding ScreenSizes}"
+                    SelectedItem="{Binding PryGuardProf.FakeProfile.ScreenSize, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
                 </ComboBox>
+                
                 <!--#endregion-->
 
                 <!--#region Media-->

@@ -86,8 +86,9 @@ namespace PryGuard.View
 
         }
 
-        
+        private void RadioButton_Checked(object sender, System.Windows.RoutedEventArgs e)
+        {
 
-        
+        }
     }
 }
