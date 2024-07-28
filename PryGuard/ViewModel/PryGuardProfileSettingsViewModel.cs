@@ -51,11 +51,15 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     }
     public List<ScreenSize> ScreenSizes { get; } = new List<ScreenSize>()
         {
-            new ScreenSize(1280, 768),
-            new ScreenSize(1366, 768),
-            new ScreenSize(1440, 900),
             new ScreenSize(1920, 1080),
-            new ScreenSize(1280, 1024)
+            new ScreenSize(1366, 768),
+            new ScreenSize(1280, 1024),
+            new ScreenSize(1440, 900),
+            new ScreenSize(1600, 900),
+            new ScreenSize(1280, 800),
+            new ScreenSize(1024, 768),
+            new ScreenSize(2560, 1440),
+            new ScreenSize(3840, 2160)
         };
     private WindowState _windowState;
     public WindowState WindowState
