@@ -24,6 +24,7 @@
     <Window.DataContext>
         <vm:PryGuardProfileSettingsViewModel/>
     </Window.DataContext>
+    
     <Window.Resources>
         <ResourceDictionary>
             <converters:EnumToComboBoxItemConverter x:Key="EnumToComboBoxItemConverter" />
@@ -381,7 +382,7 @@
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left"
                     Visibility="{Binding IsChecked, ElementName=rbScreen, Converter={StaticResource b2v}}"
-                    SelectionChanged="ComboBox_SelectionChanged"
+                    SelectionChanged="ComboBoxOS_SelectionChanged"
                     ItemsSource="{Binding Source={StaticResource EOSVersionDataProvider}}"
                     SelectedItem="{Binding PryGuardProf.FakeProfile.OsVersion, Mode=TwoWay}">
                 </ComboBox>

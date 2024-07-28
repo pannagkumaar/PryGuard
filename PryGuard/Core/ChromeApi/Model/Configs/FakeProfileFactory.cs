@@ -299,7 +299,7 @@ public class FakeProfileFactory
         return RandomNumber.Between(from, to);
     }
 
-    private static string GenerateUserAgent(FakeProfile fakeProfile)
+    public static string GenerateUserAgent(FakeProfile fakeProfile)
     {
         return "Mozilla/5.0 (" +
                GetOSInfo(fakeProfile.OsVersion, fakeProfile.IsX64) +

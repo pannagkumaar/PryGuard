@@ -3,61 +3,91 @@ using PryGuard.ViewModel;
 using System.Windows.Controls;
 using System;
 using System.Diagnostics;
+using PryGuard.Core.ChromeApi.Model.Configs;
 
-namespace PryGuard.View;
-public partial class PryGuardProfileSettingsView : IBaseView
+namespace PryGuard.View
 {
-    public BaseViewModel ViewModel { get; set; }
-    private bool _isPageLoaded = false;
-    public PryGuardProfileSettingsView()
+    public partial class PryGuardProfileSettingsView : IBaseView
     {
-        InitializeComponent();
-        this.DataContext = new PryGuardProfileSettingsViewModel();
-        this.Loaded += OnPageLoaded;
-    }
-    private void OnPageLoaded(object sender, System.Windows.RoutedEventArgs e)
-    {
-        _isPageLoaded = true;
-    }
-    private void Window_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-    {
-        this.DragMove();
-    }
+        public BaseViewModel ViewModel { get; set; }
+        private bool _isPageLoaded = false;
 
-    private void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-    {
-
-    }
-    private void ComboBoxlang_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (!_isPageLoaded)
+        public PryGuardProfileSettingsView()
         {
-            // Page is not fully loaded, exit the method
-            return;
+            InitializeComponent();
+            this.DataContext = new PryGuardProfileSettingsViewModel();
+            this.Loaded += OnPageLoaded;
         }
-        var comboBox = sender as ComboBox;
 
-        if (comboBox != null && comboBox.SelectedItem != null)
+        private void OnPageLoaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            var viewModel = this.DataContext as PryGuardProfileSettingsViewModel;
-            if (viewModel != null)
+            _isPageLoaded = true;
+        }
+
+        private void Window_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
+
+        private void ComboBoxOS_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (!_isPageLoaded)
             {
-                EChromeLanguage selectedLanguage;
-                if (Enum.TryParse(comboBox.SelectedItem.ToString(), out selectedLanguage))
+                // Page is not fully loaded, exit the method
+                return;
+            }
+
+            var comboBox = sender as ComboBox;
+            if (comboBox != null && comboBox.SelectedItem != null)
+            {
+                var viewModel = this.DataContext as PryGuardProfileSettingsViewModel;
+                if (viewModel != null)
                 {
-                    viewModel.PryGuardProf.FakeProfile.ChromeLanguageInfo = EChromeLanguageHelper.GetFullInfo(selectedLanguage);
+                    EOSVersion selectedOSVersion;
+                    if (Enum.TryParse(comboBox.SelectedItem.ToString(), out selectedOSVersion))
+                    {
+                        viewModel.PryGuardProf.FakeProfile.OsVersion = selectedOSVersion;
+                        viewModel.PryGuardProf.FakeProfile.UserAgent = FakeProfileFactory.GenerateUserAgent(viewModel.PryGuardProf.FakeProfile);
+                    }
                 }
             }
         }
-    }
 
-    private void rbMem_Checked(object sender, System.Windows.RoutedEventArgs e)
-    {
+        private void ComboBoxlang_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!_isPageLoaded)
+            {
+                // Page is not fully loaded, exit the method
+                return;
+            }
 
-    }
+            var comboBox = sender as ComboBox;
+            if (comboBox != null && comboBox.SelectedItem != null)
+            {
+                var viewModel = this.DataContext as PryGuardProfileSettingsViewModel;
+                if (viewModel != null)
+                {
+                    EChromeLanguage selectedLanguage;
+                    if (Enum.TryParse(comboBox.SelectedItem.ToString(), out selectedLanguage))
+                    {
+                        viewModel.PryGuardProf.FakeProfile.ChromeLanguageInfo = EChromeLanguageHelper.GetFullInfo(selectedLanguage);
+                    }
+                }
+            }
+        }
 
-    private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
-    {
+        private void rbMem_Checked(object sender, System.Windows.RoutedEventArgs e)
+        {
 
+        }
+
+        private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+
+        }
+
+        
+
+        
     }
 }
