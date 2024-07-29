@@ -10,6 +10,7 @@ using PryGuard.Core.ChromeApi.Settings;
 using System.Windows.Controls;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace PryGuard.ViewModel;
 public class PryGuardProfileSettingsViewModel : BaseViewModel
@@ -20,6 +21,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     public RelayCommand CheckProxyCommand { get; private set; }
     public RelayCommand SaveProfileCommand { get; private set; }
     public ICommand NewFingerprintCommand { get; }
+    public ObservableCollection<string> Renderers { get; }
 
     #endregion
 
@@ -102,6 +104,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
 
     #region Ctor
     public PryGuardProfileSettingsViewModel() { }
+    
     public PryGuardProfileSettingsViewModel(PryGuardProfile PryGuardProfile)
     {
         CloseProfileSettingsCommand = new RelayCommand(CloseProfileSettings);
@@ -111,6 +114,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         NewFingerprintCommand = new RelayCommand(GenerateNewFingerprint);
 
         PryGuardProf = PryGuardProfile;
+        Renderers = new ObservableCollection<string>(WebGLFactory.Renderers);
     }
     #endregion
 
