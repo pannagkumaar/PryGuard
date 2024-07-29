@@ -649,8 +649,10 @@
                     Margin="0,40,55,0"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Right"
-                    Visibility="{Binding IsChecked,ElementName=rbWebGlNoise,Converter={StaticResource b2v}}">
-                    <ComboBoxItem>ANGLE (NVIDIA GeForce GTX 1050 ti Direct3D11 vs_5_0 ps_5_0)</ComboBoxItem>
+                    Visibility="{Binding IsChecked,ElementName=rbWebGlNoise,Converter={StaticResource b2v}}"
+                    ItemsSource="{Binding Renderers}"
+                    SelectedItem="{Binding Path=PryGuardProf.FakeProfile.WebGL.Renderer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    
                 </ComboBox>
                 <!--#endregion-->
 
@@ -1421,10 +1423,16 @@
                     FontWeight="SemiBold"
                     Margin="10,0,0,0"/>
                 <TextBlock
-                    Grid.Row="13"
-                    Grid.Column="1"
-                    Style="{StaticResource ProfileSettingsSummary}"
-                    Text="Google Inc.  ANGLE (NVIDIA GeForce GTX 1050 ti Direct3D11 vs_5_0 ps_5_0)"/>
+                Grid.Row="13"
+                Grid.Column="1"
+                Style="{StaticResource ProfileSettingsSummary}">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0} - {1}">
+                            <Binding Path="PryGuardProf.FakeProfile.WebGL.Vendor"/>
+                            <Binding Path="PryGuardProf.FakeProfile.WebGL.Renderer"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
                 <Line
                     Grid.Row="13"
                     Grid.ColumnSpan="2"
