@@ -1,6 +1,8 @@
-﻿using PryGuard.ViewModel;
+﻿using System.Windows;
+using System.Windows.Controls;
+using PryGuard.ViewModel;
 using System.Windows.Input;
-
+using PryGuard.Model;
 namespace PryGuard.View;
 public partial class PryGuardBrowserView : IBaseView
 {
@@ -8,7 +10,11 @@ public partial class PryGuardBrowserView : IBaseView
 
     public PryGuardBrowserView()
     {
+        
+       
         InitializeComponent();
+        
+        //DataContext = new PryGuardBrowserViewModel(this, new PryGuardProfile());
     }
     private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) { DragMove(); }
 }

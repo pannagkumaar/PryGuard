@@ -29,7 +29,9 @@ public abstract class BaseViewModel : INotifyPropertyChanged
             return;
         propertyChanged(this, new PropertyChangedEventArgs(propertyName));
     }
-    public virtual void Close() { }
+    public virtual void Close() {
+    
+    }
     protected void NextStep(BaseViewModel viewModel)
     {
         ViewManager.Show(viewModel);

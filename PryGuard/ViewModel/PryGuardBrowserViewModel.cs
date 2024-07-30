@@ -34,6 +34,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     #region BrowserSettings & Other
     private List<PryGuardBrowser> _browsers;
     private PryGuardProfile _PryGuardProfileToStart;
+    //private Window _window;
     private PryGuardProfile _PryGuardProfile;
     private IpInfoResult _proxyInfo;
     private BlockManager _blockManager;
@@ -123,8 +124,11 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
     #region Ctor
     public PryGuardBrowserViewModel() { }
-    public PryGuardBrowserViewModel(PryGuardProfile PryGuardProfileToStart)
+    public PryGuardBrowserViewModel( PryGuardProfile PryGuardProfileToStart)
     {
+        
+        
+       
         _PryGuardProfileToStart = PryGuardProfileToStart;
         _mainIDCounter = 0;
         Tabs = new();
@@ -651,7 +655,10 @@ public class PryGuardBrowserViewModel : BaseViewModel
     }
     private void CloseWindow(object obj)
     {
-        Close?.Invoke();
+        ViewManager.Close(this);
+        
+        
+        
     }
     public bool CanClose()
     {

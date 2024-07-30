@@ -6,6 +6,8 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:panel="clr-namespace:PryGuard.Services.UI.Panel"
         xmlns:vm="clr-namespace:PryGuard.ViewModel"
+        
+
         mc:Ignorable="d"
         Background="White"
         Title="PryGuard" 
