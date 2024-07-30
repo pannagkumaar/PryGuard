@@ -6,8 +6,6 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:panel="clr-namespace:PryGuard.Services.UI.Panel"
         xmlns:vm="clr-namespace:PryGuard.ViewModel"
-        
-
         mc:Ignorable="d"
         Background="White"
         Title="PryGuard" 
@@ -20,17 +18,38 @@
         UseLayoutRounding="True"
         WindowStartupLocation="CenterScreen"
         WindowState="{Binding CurWindowState, Mode=TwoWay}">
-    <!--#region DataContext & Resources & WindowChrome-->
+
+    <!-- DataContext -->
     <Window.DataContext>
         <vm:PryGuardBrowserViewModel/>
     </Window.DataContext>
 
+    <!-- Resources -->
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Services/UI/Styles/DrawImageStyles.xaml" />
                 <ResourceDictionary Source="/Services/UI/Styles/UIElementStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <DataTemplate x:Key="BookmarkTemplate">
+                <Button
+                Style="{StaticResource LatchesBrowserStyle}"
+                Content="{Binding Title}">
+                    <Button.InputBindings>
+                        <!-- Left mouse button click for opening the bookmark -->
+                        <MouseBinding 
+                        Gesture="LeftClick"
+                        Command="{Binding DataContext.OpenBookmarkCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                        CommandParameter="{Binding}" />
+                        <!-- Right mouse button click for removing the bookmark -->
+                        <MouseBinding 
+                        Gesture="RightClick"
+                        Command="{Binding DataContext.RemoveBookmarkCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                        CommandParameter="{Binding}" />
+                    </Button.InputBindings>
+                </Button>
+            </DataTemplate>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -246,7 +265,7 @@
                                                     Width="24"
                                                     HorizontalAlignment="Right"
                                                     Style="{StaticResource BorderForBrowserButtons}">
-                                                    <Image 
+                                                    <!--<Image 
                                                         Margin="0,0,0,0"
                                                         Width="15" Height="15"
                                                         Source="{StaticResource AddBookmarkBrowserStarSel}">
@@ -256,6 +275,17 @@
                                                                 <i:ChangePropertyAction PropertyName="Source" Value="{StaticResource AddBookmarkBrowserStarNotSel}"/>
                                                             </i:EventTrigger>
                                                             <i:EventTrigger EventName="PreviewMouseRightButtonDown">
+                                                                <i:ChangePropertyAction PropertyName="Source" Value="{StaticResource AddBookmarkBrowserStarSel}"/>
+                                                            </i:EventTrigger>
+                                                        </i:Interaction.Triggers>
+                                                    </Image>-->
+                                                    <Image
+                                                        Margin="0,0,0,0"
+                                                        Width="15" Height="15"
+                                                        Source="{StaticResource AddBookmarkBrowserStarSel}">
+                                                        <i:Interaction.Triggers>
+                                                            <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                                                <i:InvokeCommandAction Command="{Binding AddBookmarkCommand}" />
                                                                 <i:ChangePropertyAction PropertyName="Source" Value="{StaticResource AddBookmarkBrowserStarSel}"/>
                                                             </i:EventTrigger>
                                                         </i:Interaction.Triggers>
@@ -333,7 +363,7 @@
             </StackPanel>
 
             <!--StackPanel for "Bookmarks"-->
-            <StackPanel
+            <!--<StackPanel
                 Grid.Row="1"
                 Grid.ColumnSpan="5"
                 Height="30"
@@ -346,8 +376,22 @@
                 <Button
                     Style="{StaticResource LatchesBrowserStyle}"
                     Content="Bookmark"/>
-            </StackPanel>
+            </StackPanel>-->
+            <ItemsControl
+                Grid.Row="1"
+                Grid.ColumnSpan="5"
+                Height="30"
+                ItemsSource="{Binding Bookmarks}"
+                ItemTemplate="{StaticResource BookmarkTemplate}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
         </Grid>
+
+            
         <!--#endregion-->
 
         <!--#region Browser TabControl-->
