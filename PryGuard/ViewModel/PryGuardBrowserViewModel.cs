@@ -216,6 +216,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
                 if (_PryGuardProfile.Proxy.IsProxyAuth)
                 {
+                    // Check the client proxy and set authentication credentials
                     _proxyInfo = await IpInfoClient.CheckClientProxy(_PryGuardProfile.Proxy);
                     _requestHandler.SetAuthCredentials(new ProxyAuthCredentials()
                     {
@@ -223,7 +224,13 @@ public class PryGuardBrowserViewModel : BaseViewModel
                         Password = _PryGuardProfile.Proxy.ProxyPassword
                     });
                 }
+                else
+                {
+                    // If the proxy does not require authentication, just check the client proxy
+                    _proxyInfo = await IpInfoClient.CheckClientProxy(_PryGuardProfile.Proxy);
+                }
             }
+
 
             return InitBasicSettingsBrowser(isNewPage, id, PryGuardProfile);
         }

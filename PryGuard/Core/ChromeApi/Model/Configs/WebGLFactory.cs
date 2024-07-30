@@ -4,7 +4,16 @@ using System.Collections.Generic;
 namespace PryGuard.Core.ChromeApi.Model.Configs;
 public class WebGLFactory
 {
-    public static List<string> Vendors = new List<string>() { "Google inc." };//param 37445
+    public static List<string> Vendors = new List<string>()
+{
+    "Google inc.",
+    //"AMD",                     
+    //"NVIDIA",                   
+    //"Intel",                    
+    //"Apple",                  
+    //"Qualcomm",                 
+    
+};//param 37445
     public static List<string> Renderers = new List<string>() { "ANGLE (NVIDIA GeForce GTX 1050 ti Direct3D11 vs_5_0 ps_5_0)",
     "ANGLE (AMD Radeon R5 340 (0x00006611) Direct3D11 vs_5_0 ps_5_0)",
     "ANGLE (NVIDIA GeForce RTX 2070 with Max-Q Design (0x00001F10) Direct3D11 vs_5_0 ps_5_0)",

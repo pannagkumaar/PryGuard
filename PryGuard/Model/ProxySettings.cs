@@ -36,14 +36,25 @@ public class ProxySettings : INotifyPropertyChanged
                 return;
             _proxyLine = value;
             var splitted = _proxyLine.Split(':');
-            if (splitted.Length > 3)
+            if (splitted.Length == 2)
             {
-
+                // Standard proxy without credentials
+                IsCustomProxy = true;
+                ProxyAddress = splitted[0];
+                ProxyPort = System.Convert.ToInt32(splitted[1]);
+                ProxyLogin = null;
+                ProxyPassword = null;
+                IsProxyAuth = false;
+            }
+            else if (splitted.Length == 4)
+            {
+                // Custom proxy with credentials
                 IsCustomProxy = true;
                 ProxyAddress = splitted[0];
                 ProxyPort = System.Convert.ToInt32(splitted[1]);
                 ProxyLogin = splitted[2];
                 ProxyPassword = splitted[3];
+                IsProxyAuth = true;
             }
             OnPropertyChanged(nameof(ProxyLine));
         }

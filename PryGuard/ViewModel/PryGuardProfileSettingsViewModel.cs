@@ -163,6 +163,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
 
     private async void CheckProxy()
     {
+        var a=PryGuardProf.Proxy.ProxyAddress;
         if (PryGuardProf.Proxy.ProxyAddress == "") return;
         var result = await IpInfoClient.CheckClientProxy(PryGuardProf.Proxy);
         if (result == null)
