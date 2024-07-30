@@ -805,7 +805,7 @@
                     HorizontalAlignment="Left"
                     FontSize="13"/>
                 <RadioButton 
-                    Grid.Row="17"
+                    Grid.Row="18"
                     Style="{StaticResource ThemeRadioBSettingsMainTheme}"
                     Content="AUTO"
                     GroupName="Proc"
@@ -815,7 +815,7 @@
                     IsChecked="{Binding PryGuardProf.FakeProfile.CpuStatus,
                     Converter={StaticResource EnumBooleanConverter}, ConverterParameter=AUTO}"/>
                 <RadioButton 
-                    Grid.Row="17"
+                    Grid.Row="18"
                     x:Name="rbProc"
                     Style="{StaticResource ThemeRadioBSettingsMainTheme}"
                     Content="MANUAL"
@@ -828,14 +828,14 @@
 
                 <!--#region StackPanel Cores-->
                 <StackPanel
-                    Grid.Row="17"
+                    Grid.Row="18"
                     Width="180"
                     Height="16"
                     Orientation="Horizontal"
                     Visibility="{Binding IsChecked,ElementName=rbProc,Converter={StaticResource b2v}}"
                     Margin="96,40,0,10">
                     <RadioButton 
-                        Grid.Row="17"
+                        Grid.Row="18"
                         Style="{StaticResource ThemeRadioBSettingsMainTheme}"
                         Content="2"
                         Height="16"
@@ -847,7 +847,7 @@
                         IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
                         Converter={StaticResource StringToIntParamConverter}, ConverterParameter=2}"/>
                     <RadioButton 
-                        Grid.Row="16"
+                        Grid.Row="17"
                         Style="{StaticResource ThemeRadioBSettingsMainTheme}"
                         Content="4"
                         Height="16"
@@ -859,7 +859,7 @@
                         IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
                         Converter={StaticResource StringToIntParamConverter}, ConverterParameter=4}"/>
                     <RadioButton 
-                        Grid.Row="16"
+                        Grid.Row="17"
                         Style="{StaticResource ThemeRadioBSettingsMainTheme}"
                         Content="6"
                         Height="16"
@@ -871,7 +871,7 @@
                         IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
                         Converter={StaticResource StringToIntParamConverter}, ConverterParameter=6}"/>
                     <RadioButton 
-                        Grid.Row="16"
+                        Grid.Row="17"
                         Style="{StaticResource ThemeRadioBSettingsMainTheme}"
                         Content="8"
                         Height="16"
@@ -883,7 +883,7 @@
                         IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
                         Converter={StaticResource StringToIntParamConverter}, ConverterParameter=8}"/>
                     <RadioButton 
-                        Grid.Row="16"
+                        Grid.Row="17"
                         Style="{StaticResource ThemeRadioBSettingsMainTheme}"
                         Content="12"
                         Height="16"
@@ -895,7 +895,7 @@
                         IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
                         Converter={StaticResource StringToIntParamConverter}, ConverterParameter=12}"/>
                     <RadioButton 
-                        Grid.Row="16"
+                        Grid.Row="17"
                         Style="{StaticResource ThemeRadioBSettingsMainTheme}"
                         Content="16"
                         Height="16"
@@ -920,7 +920,7 @@
                     HorizontalAlignment="Left"
                     FontSize="13"/>
                 <RadioButton 
-                    Grid.Row="18"
+                    Grid.Row="17"
                     Style="{StaticResource ThemeRadioBSettingsMainTheme}"
                     Content="AUTO"
                     GroupName="Mem"
@@ -930,7 +930,7 @@
                     IsChecked="{Binding PryGuardProf.FakeProfile.MemStatus,
                     Converter={StaticResource EnumBooleanConverter}, ConverterParameter=AUTO}"/>
                 <RadioButton 
-                    Grid.Row="18"
+                    Grid.Row="17"
                     Style="{StaticResource ThemeRadioBSettingsMainTheme}"
                     x:Name="rbMem"
                     Content="MANUAL"
@@ -943,14 +943,14 @@
 
                 <!--#region StackPanel Memory-->
                 <StackPanel
-                    Grid.Row="18"
+                    Grid.Row="17"
                     Width="90"
                     Height="16"
                     Orientation="Horizontal"
                     Visibility="{Binding IsChecked,ElementName=rbMem,Converter={StaticResource b2v}}"
                     Margin="96,40,0,10">
                     <RadioButton 
-                        Grid.Row="18"
+                        Grid.Row="17"
                         Style="{StaticResource ThemeRadioBSettingsMainTheme}"
                         Content="2"
                         Height="16"
@@ -959,7 +959,7 @@
                         IsChecked="{Binding PryGuardProf.FakeProfile.MemoryAvailable,
                         Converter={StaticResource StringToIntParamConverter}, ConverterParameter=2}"/>
                     <RadioButton 
-                        Grid.Row="18"
+                        Grid.Row="17"
                         Style="{StaticResource ThemeRadioBSettingsMainTheme}"
                         Content="4"
                         Height="16"
@@ -968,7 +968,7 @@
                         IsChecked="{Binding PryGuardProf.FakeProfile.MemoryAvailable,
                         Converter={StaticResource StringToIntParamConverter}, ConverterParameter=4}"/>
                     <RadioButton 
-                        Grid.Row="18"
+                        Grid.Row="17"
                         Style="{StaticResource ThemeRadioBSettingsMainTheme}"
                         Content="8"
                         Height="16"

@@ -175,7 +175,7 @@
                             BorderThickness="0 0 0 1"
                             BorderBrush="#393939">
                             <panel:AutoStackPanel Orientation="Horizontal">
-                                <CheckBox Style="{StaticResource ThemeCheckbox}"/>
+                                <!--<CheckBox Style="{StaticResource ThemeCheckbox}"/>-->
                                 <Button
                                     Width="25"
                                     Height="25"
