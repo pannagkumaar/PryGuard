@@ -69,12 +69,12 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public ICommand AddBookmarkCommand { get; }
     public ICommand RemoveBookmarkCommand { get; }
     public ICommand OpenBookmarkCommand { get; }
-    
+
     #endregion
 
     #region Properties
-    private TabItem _currentTabItem;
-    public TabItem CurrentTabItem
+    private CustomTabItem _currentTabItem;
+    public CustomTabItem CurrentTabItem
     {
         get => _currentTabItem;
         set => Set(ref _currentTabItem, value);
@@ -126,18 +126,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         set => Set(ref _curWindowState, value);
     }
 
-    public class CustomTabItem : TabItem
-    {
-        // Custom properties
-        // Use 'new' keyword to hide the base class property
-        
-        
-        public string Title { get; set; }
-        public string Address { get; set; }
-        public RelayCommand CloseTabCommand { get; set; }
-
-
-    }
+    
     #endregion
 
     #region Ctor
@@ -459,22 +448,35 @@ public class PryGuardBrowserViewModel : BaseViewModel
     #region HistoryWork
     private void SaveHistoryJson(string address, string desc)
     {
-        if (!File.Exists(_profileHistoryPath)) { File.Create(_profileHistoryPath).Close(); }
+        if (!File.Exists(_profileHistoryPath))
+        {
+            // Ensure the file is created if it doesn't exist
+            File.Create(_profileHistoryPath).Close();
+        }
 
         Task.Run(() =>
         {
-            var hist = new PryGuardHistoryItem(DateTime.Now.ToString("MM/dd HH:mm"),
+            // Create a history item with the current date including the year
+            var hist = new PryGuardHistoryItem(DateTime.Now.ToString("yyyy/MM/dd HH:mm"),
                 desc, address.Replace("https://", ""));
-            using StreamWriter writer = new(_profileHistoryPath);
+
+            // Insert the new history item at the start of the list
             PryGuardHistoryList.Insert(0, hist);
 
+            // Serialize the history list to JSON
             var doc = JsonSerializer.Serialize(PryGuardHistoryList);
+
+            // Write the serialized data to the file
+            using StreamWriter writer = new(_profileHistoryPath);
             writer.Write(doc);
             writer.Close();
+
+            // Update the UI on the main thread
             Application.Current.Dispatcher.Invoke(delegate
             {
                 var listBoxItem = new ListViewItem();
 
+                // Set properties for the list box item
                 ListViewItemProperties.SetTimeHistory(listBoxItem, hist.Time);
                 ListViewItemProperties.SetDescHistory(listBoxItem, hist.Description);
                 ListViewItemProperties.SetLinkPreview(listBoxItem, hist.Link[..hist.Link.IndexOf('/')]);
@@ -483,6 +485,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             });
         });
     }
+
     private void LoadHistoryJson()
     {
         if (!File.Exists(_profileHistoryPath)) { return; }

@@ -35,18 +35,18 @@
                 <Button
                 Style="{StaticResource LatchesBrowserStyle}"
                 Content="{Binding Title}">
-                        <Button.InputBindings>
-                            <!--Left mouse button click for opening the bookmark-->
-                            <MouseBinding 
+                    <Button.InputBindings>
+                        <!--Left mouse button click for opening the bookmark-->
+                        <MouseBinding 
                                 Gesture="LeftClick"
                                 Command="{Binding DataContext.OpenBookmarkCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                 CommandParameter="{Binding}" />
-                            <!--Right mouse button click for removing the bookmark-->
-                            <MouseBinding 
+                        <!--Right mouse button click for removing the bookmark-->
+                        <MouseBinding 
                                 Gesture="RightClick"
                                 Command="{Binding DataContext.RemoveBookmarkCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                 CommandParameter="{Binding}" />
-                        </Button.InputBindings>
+                    </Button.InputBindings>
                 </Button>
             </DataTemplate>
         </ResourceDictionary>
@@ -275,7 +275,7 @@
                                                             </i:EventTrigger>
                                                         </i:Interaction.Triggers>
                                                     </Image>
-                                                    
+
                                                 </Border>
                                             </Grid>
                                         </Border>
@@ -377,6 +377,11 @@
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type TabControl}">
                                 <Grid KeyboardNavigation.TabNavigation="Local">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="659*"/>
+                                        <ColumnDefinition Width="23*"/>
+                                        <ColumnDefinition Width="395*"/>
+                                    </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="*"/>
@@ -384,13 +389,13 @@
                                     <TabPanel
                                         Grid.Row="0"
                                         Panel.ZIndex="1"
-                                        Margin="0"
-                                        IsItemsHost="True"/>
+                                        Margin="0,0,0,325"
+                                        IsItemsHost="True" Grid.ColumnSpan="3" Grid.RowSpan="2"/>
                                     <Border
                                         Grid.Row="1"
                                         BorderBrush="Transparent"
                                         BorderThickness="0"
-                                        Background="{TemplateBinding Background}">
+                                        Background="{TemplateBinding Background}" Grid.ColumnSpan="3">
                                         <ContentPresenter ContentSource="SelectedContent"/>
                                     </Border>
                                 </Grid>

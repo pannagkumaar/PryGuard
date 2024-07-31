@@ -37,29 +37,29 @@
         HorizontalAlignment="Right" 
         VerticalAlignment="Center" 
         Orientation="Horizontal">
-                <TextBlock
+            <TextBlock
             Text="PryGuard" 
             FontFamily="Roboto"
             Margin="0,3,955,0"
             VerticalAlignment="Center"
             FontSize="20"
             Height="25">
-                    <TextBlock.Foreground>
-                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                            <LinearGradientBrush.RelativeTransform>
-                                <TransformGroup>
-                                    <ScaleTransform CenterY="0.5" CenterX="0.5"/>
-                                    <SkewTransform CenterY="0.5" CenterX="0.5"/>
-                                    <RotateTransform CenterY="0.5" CenterX="0.5" Angle="45"/>
-                                    <TranslateTransform/>
-                                </TransformGroup>
-                            </LinearGradientBrush.RelativeTransform>
+                <TextBlock.Foreground>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <LinearGradientBrush.RelativeTransform>
+                            <TransformGroup>
+                                <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                <RotateTransform CenterY="0.5" CenterX="0.5" Angle="45"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </LinearGradientBrush.RelativeTransform>
                         <GradientStop x:Name="GradientStop11" Color="#7d3328"/>
                         <GradientStop Offset="1" x:Name="GradientStop21" Color="#d8281b"/>
                     </LinearGradientBrush>
-                    </TextBlock.Foreground>
-                </TextBlock>
-                
+                </TextBlock.Foreground>
+            </TextBlock>
+
             <Border 
                 Height="16" Width="16"
                 CornerRadius="8"  Margin="5"
@@ -93,7 +93,8 @@
         <panel:AutoStackPanel 
             Orientation="Horizontal"
             MarginBetweenChildren="20"
-            Background="#1c1c1c" Margin="0,-1,0,1">
+            Background="#1c1c1c" Margin="0,-1,0,1"
+            >
             <Button
                 Width="25"
                 Height="25"
@@ -129,12 +130,15 @@
         <Border 
             Background="#1E1E1E" 
             BorderThickness="0 0 0 1" BorderBrush="#393939"
-            Margin="0,0,0,-1">
+            Margin="0,0,0,-1"
+            Height="22"
+            >
             <StackPanel Orientation="Horizontal">
-                <CheckBox 
+                <!--<CheckBox 
                     HorizontalAlignment="Left"
-                    Style="{StaticResource ThemeCheckbox}"/>
+                    Style="{StaticResource ThemeCheckbox}"/>-->
                 <TextBlock 
+                    Margin="95,0,0,0"
                     HorizontalAlignment="Left"
                     Style="{StaticResource ThemeTextBlock}"
                     Text="Name"
@@ -143,7 +147,7 @@
                     HorizontalAlignment="Left"
                     Style="{StaticResource ThemeTextBlock}"
                     Text="Status"
-                    Margin="365,0,0,0"
+                    Margin="275,0,0,0"
                     FontSize="11"/>
                 <TextBlock 
                     HorizontalAlignment="Left"
@@ -172,6 +176,7 @@
                             Background="#1E1E1E"
                             x:Name="btnForChangeBack"
                             Height="50"
+                            
                             BorderThickness="0 0 0 1"
                             BorderBrush="#393939">
                             <panel:AutoStackPanel Orientation="Horizontal">
@@ -179,6 +184,8 @@
                                 <Button
                                     Width="25"
                                     Height="25"
+                                    Margin="30,0,0,0"
+                                    
                                     Style="{StaticResource ThemeButtonProfilesWork}" 
                                     Command="{Binding ViewModel.EditProfileCommand}"
                                     CommandParameter="{Binding ElementName=tbProfileName,Path=Tag}">
@@ -220,7 +227,7 @@
                                     HorizontalAlignment="Left"
                                     Style="{StaticResource ThemeTextBlock}"
                                     Text="{Binding Tags}"
-                                    Margin="150,0,0,0"
+                                    Margin="130,0,0,0"
                                     Height="30"
                                     FontSize="12"
                                     Width="300"
@@ -233,7 +240,7 @@
                                     Text=""
                                     Height="30"
                                     Width="150"
-                                    Margin="0,0,0,0">
+                                    Margin="10,0,0,0">
                                     <Run Text="{Binding ProxyHostPort}"/>
                                     <Run Text="{Binding ProxyLoginPass}"/>
                                 </TextBlock>
@@ -269,7 +276,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-        
+
         <!--#endregion-->
     </panel:AutoStackPanel>
 </Window>
