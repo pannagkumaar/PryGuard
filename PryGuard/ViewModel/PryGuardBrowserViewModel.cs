@@ -245,7 +245,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
                 }
             }
 
-
+            isNewPage = true;
             return InitBasicSettingsBrowser(isNewPage, id, PryGuardProfile);
         }
         else { return InitBasicSettingsBrowser(isNewPage, id, PryGuardProfile); }
