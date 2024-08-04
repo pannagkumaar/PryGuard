@@ -15,6 +15,7 @@
                 return;
             }
             if (!navigator.mediaDevices) {
+            if (!navigator.mediaDevices) {
                 return;
             }
 

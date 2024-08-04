@@ -6,6 +6,8 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:panel="clr-namespace:PryGuard.Services.UI.Panel"
         xmlns:vm="clr-namespace:PryGuard.ViewModel"
+        
+
         mc:Ignorable="d"
         Background="White"
         Title="PryGuard" 
@@ -18,35 +20,32 @@
         UseLayoutRounding="True"
         WindowStartupLocation="CenterScreen"
         WindowState="{Binding CurWindowState, Mode=TwoWay}">
-
-    <!-- DataContext -->
+    <!--#region DataContext & Resources & WindowChrome-->
     <Window.DataContext>
         <vm:PryGuardBrowserViewModel/>
     </Window.DataContext>
 
-    <!-- Resources -->
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Services/UI/Styles/DrawImageStyles.xaml" />
                 <ResourceDictionary Source="/Services/UI/Styles/UIElementStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
             <DataTemplate x:Key="BookmarkTemplate">
                 <Button
                 Style="{StaticResource LatchesBrowserStyle}"
                 Content="{Binding Title}">
                     <Button.InputBindings>
-                        <!-- Left mouse button click for opening the bookmark -->
+                        <!--Left mouse button click for opening the bookmark-->
                         <MouseBinding 
-                        Gesture="LeftClick"
-                        Command="{Binding DataContext.OpenBookmarkCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                        CommandParameter="{Binding}" />
-                        <!-- Right mouse button click for removing the bookmark -->
+                                Gesture="LeftClick"
+                                Command="{Binding DataContext.OpenBookmarkCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{Binding}" />
+                        <!--Right mouse button click for removing the bookmark-->
                         <MouseBinding 
-                        Gesture="RightClick"
-                        Command="{Binding DataContext.RemoveBookmarkCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                        CommandParameter="{Binding}" />
+                                Gesture="RightClick"
+                                Command="{Binding DataContext.RemoveBookmarkCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{Binding}" />
                     </Button.InputBindings>
                 </Button>
             </DataTemplate>
@@ -265,20 +264,6 @@
                                                     Width="24"
                                                     HorizontalAlignment="Right"
                                                     Style="{StaticResource BorderForBrowserButtons}">
-                                                    <!--<Image 
-                                                        Margin="0,0,0,0"
-                                                        Width="15" Height="15"
-                                                        Source="{StaticResource AddBookmarkBrowserStarSel}">
-                                                        
-                                                        <i:Interaction.Triggers>
-                                                            <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
-                                                                <i:ChangePropertyAction PropertyName="Source" Value="{StaticResource AddBookmarkBrowserStarNotSel}"/>
-                                                            </i:EventTrigger>
-                                                            <i:EventTrigger EventName="PreviewMouseRightButtonDown">
-                                                                <i:ChangePropertyAction PropertyName="Source" Value="{StaticResource AddBookmarkBrowserStarSel}"/>
-                                                            </i:EventTrigger>
-                                                        </i:Interaction.Triggers>
-                                                    </Image>-->
                                                     <Image
                                                         Margin="0,0,0,0"
                                                         Width="15" Height="15"
@@ -290,6 +275,7 @@
                                                             </i:EventTrigger>
                                                         </i:Interaction.Triggers>
                                                     </Image>
+
                                                 </Border>
                                             </Grid>
                                         </Border>
@@ -363,26 +349,12 @@
             </StackPanel>
 
             <!--StackPanel for "Bookmarks"-->
-            <!--<StackPanel
-                Grid.Row="1"
-                Grid.ColumnSpan="5"
-                Height="30"
-                Orientation="Horizontal"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top">
-                <Button
-                    Style="{StaticResource LatchesBrowserStyle}"
-                    Content="Bookmark"/>
-                <Button
-                    Style="{StaticResource LatchesBrowserStyle}"
-                    Content="Bookmark"/>
-            </StackPanel>-->
             <ItemsControl
-                Grid.Row="1"
-                Grid.ColumnSpan="5"
-                Height="30"
-                ItemsSource="{Binding Bookmarks}"
-                ItemTemplate="{StaticResource BookmarkTemplate}">
+            Grid.Row="1"
+            Grid.ColumnSpan="5"
+            Height="30"
+            ItemsSource="{Binding Bookmarks}"
+            ItemTemplate="{StaticResource BookmarkTemplate}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal" />
@@ -390,8 +362,6 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Grid>
-
-            
         <!--#endregion-->
 
         <!--#region Browser TabControl-->
@@ -407,6 +377,11 @@
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type TabControl}">
                                 <Grid KeyboardNavigation.TabNavigation="Local">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="659*"/>
+                                        <ColumnDefinition Width="23*"/>
+                                        <ColumnDefinition Width="395*"/>
+                                    </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="*"/>
@@ -414,13 +389,13 @@
                                     <TabPanel
                                         Grid.Row="0"
                                         Panel.ZIndex="1"
-                                        Margin="0"
-                                        IsItemsHost="True"/>
+                                        Margin="0,0,0,325"
+                                        IsItemsHost="True" Grid.ColumnSpan="3" Grid.RowSpan="2"/>
                                     <Border
                                         Grid.Row="1"
                                         BorderBrush="Transparent"
                                         BorderThickness="0"
-                                        Background="{TemplateBinding Background}">
+                                        Background="{TemplateBinding Background}" Grid.ColumnSpan="3">
                                         <ContentPresenter ContentSource="SelectedContent"/>
                                     </Border>
                                 </Grid>

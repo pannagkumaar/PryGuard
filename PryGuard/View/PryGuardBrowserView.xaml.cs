@@ -17,5 +17,4 @@ public partial class PryGuardBrowserView : IBaseView
         //DataContext = new PryGuardBrowserViewModel(this, new PryGuardProfile());
     }
     private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) { DragMove(); }
-
 }

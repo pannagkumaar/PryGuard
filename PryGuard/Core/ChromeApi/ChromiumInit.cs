@@ -20,7 +20,7 @@ public static class ChromiumInit
         cefSettings.Locale = PryGuardProfileToStart.FakeProfile.CurrentChromeLanguage.ToLocal();
         cefSettings.UserAgent = PryGuardProfileToStart.FakeProfile.UserAgent;
         // if (!cefSettings.CefCommandLineArgs.ContainsKey("disable-gpu"))
-        // cefSettings.CefCommandLineArgs.Add("disable-gpu", "1");
+        //cefSettings.CefCommandLineArgs.Add("disable-gpu", "1");
         ///cefSettings.RootCachePath = ClientConfig.ChromeDataPath;
         if (cefSettings.CefCommandLineArgs.ContainsKey("enable-media-stream"))
             cefSettings.CefCommandLineArgs.Remove("enable-media-stream");

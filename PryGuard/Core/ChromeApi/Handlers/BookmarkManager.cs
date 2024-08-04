@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Text.Json;
 using System.IO;
+using System.Linq;
 
 public class BookmarkManager
 {
@@ -19,6 +20,13 @@ public class BookmarkManager
 
     public void AddBookmark(string title, string url)
     {
+        // Check if the bookmark already exists
+        if (Bookmarks.Any(b => b.Title == title && b.URL == url))
+        {
+            // Optionally, you can log or notify the user that the bookmark already exists
+            return;
+        }
+
         var bookmark = new Bookmark { Title = title, URL = url };
         Bookmarks.Add(bookmark);
         SaveBookmarks();

@@ -20,9 +20,7 @@ using PryGuard.Core.ChromeApi.Proxy;
 using System.Collections.ObjectModel;
 using PryGuard.Core.ChromeApi.Handlers;
 using PryGuard.Services.UI.ListView.ListViewItem;
-using System.ComponentModel;
 using System.Windows.Data;
-using System.Diagnostics;
 
 namespace PryGuard.ViewModel;
 public class PryGuardBrowserViewModel : BaseViewModel
@@ -49,9 +47,6 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private RenderMessageHandler _renderMessageHandler;
     private LoadHandler _loadHandler;
     private JsWorker _jsWorker;
-    
-
-   
     #endregion
     #endregion
 
@@ -75,12 +70,11 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public ICommand RemoveBookmarkCommand { get; }
     public ICommand OpenBookmarkCommand { get; }
 
-
     #endregion
 
     #region Properties
-    private TabItem _currentTabItem;
-    public TabItem CurrentTabItem
+    private CustomTabItem _currentTabItem;
+    public CustomTabItem CurrentTabItem
     {
         get => _currentTabItem;
         set => Set(ref _currentTabItem, value);
@@ -88,7 +82,6 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private BookmarkManager _bookmarkManager;
 
     public ObservableCollection<Bookmark> Bookmarks => _bookmarkManager?.Bookmarks;
-
     private ObservableCollection<PryGuardHistoryItem> _PryGuardHistoryList;
     public ObservableCollection<PryGuardHistoryItem> PryGuardHistoryList
     {
@@ -133,20 +126,10 @@ public class PryGuardBrowserViewModel : BaseViewModel
         set => Set(ref _curWindowState, value);
     }
 
-
+    
     #endregion
 
     #region Ctor
-  
-    public class CustomTabItem : TabItem
-    {
-        // Custom properties
-        // Use 'new' keyword to hide the base class property
-        public string Title { get; set; }
-        public string Address { get; set; }
-        
-    
-    }
     public PryGuardBrowserViewModel() { }
     public PryGuardBrowserViewModel( PryGuardProfile PryGuardProfileToStart)
     {
@@ -159,19 +142,17 @@ public class PryGuardBrowserViewModel : BaseViewModel
         _listView = new();
         PryGuardHistoryList = new();
         _profileHistoryPath = _PryGuardProfileToStart.CachePath + "\\History.json";
-
-
         _bookmarkManager = new BookmarkManager(_PryGuardProfileToStart.CachePath);
         AddBookmarkCommand = new RelayCommand(AddBookmark);
         RemoveBookmarkCommand = new RelayCommand<Bookmark>(RemoveBookmark);
         OpenBookmarkCommand = new RelayCommand<Bookmark>(OpenBookmark);
-
         MinimizeWindowCommand = new RelayCommand(MinimizedWindow);
         MaximizeWindowCommand = new RelayCommand(MaximizedWindow);
         NormalStateWindowCommand = new RelayCommand(NormalStateWindow);
         AddTabCommand = new RelayCommand(AddTab);
         OpenTabCommand = new RelayCommand(OpenTab);
         CloseTabCommand = new RelayCommand(CloseTab);
+        
         RefreshCommand = new RelayCommand(Refresh);
         ForwardCommand = new RelayCommand(Forward);
         BackCommand = new RelayCommand(Back);
@@ -179,7 +160,6 @@ public class PryGuardBrowserViewModel : BaseViewModel
         LoadHistoryLinkCommand = new RelayCommand(LoadHistoryLink);
         OpenHistoryCommand = new RelayCommand(AddTabHistory);
         OpenContextMenuSettingsCommand = new RelayCommand(OpenContextMenuSettings);
-
 
         try
         {
@@ -215,7 +195,6 @@ public class PryGuardBrowserViewModel : BaseViewModel
             _requestHandler = new RequestHandler(_blockManager);
             _requestContextSettings = new RequestContextSettings();
             _lifespanHandler = new LifespanHandler();
-            //_bookmarkManager = new BookmarkManager();
 
             if (_PryGuardProfile.IsLoadCacheInMemory)
             {
@@ -266,7 +245,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
                 }
             }
 
-
+            isNewPage = true;
             return InitBasicSettingsBrowser(isNewPage, id, PryGuardProfile);
         }
         else { return InitBasicSettingsBrowser(isNewPage, id, PryGuardProfile); }
@@ -452,17 +431,15 @@ public class PryGuardBrowserViewModel : BaseViewModel
     }
     private void OpenBookmark(Bookmark bookmark)
     {
-       
+
         AddTab();
         (CurrentTabItem.Content as PryGuardBrowser).LoadUrlAsync(bookmark.URL);
-        
+
     }
     private void RemoveBookmark(Bookmark bookmark)
     {
         _bookmarkManager.RemoveBookmark(bookmark);
     }
-    
-
     private void Browser_LoadingStateChanged(object? sender, LoadingStateChangedEventArgs e)
     {
     }
@@ -471,22 +448,35 @@ public class PryGuardBrowserViewModel : BaseViewModel
     #region HistoryWork
     private void SaveHistoryJson(string address, string desc)
     {
-        if (!File.Exists(_profileHistoryPath)) { File.Create(_profileHistoryPath).Close(); }
+        if (!File.Exists(_profileHistoryPath))
+        {
+            // Ensure the file is created if it doesn't exist
+            File.Create(_profileHistoryPath).Close();
+        }
 
         Task.Run(() =>
         {
-            var hist = new PryGuardHistoryItem(DateTime.Now.ToString("MM/dd HH:mm"),
+            // Create a history item with the current date including the year
+            var hist = new PryGuardHistoryItem(DateTime.Now.ToString("yyyy/MM/dd HH:mm"),
                 desc, address.Replace("https://", ""));
-            using StreamWriter writer = new(_profileHistoryPath);
+
+            // Insert the new history item at the start of the list
             PryGuardHistoryList.Insert(0, hist);
 
+            // Serialize the history list to JSON
             var doc = JsonSerializer.Serialize(PryGuardHistoryList);
+
+            // Write the serialized data to the file
+            using StreamWriter writer = new(_profileHistoryPath);
             writer.Write(doc);
             writer.Close();
+
+            // Update the UI on the main thread
             Application.Current.Dispatcher.Invoke(delegate
             {
                 var listBoxItem = new ListViewItem();
 
+                // Set properties for the list box item
                 ListViewItemProperties.SetTimeHistory(listBoxItem, hist.Time);
                 ListViewItemProperties.SetDescHistory(listBoxItem, hist.Description);
                 ListViewItemProperties.SetLinkPreview(listBoxItem, hist.Link[..hist.Link.IndexOf('/')]);
@@ -495,6 +485,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             });
         });
     }
+
     private void LoadHistoryJson()
     {
         if (!File.Exists(_profileHistoryPath)) { return; }
@@ -570,6 +561,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private async void AddTab()
     {
         var browser = await InitBrowser(_mainIDCounter > 0);
+        //var browser = await InitBrowser(true);
         browser.TitleChanged += Browser_TitleChanged;
         browser.LoadingStateChanged += Browser_LoadingStateChanged;
         browser.AddressChanged += Browser_AddressChanged;
@@ -579,19 +571,26 @@ public class PryGuardBrowserViewModel : BaseViewModel
             Tag = _mainIDCounter,
             Content = browser,
             Title = browser.Title,
-            Address = browser.Address
+            Address = browser.Address,
+            CloseTabCommand = CloseTabCommand  // Set the command
         };
+
+        // Set bindings to keep Title and Address updated
+        browser.TitleChanged += (s, e) => newTabItem.Title = browser.Title;
+        browser.AddressChanged += (s, e) => newTabItem.Address = browser.Address;
 
         Tabs.Add(newTabItem);
         CurrentTabItem = Tabs.Last();
 
         var button = new Label
         {
-            Content = browser.Title,
+            Content = newTabItem.Title,
             AllowDrop = true,
             Tag = _mainIDCounter,
-            DataContext = newTabItem // Set DataContext to newTabItem
+            DataContext = newTabItem
         };
+
+        button.SetBinding(Label.ContentProperty, new Binding("Title")); // Bind button content to Title
 
         button.DragEnter += BtnTabDragEnter;
         button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
@@ -638,9 +637,9 @@ public class PryGuardBrowserViewModel : BaseViewModel
         TabBtnsAndAddTabBtn.Insert(where_to_drop, _tabBtnToDrag);
     }
 
-    private void CloseTab(object arg)
+    private void CloseTab(object parameter)
     {
-        if (((MouseButtonEventArgs)arg).Source is not TextBlock tb) return;
+        if (parameter is not MouseButtonEventArgs mouseArgs || mouseArgs.Source is not TextBlock tb) return;
         var id = (int)tb.Tag;
 
         // Delete from Tabs
@@ -648,26 +647,26 @@ public class PryGuardBrowserViewModel : BaseViewModel
         if (itemToRemove != null)
         {
             itemToRemove.Content = null;
-            if (Tabs.Count == 0) return;
-
-            int currentIndex = Tabs.IndexOf(itemToRemove);
-            if (currentIndex > 0)
-            {
-                CurrentTabItem = currentIndex > 0 ? Tabs[currentIndex - 1] : Tabs[currentIndex + 1];
-            }
-
-            if (currentIndex == 0 && Tabs.Count > 1) { CurrentTabItem = Tabs[currentIndex + 1]; }
-
             Tabs.Remove(itemToRemove);
+
+            if (Tabs.Count > 0)
+            {
+                int currentIndex = Tabs.IndexOf(itemToRemove);
+                CurrentTabItem = currentIndex > 0 ? Tabs[currentIndex - 1] : Tabs.First();
+            }
         }
 
         // Delete from TabBtns
         var tabBtnToRemove = TabBtnsAndAddTabBtn.OfType<Label>().FirstOrDefault(item => (int)item.Tag == id);
-        if (tabBtnToRemove != null) { TabBtnsAndAddTabBtn.Remove(tabBtnToRemove); }
+        if (tabBtnToRemove != null)
+        {
+            TabBtnsAndAddTabBtn.Remove(tabBtnToRemove);
+        }
 
         // Delete from Browsers
         _browsers = _browsers.Where(item => (int)item.Tag != id).ToList();
     }
+
 
     private void OpenTab(object arg)
     {
