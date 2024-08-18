@@ -35,6 +35,22 @@ public class PryGuardProfilesViewModel : BaseViewModel
         get => _windowState;
         set => Set(ref _windowState, value);
     }
+    private string _searchTerm;
+    public string SearchTerm
+    {
+        get => _searchTerm;
+        set
+        {
+            if (_searchTerm != value)
+            {
+                _searchTerm = value;
+                OnPropertyChanged(nameof(SearchTerm)); 
+                FilterProfiles();
+            }
+        }
+    }
+
+
 
     private PryGuardProfileSettingsViewModel _PryGuardProfileSettingsVM;
     public PryGuardProfileSettingsViewModel PryGuardProfileSettingsVM
@@ -135,6 +151,27 @@ public class PryGuardProfilesViewModel : BaseViewModel
     #endregion
 
     #region Window Work & Actions
+    private void FilterProfiles()
+    {
+        var filteredProfiles = Setting.PryGuardProfiles
+            .Where(p => p.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        ProfileTabs.Clear();
+        foreach (var profile in filteredProfiles)
+        {
+            ProfileTabs.Add(new ProfileTab(this)
+            {
+                Name = profile.Name,
+                Id = profile.Id,
+                Status = profile.Status,
+                Tags = profile.Tags,
+                ProxyHostPort = profile.Proxy.ProxyAddress == "" && profile.Proxy.ProxyPort == 8080 ? "" : profile.Proxy.ProxyAddress + ":" + profile.Proxy.ProxyPort,
+                ProxyLoginPass = profile.Proxy.ProxyLogin == "" && profile.Proxy.ProxyPassword == "" ? "" : profile.Proxy.ProxyLogin + ":" + profile.Proxy.ProxyPassword
+            });
+        }
+    }
+
     public void LoadTabs()
     {
         foreach (var item in Setting.PryGuardProfiles)
