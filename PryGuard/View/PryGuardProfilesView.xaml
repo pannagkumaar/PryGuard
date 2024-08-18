@@ -186,8 +186,7 @@
                                 <Button
                                     Width="25"
                                     Height="25"
-                                    Margin="30,0,0,0"
-                                    
+                                    Margin="30,0,0,0"                                    
                                     Style="{StaticResource ThemeButtonProfilesWork}" 
                                     Command="{Binding ViewModel.EditProfileCommand}"
                                     CommandParameter="{Binding ElementName=tbProfileName,Path=Tag}">

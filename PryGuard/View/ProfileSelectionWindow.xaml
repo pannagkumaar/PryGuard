@@ -26,12 +26,12 @@
             </Grid.RowDefinitions>
 
             <!-- Close Button -->
-            <Border Height="20" Width="20"
+            <Border Height="16" Width="16"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
-                    CornerRadius="10" Margin="10"
+                    CornerRadius="8" Margin="6"
                     Background="{StaticResource ThemeBrushRed}"
-                    BorderBrush="#d8281b" BorderThickness="1"
+                  
                     Cursor="Hand"
                     MouseDown="OnCloseButtonClick"
                     ToolTip="Close">
@@ -40,20 +40,14 @@
                     <DropShadowEffect ShadowDepth="0" Color="{StaticResource ThemeColorRed}"/>
                 </Border.Effect>
 
-                <!-- Close Icon -->
-                <TextBlock Text="×"
-                           FontSize="16"
-                           FontWeight="Bold"
-                           Foreground="White"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
+                
             </Border>
 
             <!-- Instruction Text -->
             <TextBlock Text="Choose Profile to Import"
                        Grid.Row="0"
                        Style="{StaticResource ThemeTextBlock}"
-                       Margin="20,20,20,10"
+                       Margin="20,30,20,10"
                        VerticalAlignment="Top"
                        HorizontalAlignment="Center"
                        FontSize="16"/>
@@ -63,18 +57,18 @@
                       Grid.Row="1"
                       HorizontalAlignment="Center"
                       VerticalAlignment="Center"
-                      Width="220"
-                      Height="30"
+                      Width="200"
+                      
                       Style="{StaticResource ThemeCombobox}"
                       Padding="5"
-                      Margin="20"/>
+                      Margin="0,0,0,0"/>
 
             <!-- Import Button -->
             <Button Content="Import"
                     Grid.Row="2"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Bottom"
-                    Margin="0,20,0,20"
+                    Margin="0,10,0,20"
                     Width="100"
                     Style="{StaticResource ButtonEnableDisableProfileStyle}"
                     Click="OnImportButtonClick"/>

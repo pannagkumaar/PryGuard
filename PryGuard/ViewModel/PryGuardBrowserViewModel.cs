@@ -20,6 +20,7 @@ using PryGuard.Core.ChromeApi.Proxy;
 using System.Collections.ObjectModel;
 using PryGuard.Core.ChromeApi.Handlers;
 using PryGuard.Services.UI.ListView.ListViewItem;
+using System.Text.RegularExpressions;
 using System.Windows.Data;
 
 namespace PryGuard.ViewModel;
@@ -688,9 +689,36 @@ public class PryGuardBrowserViewModel : BaseViewModel
     {
         if ((arg as KeyEventArgs).Key == Key.Enter)
         {
-            (CurrentTabItem.Content as PryGuardBrowser).LoadUrlAsync(Address);
+            var input = Address.Trim();
+
+            // Regex to check if input looks like a domain (with optional subdomains)
+            string domainPattern = @"^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$";
+
+            if (Uri.IsWellFormedUriString(input, UriKind.Absolute))
+            {
+                // If the input is a well-formed URL, load it directly
+                (CurrentTabItem.Content as PryGuardBrowser).LoadUrlAsync(input);
+            }
+            else if (Regex.IsMatch(input, domainPattern))
+            {
+                // If it matches the domain pattern, prepend "https://" and treat it as a URL
+                var url = $"https://{input}";
+                (CurrentTabItem.Content as PryGuardBrowser).LoadUrlAsync(url);
+            }
+            else
+            {
+                // Otherwise, perform a search using a search engine
+                var searchQuery = $"https://www.google.com/search?q={Uri.EscapeDataString(input)}";
+                (CurrentTabItem.Content as PryGuardBrowser).LoadUrlAsync(searchQuery);
+            }
+
+            // Shift focus away from the search bar after executing the search
+            Keyboard.ClearFocus();  // Clear keyboard focus from the search bar
+            (CurrentTabItem.Content as PryGuardBrowser)?.Focus();  // Set focus to the browser or any other element
         }
     }
+
+
     private void Back(object arg)
     {
         if (CurrentTabItem == null) return;
