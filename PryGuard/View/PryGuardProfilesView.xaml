@@ -37,29 +37,29 @@
         HorizontalAlignment="Right" 
         VerticalAlignment="Center" 
         Orientation="Horizontal">
-            <TextBlock
+                <TextBlock
             Text="PryGuard" 
             FontFamily="Roboto"
             Margin="0,3,955,0"
             VerticalAlignment="Center"
             FontSize="20"
             Height="25">
-                <TextBlock.Foreground>
-                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <LinearGradientBrush.RelativeTransform>
-                            <TransformGroup>
-                                <ScaleTransform CenterY="0.5" CenterX="0.5"/>
-                                <SkewTransform CenterY="0.5" CenterX="0.5"/>
-                                <RotateTransform CenterY="0.5" CenterX="0.5" Angle="45"/>
-                                <TranslateTransform/>
-                            </TransformGroup>
-                        </LinearGradientBrush.RelativeTransform>
+                    <TextBlock.Foreground>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <LinearGradientBrush.RelativeTransform>
+                                <TransformGroup>
+                                    <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                    <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                    <RotateTransform CenterY="0.5" CenterX="0.5" Angle="45"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </LinearGradientBrush.RelativeTransform>
                         <GradientStop x:Name="GradientStop11" Color="#7d3328"/>
                         <GradientStop Offset="1" x:Name="GradientStop21" Color="#d8281b"/>
                     </LinearGradientBrush>
-                </TextBlock.Foreground>
-            </TextBlock>
-
+                    </TextBlock.Foreground>
+                </TextBlock>
+                
             <Border 
                 Height="16" Width="16"
                 CornerRadius="8"  Margin="5"
@@ -276,7 +276,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-
+        
         <!--#endregion-->
     </panel:AutoStackPanel>
 </Window>

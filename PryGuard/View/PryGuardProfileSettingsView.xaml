@@ -107,11 +107,19 @@
             Orientation="Horizontal"
             Background="#1c1c1c">
             <Button
+                Content="Import"
+                Width="60"
+                Height="22"
+                Margin="500,0,0,0"
+                Style="{StaticResource ButtonEnableDisableProfileStyle}"
+                />
+            <!--To implement command-->
+            <Button
                 Content="New Fingerprint"
                 Width="100"
                 Height="22"
-                Margin="500,0,20,0"
-                Style="{StaticResource ButtonEnableDisableProfileStyle}" Command="{Binding NewFingerprintCommand}"/>
+                Margin="20,0,20,0"
+                Style="{StaticResource ButtonEnableDisableProfileStyle}" Command="{Binding NewFingerprintCommand}" Click="Button_Click_1"/>
             <Button
                 Content="{Binding SaveProfileButtonContent}"
                 Width="60"

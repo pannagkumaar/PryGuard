@@ -561,6 +561,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private async void AddTab()
     {
         var browser = await InitBrowser(_mainIDCounter > 0);
+        //var browser = await InitBrowser(true);
         browser.TitleChanged += Browser_TitleChanged;
         browser.LoadingStateChanged += Browser_LoadingStateChanged;
         browser.AddressChanged += Browser_AddressChanged;

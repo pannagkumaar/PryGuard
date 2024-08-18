@@ -90,5 +90,10 @@ namespace PryGuard.View
         {
 
         }
+
+        private void Button_Click_1(object sender, System.Windows.RoutedEventArgs e)
+        {
+
+        }
     }
 }

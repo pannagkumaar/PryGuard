@@ -115,14 +115,23 @@ public class PryGuardProfilesViewModel : BaseViewModel
     }
     private void EditProfile(object arg)
     {
-        PryGuardProfileSettingsVM = new PryGuardProfileSettingsViewModel(
-            Setting.PryGuardProfiles.Where(x => x.Id == (int)arg).First())
+        var profileToEdit = Setting.PryGuardProfiles.FirstOrDefault(x => x.Id == (int)arg);
+        if (profileToEdit != null)
         {
-            SaveProfileButtonContent = "Save"
-        };
-        this.NextStep(PryGuardProfileSettingsVM);
-        PryGuardProfileSettingsVM.PryGuardProfilesVM = this;
+            PryGuardProfileSettingsVM = new PryGuardProfileSettingsViewModel(profileToEdit)
+            {
+                SaveProfileButtonContent = "Save",
+                IsEdit = true // Set the IsEdit flag to true
+            };
+            this.NextStep(PryGuardProfileSettingsVM);
+            PryGuardProfileSettingsVM.PryGuardProfilesVM = this;
+        }
+        else
+        {
+            // Handle the case where the profile is not found
+        }
     }
+
     #endregion
 
     #region Window Work & Actions

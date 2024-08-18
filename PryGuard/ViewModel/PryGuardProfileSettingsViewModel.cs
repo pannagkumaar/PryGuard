@@ -86,6 +86,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         get => _saveProfileButtonContent;
         set => Set(ref _saveProfileButtonContent, value);
     }
+    public bool IsEdit { get; set; }
 
     private Brush _tbProxyBrush = Brushes.White;
     public Brush TbProxyBrush
@@ -126,7 +127,8 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             var newFakeProfile = FakeProfileFactory.Generate();
 
             PryGuardProf.FakeProfile = newFakeProfile;
-            PryGuardProf.Status = "UPDATED"; // Or any status you want to set
+            
+        
 
             PryGuardProfilesVM.Setting.SaveSettings();
         }
@@ -137,7 +139,8 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         }
     }
     private void SaveProfile(object arg)
-    {
+    {   
+
         if (SaveProfileButtonContent == "Create")
         {
             ViewManager.Close(this);
@@ -154,6 +157,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         }
         else
         {
+            PryGuardProf.Status = "UPDATED";
             ViewManager.Close(this);
             PryGuardProfilesVM.Setting.SaveSettings();
             PryGuardProfilesVM.ProfileTabs.Clear();
