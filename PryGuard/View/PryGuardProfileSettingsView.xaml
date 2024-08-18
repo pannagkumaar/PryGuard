@@ -106,13 +106,13 @@
             Width="Auto"
             Orientation="Horizontal"
             Background="#1c1c1c">
-            <Button
-                Content="Import"
-                Width="60"
-                Height="22"
-                Margin="500,0,0,0"
-                Style="{StaticResource ButtonEnableDisableProfileStyle}"
-                />
+            <Button Content="Import"
+            Width="60"
+            Height="22"
+            Margin="500,0,0,0"
+            Command="{Binding ImportProfileCommand}"
+            Style="{StaticResource ButtonEnableDisableProfileStyle}" />
+
             <!--To implement command-->
             <Button
                 Content="New Fingerprint"

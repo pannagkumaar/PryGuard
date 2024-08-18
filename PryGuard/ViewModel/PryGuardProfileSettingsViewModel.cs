@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using PryGuard.View;
 
 namespace PryGuard.ViewModel;
 public class PryGuardProfileSettingsViewModel : BaseViewModel
@@ -19,6 +20,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     public RelayCommand CloseProfileSettingsCommand { get; private set; }
     public RelayCommand ChangeWindowStateCommand { get; private set; }
     public RelayCommand CheckProxyCommand { get; private set; }
+    public RelayCommand ImportProfileCommand { get; private set; }
     public RelayCommand SaveProfileCommand { get; private set; }
     public ICommand NewFingerprintCommand { get; }
     public ObservableCollection<string> Renderers { get; }
@@ -113,7 +115,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         ChangeWindowStateCommand = new RelayCommand(CloseWindowState);
         CheckProxyCommand = new RelayCommand(CheckProxy);
         NewFingerprintCommand = new RelayCommand(GenerateNewFingerprint);
-
+        ImportProfileCommand = new RelayCommand(ImportProfile);
         PryGuardProf = PryGuardProfile;
         Renderers = new ObservableCollection<string>(WebGLFactory.Renderers);
     }
@@ -164,7 +166,14 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             PryGuardProfilesVM.LoadTabs();
         }
     }
-
+    private void ImportProfile(object parameter)
+    {
+        var profileSelectionWindow = new ProfileSelectionWindow(PryGuardProfilesVM.Setting.PryGuardProfiles);
+        if (profileSelectionWindow.ShowDialog() == true)
+        {
+            PryGuardProf = profileSelectionWindow.SelectedProfile;
+        }
+    }
     private async void CheckProxy()
     {
         var a=PryGuardProf.Proxy.ProxyAddress;
