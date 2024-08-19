@@ -18,6 +18,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     #region Commands
     public RelayCommand CloseProfileSettingsCommand { get; private set; }
     public RelayCommand ChangeWindowStateCommand { get; private set; }
+    public RelayCommand MaximizeWindowStateCommand { get; private set; }
     public RelayCommand CheckProxyCommand { get; private set; }
     public RelayCommand SaveProfileCommand { get; private set; }
     public ICommand NewFingerprintCommand { get; }
@@ -76,7 +77,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     {
         get => _PryGuardProfilesVM;
         set => Set(ref _PryGuardProfilesVM, value);
-       
+
     }
 
 
@@ -104,12 +105,13 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
 
     #region Ctor
     public PryGuardProfileSettingsViewModel() { }
-    
+
     public PryGuardProfileSettingsViewModel(PryGuardProfile PryGuardProfile)
     {
         CloseProfileSettingsCommand = new RelayCommand(CloseProfileSettings);
         SaveProfileCommand = new RelayCommand(SaveProfile);
         ChangeWindowStateCommand = new RelayCommand(CloseWindowState);
+        MaximizeWindowStateCommand = new RelayCommand(MaximizeWindowState);
         CheckProxyCommand = new RelayCommand(CheckProxy);
         NewFingerprintCommand = new RelayCommand(GenerateNewFingerprint);
 
@@ -163,6 +165,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
 
     private async void CheckProxy()
     {
+        var a = PryGuardProf.Proxy.ProxyAddress;
         if (PryGuardProf.Proxy.ProxyAddress == "") return;
         var result = await IpInfoClient.CheckClientProxy(PryGuardProf.Proxy);
         if (result == null)
@@ -179,14 +182,19 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             TbProxyBrush = Brushes.White;
         }
     }
-   
+
     private void CloseProfileSettings(object arg)
     {
         ViewManager.Close(this);
+    }
+    private void MaximizeWindowState(object arg)
+    {
+        WindowState = WindowState.Maximized;
     }
     private void CloseWindowState(object arg)
     {
         WindowState = WindowState.Minimized;
     }
     #endregion
+
 }

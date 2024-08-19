@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System;
 using System.Diagnostics;
 using PryGuard.Core.ChromeApi.Model.Configs;
+using System.Windows;
 
 namespace PryGuard.View
 {
@@ -74,6 +75,12 @@ namespace PryGuard.View
                     }
                 }
             }
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            double relativeMargin = e.NewSize.Width * 0.1; // 10% of the window's width
+            this.Tag = new Thickness(relativeMargin, relativeMargin, relativeMargin, relativeMargin);
         }
 
         private void rbMem_Checked(object sender, System.Windows.RoutedEventArgs e)

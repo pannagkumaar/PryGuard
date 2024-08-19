@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:PryGuard.ViewModel"
-        
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:PryGuard.Core.ChromeApi.Settings"
         xmlns:configs="clr-namespace:PryGuard.Core.ChromeApi.Model.Configs"
@@ -82,6 +81,19 @@
                 </i:Interaction.Triggers>
                 <Border.Effect>
                     <DropShadowEffect ShadowDepth="0" Color="{StaticResource ThemeColorGreen}"/>
+                </Border.Effect>
+            </Border>
+            <Border
+                Height="16" Width="16"
+                CornerRadius="8" Margin="5"
+                Background="{StaticResource ThemeBrushYellow}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDown">
+                        <i:InvokeCommandAction Command="{Binding MaximizeWindowStateCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="0" Color="{StaticResource ThemeColorYellow}"/>
                 </Border.Effect>
             </Border>
             <Border

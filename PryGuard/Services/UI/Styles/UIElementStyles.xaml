@@ -42,7 +42,7 @@
     x:Key="ThemeBrushGray"/>
 
     <!--#endregion-->
-    
+
     <!--#region Line-->
     <Style x:Key="ProfileSettingsSummaryLine" TargetType="Line">
         <Setter Property="VerticalAlignment" Value="Bottom"/>
@@ -52,7 +52,7 @@
         <Setter Property="X2" Value="300"/>
     </Style>
     <!--#endregion-->
-    
+
     <!--#region TabItem-->
     <Style TargetType="TabItem">
         <Setter Property="Visibility" Value="Collapsed"/>
@@ -227,7 +227,7 @@
             </EventTrigger>
         </Style.Triggers>
     </Style>
-    
+
     <Style x:Key="ButtonEnableDisableProfileStyle" TargetType="Button">
         <Setter Property="Background" Value="#1E1E1E"/>
         <Setter Property="Height" Value="20"/>
@@ -458,7 +458,7 @@
                             <Setter TargetName="Border" Property="CornerRadius" Value="5"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
-                   
+
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -1096,5 +1096,5 @@
         </Setter>
     </Style>
     <!--#endregion-->
-   
+
 </ResourceDictionary>

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using PryGuard.Services.Commands;
 using PryGuard.Services.Settings;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace PryGuard.ViewModel;
 public class PryGuardProfilesViewModel : BaseViewModel
@@ -19,6 +20,7 @@ public class PryGuardProfilesViewModel : BaseViewModel
     public RelayCommand DeleteProfileCommand { get; private set; }
     public RelayCommand RefreshProfilesCommand { get; private set; }
     public RelayCommand ChangeWindowStateCommand { get; private set; }
+    public RelayCommand MaximizeWindowStateCommand { get; private set; }
     #endregion
 
     #region Properties
@@ -63,6 +65,7 @@ public class PryGuardProfilesViewModel : BaseViewModel
     {
         CreateProfileCommand = new RelayCommand(CreateProfile);
         ChangeWindowStateCommand = new RelayCommand(CloseWindowState);
+        MaximizeWindowStateCommand = new RelayCommand(MaximizeWindowState);
         CloseAppCommand = new RelayCommand(CloseApp);
         StartProfileCommand = new RelayCommand(StartProfile);
         EditProfileCommand = new RelayCommand(EditProfile);
@@ -147,6 +150,10 @@ public class PryGuardProfilesViewModel : BaseViewModel
     private void CloseWindowState(object arg)
     {
         WindowState = WindowState.Minimized;
+    }
+    private void MaximizeWindowState(object arg)
+    {
+        WindowState = WindowState.Maximized;
     }
     private void CloseApp(object arg)
     {
