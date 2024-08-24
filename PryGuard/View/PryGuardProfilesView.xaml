@@ -122,7 +122,9 @@
                 Width="200"
                 Height="22"
                 Margin="0,-1,0,0"
-                Tag="Search Profile"/>
+                Tag="Search Profile"
+                Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"/>
+
         </panel:AutoStackPanel>
         <!--#endregion-->
 
@@ -184,8 +186,7 @@
                                 <Button
                                     Width="25"
                                     Height="25"
-                                    Margin="30,0,0,0"
-                                    
+                                    Margin="30,0,0,0"                                    
                                     Style="{StaticResource ThemeButtonProfilesWork}" 
                                     Command="{Binding ViewModel.EditProfileCommand}"
                                     CommandParameter="{Binding ElementName=tbProfileName,Path=Tag}">

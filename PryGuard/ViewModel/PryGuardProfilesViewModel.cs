@@ -35,6 +35,22 @@ public class PryGuardProfilesViewModel : BaseViewModel
         get => _windowState;
         set => Set(ref _windowState, value);
     }
+    private string _searchTerm;
+    public string SearchTerm
+    {
+        get => _searchTerm;
+        set
+        {
+            if (_searchTerm != value)
+            {
+                _searchTerm = value;
+                OnPropertyChanged(nameof(SearchTerm)); 
+                FilterProfiles();
+            }
+        }
+    }
+
+
 
     private PryGuardProfileSettingsViewModel _PryGuardProfileSettingsVM;
     public PryGuardProfileSettingsViewModel PryGuardProfileSettingsVM
@@ -115,17 +131,47 @@ public class PryGuardProfilesViewModel : BaseViewModel
     }
     private void EditProfile(object arg)
     {
-        PryGuardProfileSettingsVM = new PryGuardProfileSettingsViewModel(
-            Setting.PryGuardProfiles.Where(x => x.Id == (int)arg).First())
+        var profileToEdit = Setting.PryGuardProfiles.FirstOrDefault(x => x.Id == (int)arg);
+        if (profileToEdit != null)
         {
-            SaveProfileButtonContent = "Save"
-        };
-        this.NextStep(PryGuardProfileSettingsVM);
-        PryGuardProfileSettingsVM.PryGuardProfilesVM = this;
+            PryGuardProfileSettingsVM = new PryGuardProfileSettingsViewModel(profileToEdit)
+            {
+                SaveProfileButtonContent = "Save",
+                IsEdit = true // Set the IsEdit flag to true
+            };
+            this.NextStep(PryGuardProfileSettingsVM);
+            PryGuardProfileSettingsVM.PryGuardProfilesVM = this;
+        }
+        else
+        {
+            // Handle the case where the profile is not found
+        }
     }
+
     #endregion
 
     #region Window Work & Actions
+    private void FilterProfiles()
+    {
+        var filteredProfiles = Setting.PryGuardProfiles
+            .Where(p => p.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        ProfileTabs.Clear();
+        foreach (var profile in filteredProfiles)
+        {
+            ProfileTabs.Add(new ProfileTab(this)
+            {
+                Name = profile.Name,
+                Id = profile.Id,
+                Status = profile.Status,
+                Tags = profile.Tags,
+                ProxyHostPort = profile.Proxy.ProxyAddress == "" && profile.Proxy.ProxyPort == 8080 ? "" : profile.Proxy.ProxyAddress + ":" + profile.Proxy.ProxyPort,
+                ProxyLoginPass = profile.Proxy.ProxyLogin == "" && profile.Proxy.ProxyPassword == "" ? "" : profile.Proxy.ProxyLogin + ":" + profile.Proxy.ProxyPassword
+            });
+        }
+    }
+
     public void LoadTabs()
     {
         foreach (var item in Setting.PryGuardProfiles)

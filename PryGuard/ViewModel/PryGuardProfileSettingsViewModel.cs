@@ -11,6 +11,11 @@ using System.Windows.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using PryGuard.View;
+using CefSharp.DevTools.Profiler;
+using PryGuard.Services.Helpers;
+using System.Xml.Linq;
+using PryGuard.Model;
 
 namespace PryGuard.ViewModel;
 public class PryGuardProfileSettingsViewModel : BaseViewModel
@@ -19,6 +24,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     public RelayCommand CloseProfileSettingsCommand { get; private set; }
     public RelayCommand ChangeWindowStateCommand { get; private set; }
     public RelayCommand CheckProxyCommand { get; private set; }
+    public RelayCommand ImportProfileCommand { get; private set; }
     public RelayCommand SaveProfileCommand { get; private set; }
     public ICommand NewFingerprintCommand { get; }
     public ObservableCollection<string> Renderers { get; }
@@ -86,6 +92,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         get => _saveProfileButtonContent;
         set => Set(ref _saveProfileButtonContent, value);
     }
+    public bool IsEdit { get; set; }
 
     private Brush _tbProxyBrush = Brushes.White;
     public Brush TbProxyBrush
@@ -112,7 +119,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         ChangeWindowStateCommand = new RelayCommand(CloseWindowState);
         CheckProxyCommand = new RelayCommand(CheckProxy);
         NewFingerprintCommand = new RelayCommand(GenerateNewFingerprint);
-
+        ImportProfileCommand = new RelayCommand(ImportProfile);
         PryGuardProf = PryGuardProfile;
         Renderers = new ObservableCollection<string>(WebGLFactory.Renderers);
     }
@@ -126,7 +133,8 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             var newFakeProfile = FakeProfileFactory.Generate();
 
             PryGuardProf.FakeProfile = newFakeProfile;
-            PryGuardProf.Status = "UPDATED"; // Or any status you want to set
+            
+        
 
             PryGuardProfilesVM.Setting.SaveSettings();
         }
@@ -137,7 +145,8 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         }
     }
     private void SaveProfile(object arg)
-    {
+    {   
+
         if (SaveProfileButtonContent == "Create")
         {
             ViewManager.Close(this);
@@ -154,13 +163,22 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         }
         else
         {
+            PryGuardProf.Status = "UPDATED";
             ViewManager.Close(this);
             PryGuardProfilesVM.Setting.SaveSettings();
             PryGuardProfilesVM.ProfileTabs.Clear();
             PryGuardProfilesVM.LoadTabs();
         }
     }
-
+    private void ImportProfile(object arg)
+    {
+        var profileSelectionWindow = new ProfileSelectionWindow(PryGuardProfilesVM.Setting.PryGuardProfiles);
+        if (profileSelectionWindow.ShowDialog() == true)
+        {
+            PryGuardProf = PryGuardProfile.ImportFromProfile(profileSelectionWindow.SelectedProfile);
+            SaveProfileButtonContent = "Create";
+        }
+    }
     private async void CheckProxy()
     {
         var a=PryGuardProf.Proxy.ProxyAddress;

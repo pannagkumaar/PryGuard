@@ -187,6 +187,28 @@ public class PryGuardProfile : INotifyPropertyChanged
             Proxy = new ProxySettings()
         };
     }
+    public static PryGuardProfile ImportFromProfile(PryGuardProfile existingProfile)
+    {
+        var profileId = new Random().Next(666, 1337);
+
+        // Create a new PryGuardProfile and copy attributes from the existing profile
+        var newProfile = new PryGuardProfile()
+        {
+            Name = existingProfile.Name + " (Copy)",
+            Id = profileId,
+            Status = "NEW",
+            FakeProfile = existingProfile.FakeProfile,
+            IsEnabled = existingProfile.IsEnabled,
+            IsAdBlock = existingProfile.IsAdBlock,
+            IsLoadImage = existingProfile.IsLoadImage,
+            IsLoadCacheInMemory = existingProfile.IsLoadCacheInMemory,
+            CachePath = Path.Combine(ClientConfig.ChromeDataPath, existingProfile.Name + "_Cache_" + profileId),
+            Proxy = existingProfile.Proxy
+        };
+
+        return newProfile;
+    }
+
 
     public event PropertyChangedEventHandler PropertyChanged;
     private void OnPropertyChanged([CallerMemberName] string propertyName = null)
