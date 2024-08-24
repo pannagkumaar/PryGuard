@@ -31,6 +31,11 @@
     Color="{DynamicResource ThemeColorGreen}"
     x:Key="ThemeBrushGreen"/>
 
+    <Color x:Key="ThemeColorYellow" A="255" R="255" G="255" B="0"/>
+    <SolidColorBrush
+    Color="{DynamicResource ThemeColorYellow}"
+    x:Key="ThemeBrushYellow"/>
+
     <Color x:Key="ThemeColorGlowRed" A="255" R="183" G="112" B="112"/>
     <SolidColorBrush
     Color="{DynamicResource ThemeColorGlowRed}"
@@ -40,6 +45,16 @@
     <SolidColorBrush
     Color="{StaticResource BitGray}"
     x:Key="ThemeBrushGray"/>
+
+    <LinearGradientBrush x:Key="ThemeGradientPinkToOrange" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#FFC51162" />
+        <GradientStop Offset="1" Color="#FFFF7F0E" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ThemeGradientPastlePinkToOrange" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#FFD1DC" />
+        <GradientStop Offset="1" Color="#FF964F" />
+    </LinearGradientBrush>
 
     <!--#endregion-->
     
@@ -631,12 +646,12 @@
                 x:Name="Border" 
                 CornerRadius="3" BorderThickness="1" Grid.ColumnSpan="2"
                 Background="{DynamicResource ThemeBrushBlue}"
-                BorderBrush="{DynamicResource ThemeBrushLightBlue}"/>
+                BorderBrush="{DynamicResource ThemeGradientPinkToOrange}"/>
             <Border 
                 Grid.Column="0"
                 Margin="1" BorderThickness="0,0,1,0" CornerRadius="10"
                 Background="{DynamicResource ThemeBrushBlue}" 
-                BorderBrush="{DynamicResource ThemeBrushLightBlue}"/>
+                BorderBrush="{DynamicResource ThemeGradientPinkToOrange}"/>
             <Path 
                 x:Name="Arrow" Grid.Column="1"     
                 Fill="{DynamicResource ThemeBrushLightBlue}"
@@ -786,7 +801,7 @@
                         <Border 
                             x:Name="root" CornerRadius="3"
                             Background="{DynamicResource ThemeBrushBlue}"
-                            BorderBrush="{DynamicResource ThemeBrushLightBlue}"
+                            BorderBrush="{DynamicResource ThemeGradientPinkToOrange}"
                             BorderThickness="1">
                             <Grid>
                                 <TextBlock 

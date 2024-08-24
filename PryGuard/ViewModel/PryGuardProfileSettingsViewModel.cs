@@ -19,6 +19,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     #region Commands
     public RelayCommand CloseProfileSettingsCommand { get; private set; }
     public RelayCommand ChangeWindowStateCommand { get; private set; }
+    public RelayCommand MaximizeWindowStateCommand { get; private set; }
     public RelayCommand CheckProxyCommand { get; private set; }
     public RelayCommand ImportProfileCommand { get; private set; }
     public RelayCommand SaveProfileCommand { get; private set; }
@@ -113,6 +114,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         CloseProfileSettingsCommand = new RelayCommand(CloseProfileSettings);
         SaveProfileCommand = new RelayCommand(SaveProfile);
         ChangeWindowStateCommand = new RelayCommand(CloseWindowState);
+        MaximizeWindowStateCommand = new RelayCommand(MaximizeWindowState);
         CheckProxyCommand = new RelayCommand(CheckProxy);
         NewFingerprintCommand = new RelayCommand(GenerateNewFingerprint);
         ImportProfileCommand = new RelayCommand(ImportProfile);
@@ -201,6 +203,10 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     private void CloseWindowState(object arg)
     {
         WindowState = WindowState.Minimized;
+    }
+    private void MaximizeWindowState(object arg)
+    {
+        WindowState = WindowState.Maximized;
     }
     #endregion
 }
