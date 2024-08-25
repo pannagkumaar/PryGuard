@@ -16,6 +16,7 @@ using CefSharp.DevTools.Profiler;
 using PryGuard.Services.Helpers;
 using System.Xml.Linq;
 using PryGuard.Model;
+using System.Linq;
 
 namespace PryGuard.ViewModel;
 public class PryGuardProfileSettingsViewModel : BaseViewModel
@@ -147,7 +148,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     private void SaveProfile(object arg)
     {   
 
-        if (SaveProfileButtonContent == "Create")
+        if (SaveProfileButtonContent == "Create" || SaveProfileButtonContent =="Import")
         {
             ViewManager.Close(this);
             PryGuardProfilesVM.ProfileTabs.Add(new ProfileTab(PryGuardProfilesVM)
@@ -169,16 +170,40 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             PryGuardProfilesVM.ProfileTabs.Clear();
             PryGuardProfilesVM.LoadTabs();
         }
+        PryGuardProf.IsSaved = true;
     }
     private void ImportProfile(object arg)
     {
-        var profileSelectionWindow = new ProfileSelectionWindow(PryGuardProfilesVM.Setting.PryGuardProfiles);
+        var savedProfiles = PryGuardProfilesVM.Setting.PryGuardProfiles.Where(p => p.IsSaved).ToList();
+        var profileSelectionWindow = new ProfileSelectionWindow(savedProfiles);
         if (profileSelectionWindow.ShowDialog() == true)
         {
-            PryGuardProf = PryGuardProfile.ImportFromProfile(profileSelectionWindow.SelectedProfile);
-            SaveProfileButtonContent = "Create";
+            
+            if (PryGuardProfilesVM.Setting.PryGuardProfiles.Any())
+            {
+                var lastProfile = PryGuardProfilesVM.Setting.PryGuardProfiles.Last();
+                PryGuardProfilesVM.Setting.PryGuardProfiles.Remove(lastProfile);
+
+                
+                var tabToRemove = PryGuardProfilesVM.ProfileTabs.FirstOrDefault(tab => tab.Id == lastProfile.Id);
+                if (tabToRemove != null)
+                {
+                    PryGuardProfilesVM.ProfileTabs.Remove(tabToRemove);
+                }
+            }
+
+            
+            var importedProfile = PryGuardProfile.ImportFromProfile(profileSelectionWindow.SelectedProfile);
+            PryGuardProfilesVM.Setting.PryGuardProfiles.Add(importedProfile);
+
+            
+            PryGuardProf = importedProfile;
+
+            
+            SaveProfileButtonContent = "Import";
         }
     }
+
     private async void CheckProxy()
     {
         var a=PryGuardProf.Proxy.ProxyAddress;
