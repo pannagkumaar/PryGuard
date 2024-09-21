@@ -20,6 +20,118 @@
             </DrawingGroup>
         </DrawingImage.Drawing>
     </DrawingImage>
+    <DrawingImage x:Key="NewTabBrowserIcon">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V512 H512 V0 H0 Z">
+                <DrawingGroup Opacity="1" Transform="0.1,0,0,-0.1,0,512">
+                    <GeometryDrawing Brush="#2a2a2a" Geometry="M50,50 L450,50 L450,450 L50,450 Z" />
+                    <GeometryDrawing Brush="#FFFFFFFF" Geometry="M100,100 L140,100 L140,220 L260,220 L260,260 L140,260 L140,380 L100,380 L100,260 L0,260 L0,220 L100,220 Z" />
+                </DrawingGroup>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="HistoryBrowserIcon">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V512 H512 V0 H0 Z">
+                <DrawingGroup Opacity="1" Transform="0.1,0,0,-0.1,0,512">
+                    <GeometryDrawing Brush="Transparent" Geometry="M256,80 A176,176 0 1,1 255.99,432 A176,176 0 1,1 256,80 Z">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="White" Thickness="40" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                    <GeometryDrawing Brush="Transparent" Geometry="M256,32 L256,120 L328,120 L300,90 Q256,32 256,32 Z">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="White" Thickness="20" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                    <GeometryDrawing Brush="Transparent" Geometry="M256,256 L256,160 L300,180 L280,220 L256,256 Z">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="White" Thickness="20" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <DrawingImage x:Key="PasswordManagerIcon">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V512 H512 V0 H0 Z">
+                <DrawingGroup Opacity="1" Transform="0.1,0,0,-0.1,0,512">
+                    <GeometryDrawing Brush="Transparent" Geometry="M150,200 L250,200 L250,300 L150,300 Z">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="White" Thickness="20" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                    <GeometryDrawing Brush="Transparent" Geometry="M200,300 L300,300 L300,350 L200,350 Z">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="White" Thickness="20" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                    <GeometryDrawing Brush="Transparent" Geometry="M220,350 L220,400 L280,400 L280,350 Z">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="White" Thickness="20" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                    <GeometryDrawing Brush="Transparent" Geometry="M230,400 L240,410 L250,400 L260,410 L270,400">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="White" Thickness="20" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="BookmarkIcon">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V512 H512 V0 H0 Z">
+                <DrawingGroup Opacity="1" Transform="0.1,0,0,-0.1,0,512">
+                    <GeometryDrawing Brush="Transparent" Geometry="M150,100 L350,100 L350,400 L250,400 L250,450 L150,450 Z">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="White" Thickness="20" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                    <GeometryDrawing Brush="Transparent" Geometry="M250,400 L300,450 L200,450 Z">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="White" Thickness="20" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="DeleteBrowsingHistoryIcon">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="#FFFFFFFF" Geometry="M150,200 L350,200 L350,400 L150,400 Z" />
+                <GeometryDrawing Brush="#FFFFFFFF" Geometry="M120,180 L380,180 L380,200 L120,200 Z" />
+                <GeometryDrawing Brush="#FFFFFFFF" Geometry="M220,140 L280,140 L280,180 L220,180 Z" />
+                <GeometryDrawing Brush="#FF000000" Geometry="M180,220 L200,220 L200,380 L180,380 Z" />
+                <GeometryDrawing Brush="#FF000000" Geometry="M240,220 L260,220 L260,380 L240,380 Z" />
+                <GeometryDrawing Brush="#FF000000" Geometry="M300,220 L320,220 L320,380 L300,380 Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="ExitIcon">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V512 H512 V0 H0 Z">
+                <DrawingGroup Opacity="1" Transform="0.1,0,0,-0.1,0,512">
+                    <GeometryDrawing Brush="Transparent" Geometry="M100,256 L300,96 L300,176 L420,176 L420,336 L300,336 L300,416 Z">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="White" Thickness="30" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                    <GeometryDrawing Brush="Transparent" Geometry="M320,336 L420,336 L420,416 L320,416 Z">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="White" Thickness="30" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+
     <DrawingImage x:Key="DotsBrowserImage">
         <DrawingImage.Drawing>
             <DrawingGroup ClipGeometry="M0,0 V512 H512 V0 H0 Z">

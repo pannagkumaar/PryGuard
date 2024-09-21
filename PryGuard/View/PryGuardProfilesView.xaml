@@ -163,13 +163,13 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border
-                            Width="350" Height="250"
-                            Margin="10"
-                            Background="#2E2E2E"
-                            CornerRadius="10"
-                            BorderThickness="1"
-                            BorderBrush="{StaticResource ThemeGradientPinkToOrange}"
-                            Padding="10">
+                    Width="350" Height="250"
+                    Margin="10"
+                    Background="#2E2E2E"
+                    CornerRadius="10"
+                    BorderThickness="1"
+                    BorderBrush="{StaticResource ThemeGradientPinkToOrange}"
+                    Padding="10">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition MinHeight="20" Height="Auto"/>
@@ -180,61 +180,64 @@
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
                                 <TextBlock 
-                                    Grid.Row="0"
-                                    FontSize="16" 
-                                    FontWeight="Bold" 
-                                    Foreground="White"
-                                    Margin="0,0,0,5">
-                                    <Run Text="Name: "/>
-                                    <Run Text="{Binding Name}"/>
+                            Grid.Row="0"
+                            FontSize="16" 
+                            FontWeight="Bold" 
+                            Foreground="White"
+                            Margin="0,0,0,5">
+                            <Run Text="Name: "/>
+                            <Run Text="{Binding Name}"/>
                                 </TextBlock>
                                 <TextBlock 
-                                    Grid.Row="1"
-                                    FontSize="12"
-                                    Foreground="White"
-                                    Margin="0,0,0,5">
-                                    <Run Text="Status: "/>
-                                    <Run Text="{Binding Status}"/>
+                            Grid.Row="1"
+                            FontSize="12"
+                            Foreground="White"
+                            Margin="0,0,0,5">
+                            <Run Text="Status: "/>
+                            <Run Text="{Binding Status}"/>
                                 </TextBlock>
                                 <TextBlock 
-                                    Grid.Row="2"
-                                    FontSize="12"
-                                    Foreground="White"
-                                    Margin="0,0,0,5">
-                                    <Run Text="Tags: "/>
-                                    <Run Text="{Binding Tags}"/>
+                            Grid.Row="2"
+                            FontSize="12"
+                            Foreground="White"
+                            Margin="0,0,0,5">
+                            <Run Text="Tags: "/>
+                            <Run Text="{Binding Tags}"/>
                                 </TextBlock>
                                 <TextBlock
-                                    Grid.Row="3"
-                                    FontSize="12"
-                                    Foreground="White"
-                                    Margin="0,0,0,5">
-                                    <Run Text="Proxy: "/>
-                                    <Run Text="{Binding ProxyHostPort}"/>
+                            Grid.Row="3"
+                            FontSize="12"
+                            Foreground="White"
+                            Margin="0,0,0,5">
+                            <Run Text="Proxy: "/>
+                            <Run Text="{Binding ProxyHostPort}"/>
                                 </TextBlock>
                                 <StackPanel
-                                    Grid.Row="4">
-                                    <Button
-                                        Content="Edit"
-                                        Command="{Binding ViewModel.EditProfileCommand}"
-                                        CommandParameter="{Binding Id}"
-                                        Style="{StaticResource ButtonEnableDisableProfileStyle}"
-                                        Margin="5,5,0,0" />
+                            Grid.Row="4">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button
+                                    Content="Edit"
+                                    Command="{Binding ViewModel.EditProfileCommand}"
+                                    CommandParameter="{Binding Id}"
+                                    Style="{StaticResource ButtonEnableDisableProfileStyle}"
+                                    Margin="5,5,10,0" />
+                                        <!-- Adjust the margin for spacing between buttons -->
 
-                                    <Button
-                                        Content="Delete"
-                                        Command="{Binding ViewModel.DeleteProfileCommand}"
-                                        CommandParameter="{Binding Id}"
-                                        Style="{StaticResource ButtonEnableDisableProfileStyle}"
-                                        Margin="5,5,0,0" />
+                                        <Button
+                                    Content="Delete"
+                                    Command="{Binding ViewModel.DeleteProfileCommand}"
+                                    CommandParameter="{Binding Id}"
+                                    Style="{StaticResource ButtonEnableDisableProfileStyle}"
+                                    Margin="5,5,0,0" />
+                                    </StackPanel>
                                 </StackPanel>
                                 <Button
-                                    Grid.Row="5"
-                                    Content="Start"
-                                    Margin="5,0,10,0"
-                                    Command="{Binding ViewModel.StartProfileCommand}"
-                                    CommandParameter="{Binding Id}"
-                                    Style="{StaticResource ButtonEnableDisableProfileStyle}">
+                            Grid.Row="5"
+                            Content="Start"
+                            Margin="0,0,260,61"
+                            Command="{Binding ViewModel.StartProfileCommand}"
+                            CommandParameter="{Binding Id}"
+                            Style="{StaticResource ButtonEnableDisableProfileStyle}">
                                 </Button>
                             </Grid>
                         </Border>
@@ -242,6 +245,6 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-            <!--#endregion-->
+        <!--#endregion-->
     </panel:AutoStackPanel>
 </Window>

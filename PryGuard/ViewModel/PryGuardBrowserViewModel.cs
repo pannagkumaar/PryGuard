@@ -22,6 +22,8 @@ using PryGuard.Core.ChromeApi.Handlers;
 using PryGuard.Services.UI.ListView.ListViewItem;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
+using System.Windows.Media;
+using PryGuard.View;
 
 namespace PryGuard.ViewModel;
 public class PryGuardBrowserViewModel : BaseViewModel
@@ -63,6 +65,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public RelayCommand BackCommand { get; private set; }
     public RelayCommand OpenHistoryCommand { get; private set; }
     public RelayCommand LoadHistoryLinkCommand { get; private set; }
+    public RelayCommand DeleteHistoryCommand { get; private set; }
     public RelayCommand AddressOnKeyDownCommand { get; private set; }
     public RelayCommand OpenContextMenuSettingsCommand { get; private set; }
     public DelegateCommand CloseCommand =>
@@ -149,6 +152,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         OpenBookmarkCommand = new RelayCommand<Bookmark>(OpenBookmark);
         MinimizeWindowCommand = new RelayCommand(MinimizedWindow);
         MaximizeWindowCommand = new RelayCommand(MaximizedWindow);
+        DeleteHistoryCommand = new RelayCommand(DeleteHistory);
         NormalStateWindowCommand = new RelayCommand(NormalStateWindow);
         AddTabCommand = new RelayCommand(AddTab);
         OpenTabCommand = new RelayCommand(OpenTab);
@@ -447,27 +451,49 @@ public class PryGuardBrowserViewModel : BaseViewModel
     #endregion
 
     #region HistoryWork
+
+    private void DeleteHistory()
+    {
+        var result = MessageBox.Show("Are you sure you want to delete all browsing history?",
+                                     "Confirm Deletion",
+                                     MessageBoxButton.YesNo,
+                                     MessageBoxImage.Warning);
+
+        if (result == MessageBoxResult.Yes)
+        {
+            PryGuardHistoryList.Clear();
+
+            var doc = JsonSerializer.Serialize(PryGuardHistoryList);
+
+            using (StreamWriter writer = new(_profileHistoryPath))
+            {
+                writer.Write(doc);
+                writer.Close();
+            }
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                _listView.Items.Clear();
+            });
+        }
+        // If the user clicks 'No', do nothing
+    }
+
     private void SaveHistoryJson(string address, string desc)
     {
         if (!File.Exists(_profileHistoryPath))
         {
-            // Ensure the file is created if it doesn't exist
             File.Create(_profileHistoryPath).Close();
         }
 
         Task.Run(() =>
         {
-            // Create a history item with the current date including the year
             var hist = new PryGuardHistoryItem(DateTime.Now.ToString("yyyy/MM/dd HH:mm"),
                 desc, address.Replace("https://", ""));
 
-            // Insert the new history item at the start of the list
             PryGuardHistoryList.Insert(0, hist);
 
-            // Serialize the history list to JSON
             var doc = JsonSerializer.Serialize(PryGuardHistoryList);
 
-            // Write the serialized data to the file
             using StreamWriter writer = new(_profileHistoryPath);
             writer.Write(doc);
             writer.Close();
@@ -539,26 +565,45 @@ public class PryGuardBrowserViewModel : BaseViewModel
     #region Tab Work
     private async void AddTabHistory()
     {
-        if (PryGuardHistoryList.Count == 0) { return; }
-
-        Tabs.Add(new CustomTabItem() { Tag = _mainIDCounter, Content = _listView });
-        CurrentTabItem = Tabs.Last();
-        Address = "PryGuard://history/";
-        var button = new Label
+        Application.Current.Dispatcher.Invoke(() =>
         {
-            Content = "History",
-            AllowDrop = true,
-            Tag = _mainIDCounter
-        };
-        button.DragEnter += BtnTabDragEnter;
-        button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
+            // Create and add the tab
+            var newTab = new CustomTabItem
+            {
+                Tag = _mainIDCounter,
+                Content = new HistoryView()  // Directly create an instance of HistoryView
+            };
+            Tabs.Add(newTab);
+            CurrentTabItem = newTab;
+            Address = "PryGuard://history/";
 
-        if (_mainIDCounter == 0) { TabBtnsAndAddTabBtn.Insert(0, button); }
-        else { TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button); }
+            // Create and add the button for the tab
+            Label button = new Label
+            {
+                Content = "History",
+                AllowDrop = true,
+                Tag = _mainIDCounter
+            };
+            button.DragEnter += BtnTabDragEnter;
+            button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
 
-        _mainIDCounter++;
-        LoadHistoryAsListView();
+            // Add the button in the appropriate position
+            if (_mainIDCounter == 0)
+            {
+                TabBtnsAndAddTabBtn.Insert(0, button);
+            }
+            else
+            {
+                TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
+            }
+
+            _mainIDCounter++;
+        });
     }
+
+
+
+
     private async void AddTab()
     {
         var browser = await InitBrowser(_mainIDCounter > 0);
