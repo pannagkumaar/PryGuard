@@ -12,6 +12,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using PryGuard.View;
+using CefSharp.DevTools.Profiler;
+using PryGuard.Services.Helpers;
+using System.Xml.Linq;
+using PryGuard.Model;
+using System.Linq;
 
 namespace PryGuard.ViewModel;
 public class PryGuardProfileSettingsViewModel : BaseViewModel
@@ -19,7 +24,6 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     #region Commands
     public RelayCommand CloseProfileSettingsCommand { get; private set; }
     public RelayCommand ChangeWindowStateCommand { get; private set; }
-    public RelayCommand MaximizeWindowStateCommand { get; private set; }
     public RelayCommand CheckProxyCommand { get; private set; }
     public RelayCommand ImportProfileCommand { get; private set; }
     public RelayCommand SaveProfileCommand { get; private set; }
@@ -79,7 +83,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     {
         get => _PryGuardProfilesVM;
         set => Set(ref _PryGuardProfilesVM, value);
-       
+
     }
 
 
@@ -108,13 +112,12 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
 
     #region Ctor
     public PryGuardProfileSettingsViewModel() { }
-    
+
     public PryGuardProfileSettingsViewModel(PryGuardProfile PryGuardProfile)
     {
         CloseProfileSettingsCommand = new RelayCommand(CloseProfileSettings);
         SaveProfileCommand = new RelayCommand(SaveProfile);
         ChangeWindowStateCommand = new RelayCommand(CloseWindowState);
-        MaximizeWindowStateCommand = new RelayCommand(MaximizeWindowState);
         CheckProxyCommand = new RelayCommand(CheckProxy);
         NewFingerprintCommand = new RelayCommand(GenerateNewFingerprint);
         ImportProfileCommand = new RelayCommand(ImportProfile);
@@ -131,8 +134,8 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             var newFakeProfile = FakeProfileFactory.Generate();
 
             PryGuardProf.FakeProfile = newFakeProfile;
-            
-        
+
+
 
             PryGuardProfilesVM.Setting.SaveSettings();
         }
@@ -143,9 +146,9 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         }
     }
     private void SaveProfile(object arg)
-    {   
+    {
 
-        if (SaveProfileButtonContent == "Create")
+        if (SaveProfileButtonContent == "Create" || SaveProfileButtonContent == "Import")
         {
             ViewManager.Close(this);
             PryGuardProfilesVM.ProfileTabs.Add(new ProfileTab(PryGuardProfilesVM)
@@ -167,18 +170,43 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             PryGuardProfilesVM.ProfileTabs.Clear();
             PryGuardProfilesVM.LoadTabs();
         }
+        PryGuardProf.IsSaved = true;
     }
-    private void ImportProfile(object parameter)
+    private void ImportProfile(object arg)
     {
-        var profileSelectionWindow = new ProfileSelectionWindow(PryGuardProfilesVM.Setting.PryGuardProfiles);
+        var savedProfiles = PryGuardProfilesVM.Setting.PryGuardProfiles.Where(p => p.IsSaved).ToList();
+        var profileSelectionWindow = new ProfileSelectionWindow(savedProfiles);
         if (profileSelectionWindow.ShowDialog() == true)
         {
-            PryGuardProf = profileSelectionWindow.SelectedProfile;
+
+            if (PryGuardProfilesVM.Setting.PryGuardProfiles.Any())
+            {
+                var lastProfile = PryGuardProfilesVM.Setting.PryGuardProfiles.Last();
+                PryGuardProfilesVM.Setting.PryGuardProfiles.Remove(lastProfile);
+
+
+                var tabToRemove = PryGuardProfilesVM.ProfileTabs.FirstOrDefault(tab => tab.Id == lastProfile.Id);
+                if (tabToRemove != null)
+                {
+                    PryGuardProfilesVM.ProfileTabs.Remove(tabToRemove);
+                }
+            }
+
+
+            var importedProfile = PryGuardProfile.ImportFromProfile(profileSelectionWindow.SelectedProfile);
+            PryGuardProfilesVM.Setting.PryGuardProfiles.Add(importedProfile);
+
+
+            PryGuardProf = importedProfile;
+
+
+            SaveProfileButtonContent = "Import";
         }
     }
+
     private async void CheckProxy()
     {
-        var a=PryGuardProf.Proxy.ProxyAddress;
+        var a = PryGuardProf.Proxy.ProxyAddress;
         if (PryGuardProf.Proxy.ProxyAddress == "") return;
         var result = await IpInfoClient.CheckClientProxy(PryGuardProf.Proxy);
         if (result == null)
@@ -195,7 +223,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             TbProxyBrush = Brushes.White;
         }
     }
-   
+
     private void CloseProfileSettings(object arg)
     {
         ViewManager.Close(this);
@@ -203,10 +231,6 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     private void CloseWindowState(object arg)
     {
         WindowState = WindowState.Minimized;
-    }
-    private void MaximizeWindowState(object arg)
-    {
-        WindowState = WindowState.Maximized;
     }
     #endregion
 }

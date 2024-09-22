@@ -26,6 +26,7 @@ using System.Windows.Media;
 using PryGuard.View;
 
 namespace PryGuard.ViewModel;
+
 public class PryGuardBrowserViewModel : BaseViewModel
 {
     #region Fields
@@ -86,12 +87,17 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private BookmarkManager _bookmarkManager;
 
     public ObservableCollection<Bookmark> Bookmarks => _bookmarkManager?.Bookmarks;
-    private ObservableCollection<PryGuardHistoryItem> _PryGuardHistoryList;
+
+
+    private ObservableCollection<PryGuardHistoryItem> _pryGuardHistoryList;
+
     public ObservableCollection<PryGuardHistoryItem> PryGuardHistoryList
     {
-        get => _PryGuardHistoryList;
-        set => Set(ref _PryGuardHistoryList, value);
+        get => _pryGuardHistoryList;
+        set => Set(ref _pryGuardHistoryList, value);
     }
+
+
 
     private string _address;
     public string Address
@@ -165,6 +171,9 @@ public class PryGuardBrowserViewModel : BaseViewModel
         LoadHistoryLinkCommand = new RelayCommand(LoadHistoryLink);
         OpenHistoryCommand = new RelayCommand(AddTabHistory);
         OpenContextMenuSettingsCommand = new RelayCommand(OpenContextMenuSettings);
+
+
+
 
         try
         {
@@ -490,17 +499,18 @@ public class PryGuardBrowserViewModel : BaseViewModel
             var hist = new PryGuardHistoryItem(DateTime.Now.ToString("yyyy/MM/dd HH:mm"),
                 desc, address.Replace("https://", ""));
 
-            PryGuardHistoryList.Insert(0, hist);
-
+            // Write to the JSON file in the background thread
             var doc = JsonSerializer.Serialize(PryGuardHistoryList);
-
             using StreamWriter writer = new(_profileHistoryPath);
             writer.Write(doc);
             writer.Close();
 
             // Update the UI on the main thread
-            Application.Current.Dispatcher.Invoke(delegate
+            Application.Current.Dispatcher.Invoke(() =>
             {
+                // Insert history item into the ObservableCollection on the UI thread
+                PryGuardHistoryList.Insert(0, hist);
+
                 var listBoxItem = new ListViewItem();
 
                 // Set properties for the list box item
@@ -508,10 +518,13 @@ public class PryGuardBrowserViewModel : BaseViewModel
                 ListViewItemProperties.SetDescHistory(listBoxItem, hist.Description);
                 ListViewItemProperties.SetLinkPreview(listBoxItem, hist.Link[..hist.Link.IndexOf('/')]);
                 ListViewItemProperties.SetFullLink(listBoxItem, hist.Link);
+
+                // Insert into the ListView on the UI thread
                 _listView.Items.Insert(0, listBoxItem);
             });
         });
     }
+
 
     private void LoadHistoryJson()
     {
@@ -522,6 +535,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         reader.Close();
         PryGuardHistoryList = JsonSerializer.Deserialize<ObservableCollection<PryGuardHistoryItem>>(JsonNode.Parse(json).ToString());
     }
+
     private void LoadHistoryLink(object link)
     {
         AddTab();
@@ -535,31 +549,6 @@ public class PryGuardBrowserViewModel : BaseViewModel
             button.ContextMenu.IsOpen = true;
         }
     }
-
-    private void AddListViewItem(PryGuardHistoryItem item)
-    {
-        Application.Current.Dispatcher.Invoke((Action)delegate
-        {
-            var listBoxItem = new ListViewItem();
-
-            ListViewItemProperties.SetTimeHistory(listBoxItem, item.Time);
-            ListViewItemProperties.SetDescHistory(listBoxItem, item.Description);
-            ListViewItemProperties.SetLinkPreview(listBoxItem, item.Link[..item.Link.IndexOf('/')]);
-            ListViewItemProperties.SetFullLink(listBoxItem, item.Link);
-            _listView.Items.Add(listBoxItem);
-        });
-    }
-    private async void LoadHistoryAsListView()
-    {
-        _listView.Items.Clear();
-        Task.Run(() =>
-        {
-            foreach (var item in PryGuardHistoryList)
-            {
-                AddListViewItem(item);
-            }
-        });
-    }
     #endregion
 
     #region Tab Work
@@ -567,15 +556,22 @@ public class PryGuardBrowserViewModel : BaseViewModel
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
+            PryGuardHistoryList.Add(new PryGuardHistoryItem("2024/09/21 10:30", "Test Description", "www.google.com"));
             // Create and add the tab
             var newTab = new CustomTabItem
             {
                 Tag = _mainIDCounter,
-                Content = new HistoryView()  // Directly create an instance of HistoryView
+                Content = new HistoryView()
+                {
+                    DataContext = this
+                }
             };
             Tabs.Add(newTab);
             CurrentTabItem = newTab;
             Address = "PryGuard://history/";
+            
+            // Load history when the tab is created
+            LoadHistoryJson(); // Ensure history is loaded
 
             // Create and add the button for the tab
             Label button = new Label
@@ -597,10 +593,10 @@ public class PryGuardBrowserViewModel : BaseViewModel
                 TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
             }
 
+
             _mainIDCounter++;
         });
     }
-
 
 
 
@@ -720,13 +716,24 @@ public class PryGuardBrowserViewModel : BaseViewModel
         if (tabToSelect != null)
         {
             CurrentTabItem = tabToSelect;
+
             if (CurrentTabItem.Content.ToString().Contains("ListView"))
             {
                 Address = "PryGuard://history/";
             }
-            else { Address = (CurrentTabItem.Content as PryGuardBrowser).Address; }
+            else if (CurrentTabItem.Content is PryGuardBrowser browser)
+            {
+                // Safely cast and access the Address property
+                Address = browser.Address;
+            }
+            else
+            {
+                // Fallback in case it's not a PryGuardBrowser or a ListView (if needed)
+                Address = "PryGuard://default/";
+            }
         }
     }
+
     #endregion
 
     #region Window Work

@@ -1,203 +1,215 @@
 ﻿using System;
 using System.IO;
 using System.ComponentModel;
-using PryGuard.Services.Helpers;
 using System.Runtime.CompilerServices;
 using PryGuard.Core.ChromeApi.Model.Configs;
+using PryGuard.Services.Helpers;
 
-namespace PryGuard.Model;
-public class PryGuardProfile : INotifyPropertyChanged
+namespace PryGuard.Model
 {
-    private ProxySettings _proxy;
-    public ProxySettings Proxy
+    public class PryGuardProfile : INotifyPropertyChanged
     {
-        get => _proxy;
-        set
+        private ProxySettings _proxy;
+        public ProxySettings Proxy
         {
-            if (_proxy == value)
-                return;
-            _proxy = value;
-            OnPropertyChanged(nameof(Proxy));
-        }
-    }
-
-    /// <summary>
-    /// Profile Name
-    /// </summary>
-    private string _name;
-    public string Name
-    {
-        get => _name;
-        set
-        {
-            if (_name == value)
-                return;
-            // Rename folder at once
-            if (_name != null && Directory.Exists(ClientConfig.ChromeDataPath + "\\" + _name))
+            get => _proxy;
+            set
             {
-                Directory.Move(ClientConfig.ChromeDataPath + "\\" + _name, ClientConfig.ChromeDataPath + "\\" + value);
+                if (_proxy == value)
+                    return;
+                _proxy = value;
+                OnPropertyChanged(nameof(Proxy));
             }
-            _name = value;
-            OnPropertyChanged(nameof(Name));
         }
-    }
+        public bool IsSaved { get; set; } = false;
 
-    private int _id;
-    public int Id
-    {
-        get => _id;
-        set
+        private string _name;
+        public string Name
         {
-            if (_id == value)
-                return;
-            _id = value;
-            OnPropertyChanged(nameof(Id));
-
+            get => _name;
+            set
+            {
+                if (_name == value)
+                    return;
+                // Rename folder at once
+                if (_name != null && Directory.Exists(ClientConfig.ChromeDataPath + "\\" + _name))
+                {
+                    Directory.Move(ClientConfig.ChromeDataPath + "\\" + _name, ClientConfig.ChromeDataPath + "\\" + value);
+                }
+                _name = value;
+                OnPropertyChanged(nameof(Name));
+            }
         }
-    }
 
-    private string _status;
-    public string Status
-    {
-        get => _status;
-        set
+
+
+        private int _id;
+        public int Id
         {
-            if (_status == value)
-                return;
-            _status = value;
-            _status = _status.Replace("System.Windows.Controls.ComboBoxItem: ", "");
-            OnPropertyChanged(nameof(Status));
+            get => _id;
+            set
+            {
+                if (_id == value)
+                    return;
+                _id = value;
+                OnPropertyChanged(nameof(Id));
+            }
         }
-    }
 
-    private string _tags;
-    public string Tags
-    {
-        get => _tags;
-        set
+        private string _status;
+        public string Status
         {
-            if (_tags == value)
-                return;
-            _tags = value;
-            OnPropertyChanged(nameof(Tags));
+            get => _status;
+            set
+            {
+                if (_status == value)
+                    return;
+                _status = value;
+                _status = _status.Replace("System.Windows.Controls.ComboBoxItem: ", "");
+                OnPropertyChanged(nameof(Status));
+            }
         }
-    }
 
-    /// <summary>
-    /// On/Off
-    /// </summary>
-    private bool _isEnabled;
-    public bool IsEnabled
-    {
-        get => _isEnabled;
-        set
+        private string _tags;
+        public string Tags
         {
-            if (_isEnabled == value)
-                return;
-            _isEnabled = value;
-            OnPropertyChanged(nameof(IsEnabled));
+            get => _tags;
+            set
+            {
+                if (_tags == value)
+                    return;
+                _tags = value;
+                OnPropertyChanged(nameof(Tags));
+            }
         }
-    }
 
-    /// <summary>
-    /// Browser footprint
-    /// </summary>
-    private FakeProfile _fakeProfile;
-    public FakeProfile FakeProfile
-    {
-        get => _fakeProfile;
-        set
+        private bool _isEnabled;
+        public bool IsEnabled
         {
-            if (_fakeProfile == value)
-                return;
-            _fakeProfile = value;
-            OnPropertyChanged(nameof(FakeProfile));
+            get => _isEnabled;
+            set
+            {
+                if (_isEnabled == value)
+                    return;
+                _isEnabled = value;
+                OnPropertyChanged(nameof(IsEnabled));
+            }
         }
-    }
 
-    private bool _isLoadImage;
-    public bool IsLoadImage
-    {
-        get => _isLoadImage;
-        set
+        private FakeProfile _fakeProfile;
+        public FakeProfile FakeProfile
         {
-            if (_isLoadImage == value)
-                return;
-            _isLoadImage = value;
-            OnPropertyChanged(nameof(IsLoadImage));
+            get => _fakeProfile;
+            set
+            {
+                if (_fakeProfile == value)
+                    return;
+                _fakeProfile = value;
+                OnPropertyChanged(nameof(FakeProfile));
+            }
         }
-    }
 
-    private bool _isLoadCacheInMemory;
-    public bool IsLoadCacheInMemory
-    {
-        get => _isLoadCacheInMemory;
-        set
+        private bool _isLoadImage;
+        public bool IsLoadImage
         {
-            if (_isLoadCacheInMemory == value)
-                return;
-            _isLoadCacheInMemory = value;
-            OnPropertyChanged(nameof(IsLoadCacheInMemory));
+            get => _isLoadImage;
+            set
+            {
+                if (_isLoadImage == value)
+                    return;
+                _isLoadImage = value;
+                OnPropertyChanged(nameof(IsLoadImage));
+            }
         }
-    }
 
-    /// <summary>
-    /// Block ads and scripts
-    /// </summary>
-    private bool _isAdBlock;
-    public bool IsAdBlock
-    {
-        get => _isAdBlock;
-        set
+        private bool _isLoadCacheInMemory;
+        public bool IsLoadCacheInMemory
         {
-            if (_isAdBlock == value)
-                return;
-            _isAdBlock = value;
-            OnPropertyChanged(nameof(IsAdBlock));
+            get => _isLoadCacheInMemory;
+            set
+            {
+                if (_isLoadCacheInMemory == value)
+                    return;
+                _isLoadCacheInMemory = value;
+                OnPropertyChanged(nameof(IsLoadCacheInMemory));
+            }
         }
-    }
 
-    private string _cachePath;
-    public string CachePath
-    {
-        get => _cachePath;       
-        set
+        private bool _isAdBlock;
+        public bool IsAdBlock
         {
-            if (_cachePath == value)
-                return;
-            _cachePath = value;
-            OnPropertyChanged(nameof(CachePath));
+            get => _isAdBlock;
+            set
+            {
+                if (_isAdBlock == value)
+                    return;
+                _isAdBlock = value;
+                OnPropertyChanged(nameof(IsAdBlock));
+            }
         }
-    }
 
-    public static PryGuardProfile GenerateNewProfile(string name)
-    {
-        var profileId = new Random().Next(666, 1337);
-        return new PryGuardProfile()
+        private string _cachePath;
+        public string CachePath
         {
-            Name = name,
-            Id = profileId,
-            Status = "NEW",
-            FakeProfile = FakeProfileFactory.Generate(),
-            IsEnabled = false,
-            IsAdBlock = true,
-            IsLoadImage = true,
-            IsLoadCacheInMemory = true,
-            CachePath = Path.Combine(ClientConfig.ChromeDataPath, name + "_Cache_" + profileId),
-            Proxy = new ProxySettings()
-        };
-    }
+            get => _cachePath;
+            set
+            {
+                if (_cachePath == value)
+                    return;
+                _cachePath = value;
+                OnPropertyChanged(nameof(CachePath));
+            }
+        }
 
-    public event PropertyChangedEventHandler PropertyChanged;
-    private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-    {
-        PropertyChangedEventHandler propertyChanged = PropertyChanged;
-        if (propertyChanged == null)
-            return;
-        propertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        if (propertyName == Name)
+        private static int _nextId = 666; // Starting value, can be any unique initial number
+
+        private static int GenerateUniqueId()
         {
+            // Ensure thread safety and unique ID generation
+            lock (typeof(PryGuardProfile))
+            {
+                return _nextId++;
+            }
+        }
 
+        public static PryGuardProfile GenerateNewProfile(string name)
+        {
+            return new PryGuardProfile()
+            {
+                Name = name,
+                Id = GenerateUniqueId(),
+                Status = "NEW",
+                FakeProfile = FakeProfileFactory.Generate(),
+                IsEnabled = false,
+                IsAdBlock = true,
+                IsLoadImage = true,
+                IsLoadCacheInMemory = true,
+                CachePath = Path.Combine(ClientConfig.ChromeDataPath, name + "_Cache_" + GenerateUniqueId()),
+                Proxy = new ProxySettings()
+            };
+        }
+
+        public static PryGuardProfile ImportFromProfile(PryGuardProfile existingProfile)
+        {
+            return new PryGuardProfile()
+            {
+                Name = existingProfile.Name + " (Copy)",
+                Id = GenerateUniqueId(),
+                Status = "NEW",
+                FakeProfile = existingProfile.FakeProfile, // Assuming Clone() is implemented
+                IsEnabled = existingProfile.IsEnabled,
+                IsAdBlock = existingProfile.IsAdBlock,
+                IsLoadImage = existingProfile.IsLoadImage,
+                IsLoadCacheInMemory = existingProfile.IsLoadCacheInMemory,
+                CachePath = Path.Combine(ClientConfig.ChromeDataPath, existingProfile.Name + "_Cache_" + GenerateUniqueId()),
+                Proxy = existingProfile.Proxy // Assuming Clone() is implemented
+            };
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

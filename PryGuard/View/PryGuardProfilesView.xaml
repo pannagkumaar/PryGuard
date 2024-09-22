@@ -46,7 +46,7 @@
                 <TextBlock
                     Text="PryGuard" 
                     FontFamily="Roboto"
-                    Margin="0,3,955,0"
+                    Margin="5,3,955,0"
                     VerticalAlignment="Center"
                     FontSize="20"
                     Height="25">
@@ -137,9 +137,9 @@
                 </Button>
                 <TextBox
                     Style="{StaticResource ThemeTextbox}"
-                    Width="200"
+                    Width="190"
                     Height="22"
-                    Margin="0,3,0,0"
+                    Margin="0,3,5,0"
                     Tag="Search Profile"
                     Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"/>
             </panel:AutoStackPanel>
@@ -170,7 +170,11 @@
                             BorderThickness="1"
                             BorderBrush="{StaticResource ThemeGradientPinkToOrange}"
                             Padding="10"
-                            x:Name="ProfileBorder">
+                            x:Name="ProfileBorder"
+                            AllowDrop="True"
+                            PreviewMouseDown="ProfileBorder_MouseDown"
+                            PreviewMouseMove="ProfileBorder_MouseMove"
+                            Drop="ProfileBorder_Drop">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition MinHeight="20" Height="Auto"/>
@@ -224,29 +228,38 @@
                 HorizontalAlignment="Left"
                                     Orientation="Horizontal">
                                     <Button
-                                    Content="Edit"
-                                    Command="{Binding ViewModel.EditProfileCommand}"
-                                    CommandParameter="{Binding Id}"
-                                    Style="{StaticResource ButtonEnableDisableProfileStyle}"
-                                    Margin="5,5,10,0" />
-                                    <!-- Adjust the margin for spacing between buttons -->
-
+                                        Width="25"
+                                        Height="25"
+                                        Margin="30,0,0,0"                                    
+                                        Style="{StaticResource ThemeButtonProfilesWork}" 
+                                        Command="{Binding ViewModel.EditProfileCommand}"
+                                        CommandParameter="{Binding Id}">
+                                         <Image 
+                                            Margin="0,0,0,0"
+                                            Source="{StaticResource EditProfileImage}"
+                                            Height="21" Width="21"/>
+                                    </Button>
                                     <Button
-                                    Content="Delete"
-                                    Command="{Binding ViewModel.DeleteProfileCommand}"
-                                    CommandParameter="{Binding Id}"
-                                    Style="{StaticResource ButtonEnableDisableProfileStyle}"
-                                    Margin="5,5,0,0" />
+                                        Width="25"
+                                        Height="25"
+                                        Style="{StaticResource ThemeButtonProfilesWork}" 
+                                        Command="{Binding ViewModel.DeleteProfileCommand}"
+                                        CommandParameter="{Binding Id}">
+                                        <Image 
+                                            Margin="-3,0,0,0"
+                                            Source="{StaticResource DeleteProfileImage}"
+                                            Height="21" Width="21"/>
+                                    </Button>
                                     <Button
-                Grid.Row="5"
-                Content="Start"
-                Margin="5,0,10,0"
-                Visibility="Collapsed"
-                x:Name="StartButton"
-                Command="{Binding ViewModel.StartProfileCommand}"
-                CommandParameter="{Binding Id}"
-                Style="{StaticResource ButtonEnableDisableProfileStyle}">
-                                </Button>
+                                        Grid.Row="5"
+                                        Content="Start"
+                                        Margin="5,0,10,0"
+                                        Visibility="Collapsed"
+                                        x:Name="StartButton"
+                                        Command="{Binding ViewModel.StartProfileCommand}"
+                                        CommandParameter="{Binding Id}"
+                                        Style="{StaticResource ButtonEnableDisableProfileStyle}">
+                                    </Button>
                                 </StackPanel>
 
                             </Grid>

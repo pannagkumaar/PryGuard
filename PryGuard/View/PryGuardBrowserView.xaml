@@ -348,7 +348,7 @@
                                 </StackPanel>
                             </MenuItem.Header>
                         </MenuItem>
-                        <MenuItem Style="{StaticResource ThemeMenuItem}">
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding AddTabCommand}">
                             <MenuItem.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <Image

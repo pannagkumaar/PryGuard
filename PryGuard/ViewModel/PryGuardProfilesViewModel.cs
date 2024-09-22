@@ -185,6 +185,18 @@ public class PryGuardProfilesViewModel : BaseViewModel
             });
         }
     }
+    public void MoveProfile(ProfileTab sourceProfile, ProfileTab targetProfile)
+    {
+        var sourceIndex = ProfileTabs.IndexOf(sourceProfile);
+        var targetIndex = ProfileTabs.IndexOf(targetProfile);
+
+        if (sourceIndex != -1 && targetIndex != -1 && sourceIndex != targetIndex)
+        {
+            ProfileTabs.Move(sourceIndex, targetIndex);
+            // Save the new order to your settings if needed
+            Setting.SaveSettings();
+        }
+    }
 
     public void LoadTabs()
     {

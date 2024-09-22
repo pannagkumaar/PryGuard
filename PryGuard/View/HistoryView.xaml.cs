@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PryGuard.ViewModel;
 
 namespace PryGuard.View
 {
@@ -23,6 +24,16 @@ namespace PryGuard.View
         public HistoryView()
         {
             InitializeComponent();
+        }
+
+        private void OnLinkClick(object sender, MouseButtonEventArgs e)
+        {
+            var link = (sender as TextBlock)?.Text;
+            if (link != null)
+            {
+                var viewModel = DataContext as PryGuardBrowserViewModel;
+                viewModel?.LoadHistoryLinkCommand.Execute(link);
+            }
         }
     }
 

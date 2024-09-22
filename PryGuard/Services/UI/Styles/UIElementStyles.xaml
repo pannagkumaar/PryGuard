@@ -47,8 +47,8 @@
     x:Key="ThemeBrushGray"/>
 
     <LinearGradientBrush x:Key="ThemeGradientPinkToOrange" StartPoint="0,0" EndPoint="1,0">
-        <GradientStop Offset="0" Color="#FFC51162" />
-        <GradientStop Offset="1" Color="#FFFF7F0E" />
+        <GradientStop Offset="0" Color="#b31504" />
+        <GradientStop Offset="1" Color="#781e02" />
     </LinearGradientBrush>
 
     <LinearGradientBrush x:Key="ThemeGradientPastlePinkToOrange" StartPoint="0,0" EndPoint="1,0">
