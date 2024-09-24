@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Test</title>
+</head>
+<body>
+    <h1>Cookie Test Page</h1>
+    <button id="set-cookie">Set Cookie</button>
+    <button id="check-cookie">Check Cookie</button>
+    <div id="cookie-value"></div>
+
+    <script>
+        document.getElementById('set-cookie').onclick = function() {
+            document.cookie = "AMP_067b9b07c8=TestValue1223; path=/; domain=localhost"; // Set cookie
+            alert("Cookie Set!");
+        };
+
+        document.getElementById('check-cookie').onclick = function() {
+            const cookies = document.cookie;
+            document.getElementById('cookie-value').innerText = cookies || "No cookies found.";
+        };
+    </script>
+</body>
+</html>

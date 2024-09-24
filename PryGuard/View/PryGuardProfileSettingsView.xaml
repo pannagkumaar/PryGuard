@@ -24,7 +24,7 @@
     <Window.DataContext>
         <vm:PryGuardProfileSettingsViewModel/>
     </Window.DataContext>
-    
+
     <Window.Resources>
         <ResourceDictionary>
             <converters:EnumToComboBoxItemConverter x:Key="EnumToComboBoxItemConverter" />
@@ -34,7 +34,8 @@
                 <ObjectDataProvider.MethodParameters>
                     <x:Type TypeName="configs:EOSVersion" />
                 </ObjectDataProvider.MethodParameters>
-            </ObjectDataProvider><ObjectDataProvider MethodName="GetValues"
+            </ObjectDataProvider>
+            <ObjectDataProvider MethodName="GetValues"
                             ObjectType="{x:Type sys:Enum}"
                             x:Key="EChromeLanguageDataProvider">
                 <ObjectDataProvider.MethodParameters>
@@ -342,16 +343,50 @@
                 <!--#endregion-->
 
                 <!--#region Cookie-->
-                <TextBox
-                    Grid.Row="4"
-                    Style="{StaticResource ThemeTextbox}"
-                    Width="363"
-                    Height="100"
-                    Margin="14,0,0,0"
-                    IsEnabled="False"
-                    HorizontalAlignment="Center"
-                    Tag="Cookie"
-                    HorizontalContentAlignment="Left"/>
+               
+                <StackPanel Grid.Row="4" Orientation="Horizontal">
+                    <TextBox
+                        Style="{StaticResource ThemeTextbox}"
+                        Width="363"
+                        Height="100"
+                        Tag="Cookies"
+                        Margin="67,0,0,0"
+                        HorizontalAlignment="Center"
+                        HorizontalContentAlignment="Left"
+                        Text="{Binding PryGuardProf.Cookies, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                        AcceptsReturn="True"  
+                        VerticalScrollBarVisibility="Auto" />
+
+                    <TextBlock
+                        Width="16"
+                        Height="17"
+                        Margin="-110,-73,0,0"
+                        Cursor="Help" RenderTransformOrigin="3,0.255" HorizontalAlignment="Right">
+                        <TextBlock.ToolTip>
+                            <ToolTip Width="160" Height="60">
+                                <StackPanel>
+                                    <TextBlock
+                                        TextWrapping="Wrap"
+                                        Text="Valid cookie formats: 
+                                        ● key=value; Domain=URL;
+                                        ● Include all necessary parts "
+                                        
+                                        />
+                                </StackPanel>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+                        <StackPanel>
+                            <Image 
+                                Margin="-5.5,0,0,0"
+                                Source="{StaticResource ProxyInfoHelpImage}" 
+                                Height="15" Width="15"/>
+                        </StackPanel>
+                    </TextBlock>
+
+
+                </StackPanel>
+
+
                 <!--#endregion-->
 
                 <!--#region Useragent-->
@@ -660,7 +695,7 @@
                     Visibility="{Binding IsChecked,ElementName=rbWebGlNoise,Converter={StaticResource b2v}}"
                     ItemsSource="{Binding Renderers}"
                     SelectedItem="{Binding Path=PryGuardProf.FakeProfile.WebGL.Renderer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                    
+
                 </ComboBox>
                 <!--#endregion-->
 
@@ -735,7 +770,7 @@
                 <ComboBox
                     Grid.Row="15"
                     Style="{StaticResource ThemeCombobox}"
-                    Width="239"
+                    Width="140"
                     SelectedIndex="0"
                     Margin="96,40,0,10"
                     VerticalAlignment="Top"
@@ -746,7 +781,7 @@
                     SelectedItem="{Binding Path=SelectedLanguage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                     <!--SelectedItem="{Binding Path=SelectedLanguage, Mode=TwoWay}">-->
                 </ComboBox>
-                
+
                 <!--#endregion-->
 
                 <!--#region Geolocation-->
@@ -1029,13 +1064,13 @@
                     Visibility="{Binding IsChecked,ElementName=rbScreen,Converter={StaticResource b2v}}"
                     ItemsSource="{Binding ScreenSizes}"
                     SelectedItem="{Binding PryGuardProf.FakeProfile.ScreenSize, Mode=TwoWay}">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding}" />
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
                 </ComboBox>
-                
+
                 <!--#endregion-->
 
                 <!--#region Media-->
@@ -1562,7 +1597,7 @@
                    Text="{Binding PryGuardProf.FakeProfile.ScreenSize}"
                     >
                 </TextBlock>
-                    
+
                 <Line
                     Grid.Row="19"
                     Grid.ColumnSpan="2"

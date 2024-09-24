@@ -20,10 +20,12 @@ using PryGuard.Core.ChromeApi.Proxy;
 using System.Collections.ObjectModel;
 using PryGuard.Core.ChromeApi.Handlers;
 using PryGuard.Services.UI.ListView.ListViewItem;
+using System.Data.SQLite;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
 using System.Windows.Media;
 using PryGuard.View;
+using CefSharp.Wpf;
 
 namespace PryGuard.ViewModel;
 
@@ -77,6 +79,18 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
     #endregion
 
+    private string _cookies;
+    public string Cookies
+    {
+        get => _cookies;
+        set
+        {
+            if (_cookies == value)
+                return;
+            _cookies = value;
+            OnPropertyChanged(nameof(Cookies));
+        }
+    }
     #region Properties
     private CustomTabItem _currentTabItem;
     public CustomTabItem CurrentTabItem
@@ -196,8 +210,24 @@ public class PryGuardBrowserViewModel : BaseViewModel
     {
         PryGuardBrowser browser = await CreateBrowser(isNewPage, _mainIDCounter, _PryGuardProfileToStart);
         _browsers.Add(browser);
+        if (browser.IsBrowserInitialized)
+        {
+            await ParseAndInsertCookies(_PryGuardProfile.Cookies, _PryGuardProfile, browser);
+        }
+        else
+        {
+            browser.IsBrowserInitializedChanged += async (s, e) =>
+            {
+                if (browser.IsBrowserInitialized)
+                {
+                    await ParseAndInsertCookies(_PryGuardProfile.Cookies, _PryGuardProfile, browser);
+                }
+            };
+        }
+
         return browser;
     }
+
     private async Task<PryGuardBrowser> CreateBrowser(bool isNewPage, object id, PryGuardProfile PryGuardProfile)
     {
         if (!isNewPage)
@@ -297,11 +327,103 @@ public class PryGuardBrowserViewModel : BaseViewModel
                 Binder = new DefaultBinder(new MyCamelCaseNameConverter())
             });
         ExecGeoScript(PryGuardBrowser);
-
+        
         PryGuardBrowser.Tag = id;
         PryGuardBrowser.Address = "https://google.com/";
         return PryGuardBrowser;
     }
+    private async Task ParseAndInsertCookies(string cookiesInput, PryGuardProfile pryGuardProfile, ChromiumWebBrowser browser)
+    {
+        if (string.IsNullOrWhiteSpace(cookiesInput))
+            return;
+
+        // Get the CookieManager from the global context
+        var cookieManager = browser.GetCookieManager();
+
+        // Each cookie should be on a new line
+        string[] cookiesLines = cookiesInput.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+
+        foreach (var cookieLine in cookiesLines)
+        {
+            if (string.IsNullOrWhiteSpace(cookieLine))
+                continue;
+
+            // Parse each cookie format "CookieName=CookieValue; Domain=http://localhost:8000"
+            var parts = cookieLine.Split(';');
+            if (parts.Length != 2)
+            {
+                // Invalid format, skip
+                continue;
+            }
+
+            var cookieParts = parts[0].Split('=');
+            if (cookieParts.Length != 2)
+            {
+                // Invalid format, skip
+                continue;
+            }
+
+            string cookieName = cookieParts[0].Trim();
+            string cookieValue = cookieParts[1].Trim();
+            string domainInfo = parts[1].Replace("Domain=", "").Trim();
+
+            // Extract protocol and domain from the domainInfo
+            Uri uri;
+
+            try
+            {
+                // Create a Uri to extract components
+                uri = new Uri(domainInfo);
+            }
+            catch (UriFormatException)
+            {
+                // Invalid format, skip
+                continue;
+            }
+
+            string protocol = uri.Scheme; 
+            string domain = uri.Host;
+            int port = uri.Port;
+
+           
+            if (port == -1)
+            {
+                port = protocol == "https" ? 443 : 80;
+            }
+
+            
+            string url = $"{protocol}://{domain}:{port}";
+
+           
+            var cookie = new Cookie
+            {
+                Name = cookieName,
+                Value = cookieValue,
+                Domain = domain, 
+                Path = "/",
+                Expires = DateTime.UtcNow.AddYears(1), 
+                Secure = (protocol == "https"), 
+                HttpOnly = false, 
+            };
+
+            
+            bool success = await cookieManager.SetCookieAsync(url, cookie);
+
+           
+            await cookieManager.FlushStoreAsync();
+
+            if (!success)
+            {
+                Console.WriteLine($"Failed to set cookie for domain: {domain}");
+            }
+        }
+    }
+
+
+
+
+
+
     private void ExecGeoScript(PryGuardBrowser PryGuardBrowser)
     {
         double latitude;
@@ -603,10 +725,11 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private async void AddTab()
     {
         var browser = await InitBrowser(_mainIDCounter > 0);
-        //var browser = await InitBrowser(true);
         browser.TitleChanged += Browser_TitleChanged;
         browser.LoadingStateChanged += Browser_LoadingStateChanged;
         browser.AddressChanged += Browser_AddressChanged;
+
+       
 
         var newTabItem = new CustomTabItem()
         {
@@ -614,7 +737,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             Content = browser,
             Title = browser.Title,
             Address = browser.Address,
-            CloseTabCommand = CloseTabCommand  // Set the command
+            CloseTabCommand = CloseTabCommand // Set the command
         };
 
         // Set bindings to keep Title and Address updated
@@ -648,6 +771,8 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
         _mainIDCounter++;
     }
+
+
 
     private void BtnMouseDownForDragAndOpenTab(object sender, MouseButtonEventArgs e)
     {
