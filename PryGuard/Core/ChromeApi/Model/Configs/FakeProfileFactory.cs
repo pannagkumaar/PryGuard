@@ -8,6 +8,7 @@ using PryGuard.Services.Helpers;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using PryGuard.Core.ChromeApi.Settings;
+using CefSharp;
 
 namespace PryGuard.Core.ChromeApi.Model.Configs;
 public class FakeProfileFactory
@@ -402,24 +403,29 @@ public class FakeProfileFactory
 
     public static string GenerateUserAgent(FakeProfile fakeProfile)
     {
+        string baseUserAgent;
+
         if (fakeProfile.OsVersion == EOSVersion.Win10)
         {
-            return "Mozilla/5.0 (" +
+            baseUserAgent = "Mozilla/5.0 (" +
                 GetOSInfo(fakeProfile.OsVersion, fakeProfile.IsX64) +
-                ") AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
-                + ChromeBuildVersion.GetRandValue()
-                + " Safari/537.36";
+                ") AppleWebKit/537.36 (KHTML, like Gecko) Chrome/" +
+                ChromeBuildVersion.GetRandValue() +
+                " Safari/537.36";
         }
         else
         {
-            return "Mozilla/5.0 (" +
+            baseUserAgent = "Mozilla/5.0 (" +
                GetOSInfo(fakeProfile.OsVersion, fakeProfile.IsX64) +
-               ") AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
-               + ChromeBuildVersionWin_7_8_81.GetRandValue()
-               + " Safari/537.36";
+               ") AppleWebKit/537.36 (KHTML, like Gecko) Chrome/" +
+               ChromeBuildVersionWin_7_8_81.GetRandValue() +
+               " Safari/537.36";
         }
-        
+
+        // Append the CefSharp browser version to the user agent
+        return baseUserAgent + " /CefSharp Browser " + Cef.CefSharpVersion;
     }
+
 
     private static string GetX64String(bool isX64)
     {

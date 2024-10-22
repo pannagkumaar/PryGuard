@@ -150,12 +150,15 @@ public class RequestHandler : IRequestHandler
     }
 
     void IRequestHandler.OnRenderProcessTerminated(
-      IWebBrowser browserControl,
-      IBrowser browser,
-      CefTerminationStatus status)
+    IWebBrowser browserControl,
+    IBrowser browser,
+    CefTerminationStatus status,
+    int exitCode,
+    string crashUrl)
     {
         browserControl.Reload();
     }
+
 
     public void OnRenderViewReady(
         IWebBrowser chromiumWebBrowser, 

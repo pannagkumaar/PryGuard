@@ -83,7 +83,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     {
         get => _PryGuardProfilesVM;
         set => Set(ref _PryGuardProfilesVM, value);
-       
+
     }
 
 
@@ -112,7 +112,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
 
     #region Ctor
     public PryGuardProfileSettingsViewModel() { }
-    
+
     public PryGuardProfileSettingsViewModel(PryGuardProfile PryGuardProfile)
     {
         CloseProfileSettingsCommand = new RelayCommand(CloseProfileSettings);
@@ -134,8 +134,8 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             var newFakeProfile = FakeProfileFactory.Generate();
 
             PryGuardProf.FakeProfile = newFakeProfile;
-            
-        
+
+
 
             PryGuardProfilesVM.Setting.SaveSettings();
         }
@@ -146,9 +146,9 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         }
     }
     private void SaveProfile(object arg)
-    {   
+    {
 
-        if (SaveProfileButtonContent == "Create" || SaveProfileButtonContent =="Import")
+        if (SaveProfileButtonContent == "Create" || SaveProfileButtonContent == "Import")
         {
             ViewManager.Close(this);
             PryGuardProfilesVM.ProfileTabs.Add(new ProfileTab(PryGuardProfilesVM)
@@ -178,13 +178,13 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         var profileSelectionWindow = new ProfileSelectionWindow(savedProfiles);
         if (profileSelectionWindow.ShowDialog() == true)
         {
-            
+
             if (PryGuardProfilesVM.Setting.PryGuardProfiles.Any())
             {
                 var lastProfile = PryGuardProfilesVM.Setting.PryGuardProfiles.Last();
                 PryGuardProfilesVM.Setting.PryGuardProfiles.Remove(lastProfile);
 
-                
+
                 var tabToRemove = PryGuardProfilesVM.ProfileTabs.FirstOrDefault(tab => tab.Id == lastProfile.Id);
                 if (tabToRemove != null)
                 {
@@ -192,21 +192,21 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
                 }
             }
 
-            
+
             var importedProfile = PryGuardProfile.ImportFromProfile(profileSelectionWindow.SelectedProfile);
             PryGuardProfilesVM.Setting.PryGuardProfiles.Add(importedProfile);
 
-            
+
             PryGuardProf = importedProfile;
 
-            
+
             SaveProfileButtonContent = "Import";
         }
     }
 
     private async void CheckProxy()
     {
-        var a=PryGuardProf.Proxy.ProxyAddress;
+        var a = PryGuardProf.Proxy.ProxyAddress;
         if (PryGuardProf.Proxy.ProxyAddress == "") return;
         var result = await IpInfoClient.CheckClientProxy(PryGuardProf.Proxy);
         if (result == null)
@@ -223,7 +223,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             TbProxyBrush = Brushes.White;
         }
     }
-   
+
     private void CloseProfileSettings(object arg)
     {
         ViewManager.Close(this);

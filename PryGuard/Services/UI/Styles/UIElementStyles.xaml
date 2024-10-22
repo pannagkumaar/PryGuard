@@ -31,6 +31,11 @@
     Color="{DynamicResource ThemeColorGreen}"
     x:Key="ThemeBrushGreen"/>
 
+    <Color x:Key="ThemeColorYellow" A="255" R="255" G="255" B="0"/>
+    <SolidColorBrush
+    Color="{DynamicResource ThemeColorYellow}"
+    x:Key="ThemeBrushYellow"/>
+
     <Color x:Key="ThemeColorGlowRed" A="255" R="183" G="112" B="112"/>
     <SolidColorBrush
     Color="{DynamicResource ThemeColorGlowRed}"
@@ -40,6 +45,16 @@
     <SolidColorBrush
     Color="{StaticResource BitGray}"
     x:Key="ThemeBrushGray"/>
+
+    <LinearGradientBrush x:Key="ThemeGradientPinkToOrange" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#b31504" />
+        <GradientStop Offset="1" Color="#781e02" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ThemeGradientPastlePinkToOrange" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#FFD1DC" />
+        <GradientStop Offset="1" Color="#FF964F" />
+    </LinearGradientBrush>
 
     <!--#endregion-->
     
@@ -96,7 +111,7 @@
     <!--#endregion-->
 
     <!--#region RadioButton-->
-    <Style x:Key="ThemeRadioBSettingsMainTheme" TargetType="RadioButton">
+    <!--<Style x:Key="ThemeRadioBSettingsMainTheme" TargetType="RadioButton">
         <Setter Property="Height" Value="20"/>
         <Setter Property="Width" Value="80"/>
         <Setter Property="Cursor" Value="Hand"/>
@@ -165,6 +180,106 @@
                                             Storyboard.TargetName="btnForChangeBack"
                                             Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
                                             To="#1E1E1E" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>-->
+    <Style x:Key="ThemeRadioBSettingsMainTheme" TargetType="RadioButton">
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Width" Value="79.2"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        
+        <!-- Adds space between buttons -->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border
+                x:Name="btnForChangeBack"
+                Background="#1E1E1E"
+                BorderBrush="#3C3C3C"
+                BorderThickness="1.5"
+                CornerRadius="3">
+                        <Grid>
+                            <TextBlock 
+                        FontSize="10"
+                        Padding="0"
+                        Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                        AncestorType={x:Type RadioButton}},Path=Content}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="#f04441"
+                        FontWeight="Bold"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <!-- Hover Effect -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation 
+                                    Storyboard.TargetName="btnForChangeBack"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    To="#2e1c1c" Duration="0:0:0.2"/>
+                                        <ColorAnimation 
+                                    Storyboard.TargetName="btnForChangeBack"
+                                    Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                    To="#f04441" Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation 
+                                    Storyboard.TargetName="btnForChangeBack"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    To="#1E1E1E" Duration="0:0:0.2"/>
+                                        <ColorAnimation 
+                                    Storyboard.TargetName="btnForChangeBack"
+                                    Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                    To="#333333" Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <!-- Checked Effect -->
+                        <Trigger Property="IsChecked" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation 
+                                    Storyboard.TargetName="btnForChangeBack"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    To="#441e1e" Duration="0:0:0.2"/>
+                                        <ColorAnimation 
+                                    AutoReverse="True"
+                                    Storyboard.TargetName="btnForChangeBack"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    To="#5c2828" Duration="0:0:0.2"/>
+                                        <ColorAnimation 
+                                    Storyboard.TargetName="btnForChangeBack"
+                                    Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                    To="#f04441" Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard FillBehavior="Stop">
+                                        <ColorAnimation 
+                                    Storyboard.TargetName="btnForChangeBack"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    To="#1E1E1E" Duration="0:0:0.2"/>
+                                        <ColorAnimation 
+                                    Storyboard.TargetName="btnForChangeBack"
+                                    Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                    To="#333333" Duration="0:0:0.2"/>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.ExitActions>
@@ -479,7 +594,7 @@
                         Background="{StaticResource ThemeBrushDarkGrayBlue}" 
                         CornerRadius="3" 
                         BorderThickness="1"
-                        BorderBrush="{StaticResource ThemeBrushLightBlue}">
+                        BorderBrush="#B32321">
                         <Grid Margin="4">
                             <ContentPresenter VerticalAlignment="Top" Grid.Row="1"/>
                         </Grid>
@@ -628,22 +743,43 @@
                 <ColumnDefinition Width="20"/>
             </Grid.ColumnDefinitions>
             <Border 
-                x:Name="Border" 
-                CornerRadius="3" BorderThickness="1" Grid.ColumnSpan="2"
-                Background="{DynamicResource ThemeBrushBlue}"
-                BorderBrush="{DynamicResource ThemeBrushLightBlue}"/>
+            x:Name="Border" 
+            CornerRadius="3" 
+            BorderThickness="1" 
+            Grid.ColumnSpan="2"
+            Background="#80AB1B19"
+            BorderBrush="{DynamicResource ThemeGradientPinkToOrange}"/>
             <Border 
-                Grid.Column="0"
-                Margin="1" BorderThickness="0,0,1,0" CornerRadius="10"
-                Background="{DynamicResource ThemeBrushBlue}" 
-                BorderBrush="{DynamicResource ThemeBrushLightBlue}"/>
+            Grid.Column="0"
+            Margin="1" 
+            BorderThickness="0,0,1,0" 
+            CornerRadius="6"
+            Background="#40AB1B19" 
+            BorderBrush="#60AB1B19"/>
             <Path 
-                x:Name="Arrow" Grid.Column="1"     
-                Fill="{DynamicResource ThemeBrushLightBlue}"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Data="M0,0 L0,2 L4,6 L8,2 L8,0 L4,4 z"/>
+            x:Name="Arrow" 
+            Grid.Column="1"     
+            Fill="{DynamicResource ThemeBrushLightBlue}"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Data="M0,0 L0,2 L4,6 L8,2 L8,0 L4,4 z"/>
         </Grid>
+
+        <ControlTemplate.Triggers>
+            
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Border" Property="Background" Value="#90B32321"/>
+                
+                <Setter TargetName="Border" Property="BorderBrush" Value="#B32321"/>
+                
+                <Setter TargetName="Arrow" Property="Fill" Value="#450909"/>
+                
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Border" Property="Background" Value="Gray"/>
+                <Setter TargetName="Arrow" Property="Fill" Value="DarkGray"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
     </ControlTemplate>
 
     <ControlTemplate x:Key="ComboBoxBrowserToggleButton" TargetType="{x:Type ToggleButton}">
@@ -681,95 +817,108 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ComboBox}">
                     <Grid>
+                        <!-- ToggleButton for dropdown -->
                         <ToggleButton 
-                            Name="ToggleButton" 
-                            Template="{StaticResource ComboBoxToggleButton}" 
-                            Grid.Column="2" Focusable="false" ClickMode="Press"
-                            IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay,
-                            RelativeSource={RelativeSource TemplatedParent}}">
-                        </ToggleButton>
+                        Name="ToggleButton" 
+                        Template="{StaticResource ComboBoxToggleButton}" 
+                        Grid.Column="2" 
+                        Focusable="false" 
+                        ClickMode="Press"
+                        IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay,
+                        RelativeSource={RelativeSource TemplatedParent}}"
+                        Background="#1e1e1e"
+                        BorderBrush="#f04441"
+                        BorderThickness="1"/>
+
+                        <!-- Content presenter -->
                         <ContentPresenter 
-                            Name="ContentSite"
-                            IsHitTestVisible="False" 
-                            Content="{TemplateBinding SelectionBoxItem}"
-                            ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                            ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                            Margin="5,3,23,3"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Left"/>
+                        Name="ContentSite"
+                        IsHitTestVisible="False" 
+                        Content="{TemplateBinding SelectionBoxItem}"
+                        ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                        ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                        Margin="5,3,23,3"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                    />
+
+                        <!-- Editable TextBox when ComboBox is in edit mode -->
                         <TextBox 
-                            x:Name="PART_EditableTextBox"
-                            Style="{x:Null}" 
-                            Template="{StaticResource ComboBoxTextBox}" 
-                            HorizontalAlignment="Left" 
-                            VerticalAlignment="Center" 
-                            Margin="3,3,23,3"
-                            Focusable="True" 
-                            Visibility="Hidden"
-                            IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                        x:Name="PART_EditableTextBox"
+                        Style="{x:Null}" 
+                        Template="{StaticResource ComboBoxTextBox}" 
+                        HorizontalAlignment="Left" 
+                        VerticalAlignment="Center" 
+                        Margin="3,3,23,3"
+                        Focusable="True" 
+                        Visibility="Hidden"
+                        IsReadOnly="{TemplateBinding IsReadOnly}"/>
+
+                        <!-- Popup for dropdown content -->
                         <Popup 
-                            Name="Popup"
-                            Placement="Bottom"
-                            IsOpen="{TemplateBinding IsDropDownOpen}"
-                            AllowsTransparency="True" 
-                            Focusable="False"
-                            PopupAnimation="Slide">
+                        Name="Popup"
+                        Placement="Bottom"
+                        IsOpen="{TemplateBinding IsDropDownOpen}"
+                        AllowsTransparency="True" 
+                        Focusable="False"
+                        PopupAnimation="Slide">
                             <Grid
-                                Name="DropDown"
-                                SnapsToDevicePixels="True"                
-                                MinWidth="{TemplateBinding ActualWidth}"
-                                MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                            Name="DropDown"
+                            SnapsToDevicePixels="True"                
+                            MinWidth="{TemplateBinding ActualWidth}"
+                            MaxHeight="{TemplateBinding MaxDropDownHeight}">
                                 <Border 
-                                    x:Name="DropDownBorder"
-                                    Background="{DynamicResource ThemeBrushBlue}"
-                                    BorderThickness="1"
-                                    BorderBrush="{DynamicResource ThemeBrushGlowBlue}"/>
+                                x:Name="DropDownBorder"
+                                Background="#1e1e1e"
+                                BorderThickness="1"
+                                BorderBrush="#f04441"
+                                CornerRadius="5"/>
                                 <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
                                     <StackPanel
-                                        IsItemsHost="True"
-                                        KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                    IsItemsHost="True"
+                                    KeyboardNavigation.DirectionalNavigation="Contained"/>
                                 </ScrollViewer>
                             </Grid>
                         </Popup>
                     </Grid>
+
+                    <!-- ControlTemplate Triggers for different states -->
                     <ControlTemplate.Triggers>
+                        <!-- When ComboBox is empty -->
                         <Trigger Property="HasItems" Value="false">
-                            <Setter 
-                                TargetName="DropDownBorder"
-                                Property="MinHeight" Value="95"/>
+                            <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
                         </Trigger>
+
+                        <!-- When ComboBox is disabled -->
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter
-                                Property="Foreground" 
-                                Value="{DynamicResource ThemeBrushBlue}"/>
+                            <Setter Property="Foreground" Value="#888"/>
                         </Trigger>
-                        <Trigger Property="IsGrouping" Value="true">
-                            <Setter 
-                                Property="ScrollViewer.CanContentScroll"
-                                Value="false"/>
-                        </Trigger>
-                        <Trigger SourceName="Popup" Property="Popup.AllowsTransparency" Value="true">
-                            <Setter
-                                TargetName="DropDownBorder"
-                                Property="CornerRadius" Value="0"/>
-                            <Setter 
-                                TargetName="DropDownBorder"
-                                Property="Margin" Value="0,2,0,0"/>
-                        </Trigger>
+
+                        <!-- When ComboBox is editable -->
                         <Trigger Property="IsEditable" Value="true">
                             <Setter Property="IsTabStop" Value="false"/>
-                            <Setter 
-                                TargetName="PART_EditableTextBox"
-                                Property="Visibility" Value="Visible"/>
-                            <Setter 
-                                TargetName="ContentSite"
-                                Property="Visibility" Value="Hidden"/>
+                            <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+                        </Trigger>
+
+                        <!-- Hover effect for ComboBox button -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ToggleButton" Property="Background" Value="#2e1c1c"/>
+                            <Setter TargetName="ToggleButton" Property="BorderBrush" Value="#f04441"/>
+                        </Trigger>
+
+                        <!-- Checked effect for dropdown open -->
+                        <Trigger Property="IsDropDownOpen" Value="True">
+                            <Setter TargetName="DropDownBorder" Property="Background" Value="#441e1e"/>
+                            <Setter TargetName="DropDownBorder" Property="BorderBrush" Value="#f04441"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
+
+
     <!--#endregion-->
 
     <!--#region TextBox-->
@@ -784,67 +933,63 @@
                 <ControlTemplate TargetType="TextBox">
                     <Grid SnapsToDevicePixels="True">
                         <Border 
-                            x:Name="root" CornerRadius="3"
-                            Background="{DynamicResource ThemeBrushBlue}"
-                            BorderBrush="{DynamicResource ThemeBrushLightBlue}"
-                            BorderThickness="1">
+                        x:Name="root" 
+                        CornerRadius="3"
+                        Background="#60AB1B19" 
+                        BorderBrush="#f04441"
+                        BorderThickness="1">
                             <Grid>
                                 <TextBlock 
-                                    x:Name="PlaceholderTb" Margin="5,0,0,0" 
-                                    Text="{TemplateBinding Tag}" VerticalAlignment="Center"
-                                    Visibility="Collapsed" Foreground="Gray">
-                                </TextBlock>
-                                <ScrollViewer 
-                                    x:Name="PART_ContentHost"
-                                    TextElement.Foreground="{DynamicResource ThemeBrushGlowBlue}"
-                                    Background="{x:Null}">
-                                </ScrollViewer>
-                            </Grid>
+                                x:Name="PlaceholderTb" 
+                                Margin="5,0,0,0" 
+                                Text="{TemplateBinding Tag}" 
+                                VerticalAlignment="Center"
+                                Visibility="Visible" 
+                                Foreground="Gray"/>
+                            <ScrollViewer 
+                                x:Name="PART_ContentHost"
+                                TextElement.Foreground="White" 
+                                Background="{x:Null}"/>
+                        </Grid>
                         </Border>
                     </Grid>
-                    <ControlTemplate.Resources>
-                        <Storyboard x:Key="OnHover">
-                            <ColorAnimation
-                                To="{StaticResource ThemeColorGlowRed}"
-                                Storyboard.TargetName="root" 
-                                Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" 
-                                Duration="0:0:0.1">
-                            </ColorAnimation>
-                        </Storyboard>
-                        <Storyboard x:Key="OnUnhover">
-                            <ColorAnimation 
-                                To="{StaticResource ThemeColorLightRed}"
-                                Storyboard.TargetName="root" 
-                                Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" 
-                                Duration="0:0:0.1">
-                            </ColorAnimation>
-                        </Storyboard>
-                    </ControlTemplate.Resources>
+
                     <ControlTemplate.Triggers>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="Text" Value=""/>
-                            </MultiTrigger.Conditions>
-                            <Setter Property="Visibility" TargetName="PlaceholderTb" Value="Visible"/>
-                            <MultiTrigger.ExitActions>
-                                <BeginStoryboard 
-                                    Storyboard="{StaticResource OnUnhover}"
-                                    x:Name="OnUnhover_BeginStoryboard"/>
-                            </MultiTrigger.ExitActions>
-                            <MultiTrigger.EnterActions>
-                                <BeginStoryboard
-                                    Storyboard="{StaticResource OnHover}"
-                                    x:Name="OnHover_BeginStoryboard"/>
-                            </MultiTrigger.EnterActions>
-                        </MultiTrigger>
+                        
+                        <Trigger Property="Text" Value="">
+                            <Setter TargetName="PlaceholderTb" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter TargetName="PlaceholderTb" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="DimGray"/>
+                        </Trigger>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter Property="Background" TargetName="root" Value="#70f04441"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" TargetName="root" Value="#90890505"/>
+                            <Setter Property="BorderBrush" TargetName="root" Value="#DD3835"/>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter Property="Background" TargetName="root" Value="#890505"/>
+                            <Setter Property="BorderBrush" TargetName="root" Value="#DD3835"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
+
+
+
+
+
+
+
+
 
     <Style x:Key="ThemeTextBoxInHistoryItem" TargetType="{x:Type TextBox}">
         <Setter Property="Foreground" Value="White"/>

@@ -7,18 +7,23 @@ using System.Threading.Tasks;
 using PryGuard.Services.Commands;
 using PryGuard.Services.Settings;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace PryGuard.ViewModel;
 public class PryGuardProfilesViewModel : BaseViewModel
 {
+    private bool _isWindowMaximized = false;
+
     #region Commands
     public RelayCommand CloseAppCommand { get; private set; }
     public RelayCommand CreateProfileCommand { get; private set; }
+    public RelayCommand ToggleWindowStateCommand { get; private set; }
     public RelayCommand StartProfileCommand { get; private set; }
     public RelayCommand EditProfileCommand { get; private set; }
     public RelayCommand DeleteProfileCommand { get; private set; }
     public RelayCommand RefreshProfilesCommand { get; private set; }
     public RelayCommand ChangeWindowStateCommand { get; private set; }
+    public RelayCommand MaximizeWindowStateCommand { get; private set; }
     #endregion
 
     #region Properties
@@ -35,6 +40,13 @@ public class PryGuardProfilesViewModel : BaseViewModel
         get => _windowState;
         set => Set(ref _windowState, value);
     }
+
+    public bool IsWindowMaximized
+    {
+        get => _isWindowMaximized;
+        set => Set(ref _isWindowMaximized, value);
+    }
+
     private string _searchTerm;
     public string SearchTerm
     {
@@ -79,6 +91,8 @@ public class PryGuardProfilesViewModel : BaseViewModel
     {
         CreateProfileCommand = new RelayCommand(CreateProfile);
         ChangeWindowStateCommand = new RelayCommand(CloseWindowState);
+        MaximizeWindowStateCommand = new RelayCommand(MaximizeWindowState);
+        ToggleWindowStateCommand = new RelayCommand(ToggleWindowState);
         CloseAppCommand = new RelayCommand(CloseApp);
         StartProfileCommand = new RelayCommand(StartProfile);
         EditProfileCommand = new RelayCommand(EditProfile);
@@ -171,6 +185,18 @@ public class PryGuardProfilesViewModel : BaseViewModel
             });
         }
     }
+    public void MoveProfile(ProfileTab sourceProfile, ProfileTab targetProfile)
+    {
+        var sourceIndex = ProfileTabs.IndexOf(sourceProfile);
+        var targetIndex = ProfileTabs.IndexOf(targetProfile);
+
+        if (sourceIndex != -1 && targetIndex != -1 && sourceIndex != targetIndex)
+        {
+            ProfileTabs.Move(sourceIndex, targetIndex);
+            // Save the new order to your settings if needed
+            Setting.SaveSettings();
+        }
+    }
 
     public void LoadTabs()
     {
@@ -198,5 +224,30 @@ public class PryGuardProfilesViewModel : BaseViewModel
     {
         Environment.Exit(0);
     }
+
+    private void MaximizeWindowState()
+    {
+        WindowState = WindowState.Maximized;
+        IsWindowMaximized = true;
+    }
+
+    private void RestoreWindowState()
+    {
+        WindowState = WindowState.Normal;
+        IsWindowMaximized = false;
+    }
+
+    private void ToggleWindowState()
+    {
+        if (IsWindowMaximized)
+        {
+            RestoreWindowState();
+        }
+        else
+        {
+            MaximizeWindowState();
+        }
+    }
+
     #endregion
 }

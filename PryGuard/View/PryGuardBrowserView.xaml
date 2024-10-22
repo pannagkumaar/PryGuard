@@ -6,6 +6,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:panel="clr-namespace:PryGuard.Services.UI.Panel"
         xmlns:vm="clr-namespace:PryGuard.ViewModel"
+        xmlns:views="clr-namespace:PryGuard.View"
         
 
         mc:Ignorable="d"
@@ -322,24 +323,86 @@
                 Height="24" Width="24"
                 x:Name="sTBrowsSettings">
                 <StackPanel.ContextMenu>
-                    <ContextMenu Style="{StaticResource ThemeContextMenu}">
-                        <MenuItem
-                            Style="{StaticResource ThemeMenuItem}" 
-                            Command="{Binding OpenHistoryCommand}"
-                            Header="History"/>
-                        <MenuItem 
-                            Style="{StaticResource ThemeMenuItem}" 
-                            Command="{Binding AddTabCommand}"
-                            Header="Add Tab"/>
+                    <ContextMenu
+                        Style="{StaticResource ThemeContextMenu}"
+                        DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding OpenHistoryCommand}">
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image
+                            Margin="0,0,8,0"
+                            Width="16" Height="16"
+                            Source="{StaticResource HistoryBrowserIcon}"/>
+                                    <TextBlock Text="History"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding AddTabCommand}">
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image 
+                            Margin="0,0,8,0"
+                            Width="16" Height="16"
+                            Source="{StaticResource NewTabBrowserIcon}"/>
+                                    <TextBlock Text="Add Tab"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding AddTabCommand}">
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image
+                            Margin="0,0,8,0"
+                            Width="16" Height="16"
+                            Source="{StaticResource PasswordManagerIcon}"/>
+                                    <TextBlock Text="Email-Password Manager"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem Style="{StaticResource ThemeMenuItem}">
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image
+                            Margin="0,0,8,0"
+                            Width="16" Height="16"
+                            Source="{StaticResource BookmarkIcon}"/>
+                                    <TextBlock Text="Bookmark"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding DeleteHistoryCommand}">
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image
+                            Margin="0,0,8,0"
+                            Width="16" Height="16"
+                            Source="{StaticResource DeleteBrowsingHistoryIcon}"/>
+                                    <TextBlock Text="Delete Browsing History"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding CloseCommand}">
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image
+                            Margin="0,0,8,0"
+                            Width="16" Height="16"
+                            Source="{StaticResource ExitIcon}"/>
+                                    <TextBlock Text="Exit"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
                     </ContextMenu>
                 </StackPanel.ContextMenu>
+
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                         <i:InvokeCommandAction
-                            Command="{Binding OpenContextMenuSettingsCommand}" 
-                            CommandParameter="{Binding ElementName=sTBrowsSettings}"/>
+                Command="{Binding OpenContextMenuSettingsCommand}" 
+                CommandParameter="{Binding ElementName=sTBrowsSettings}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
+
                 <Border Height="24" Width="24" Style="{StaticResource BorderForBrowserButtons}">
                     <Image 
                         Margin="0,1,8,0"
@@ -347,6 +410,7 @@
                         Source="{StaticResource DotsBrowserImage}"/>
                 </Border>
             </StackPanel>
+
 
             <!--StackPanel for "Bookmarks"-->
             <ItemsControl

@@ -6,53 +6,59 @@ using PryGuard.Core.ChromeApi.Model.Configs;
 using PryGuard.Core.ChromeApi.Settings;
 using PryGuard.Model;
 
-namespace PryGuard.Core.ChromeApi;
-public static class ChromiumInit
+namespace PryGuard.Core.ChromeApi
 {
-    public static void Init(PryGuardProfile PryGuardProfileToStart)
+    public static class ChromiumInit
     {
-        // CefSharpSettings.LegacyJavascriptBindingEnabled = true;
-        CefSharpSettings.SubprocessExitIfParentProcessClosed = true;
-        CefSharpSettings.ShutdownOnExit = true;
-        // CefSharpSettings.ConcurrentTaskExecution = true;
-        var cefSettings = new CefSettings();
-       // cefSettings.LocalesDirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "locales");
-        cefSettings.Locale = PryGuardProfileToStart.FakeProfile.CurrentChromeLanguage.ToLocal();
-        cefSettings.UserAgent = PryGuardProfileToStart.FakeProfile.UserAgent;
-        // if (!cefSettings.CefCommandLineArgs.ContainsKey("disable-gpu"))
-        //cefSettings.CefCommandLineArgs.Add("disable-gpu", "1");
-        ///cefSettings.RootCachePath = ClientConfig.ChromeDataPath;
-        if (cefSettings.CefCommandLineArgs.ContainsKey("enable-media-stream"))
-            cefSettings.CefCommandLineArgs.Remove("enable-media-stream");
-        cefSettings.DisableGpuAcceleration();
-        cefSettings.CommandLineArgsDisabled = true;
-        cefSettings.PersistSessionCookies = true;
-        cefSettings.PersistUserPreferences = true;
-        ///if (!appsettings.IsLoadImage)
-        ///    cefSettings.CefCommandLineArgs.Add("disable-image-loading", "1");
-        cefSettings.CefCommandLineArgs.Remove("disable-cache-settings=0");
-        cefSettings.CefCommandLineArgs.Add("disable-gpu=1");
-        cefSettings.CefCommandLineArgs.Add("disable-gpu-vsync=1");
-        cefSettings.CefCommandLineArgs.Add("disable-gpu-compositing=1");
+        public static void Init(PryGuardProfile PryGuardProfileToStart)
+        {
+            // Ensuring subprocess is closed if the parent process is terminated
+            CefSharpSettings.SubprocessExitIfParentProcessClosed = true;
+            CefSharpSettings.ShutdownOnExit = true;
 
-        cefSettings.CefCommandLineArgs.Add("enable-webgl-draft-extensions=1");
-        cefSettings.CefCommandLineArgs.Add("enable-webgl=1");
-        cefSettings.CefCommandLineArgs.Add("enable-media-stream=0");
-        // cefSettings.CefCommandLineArgs.Add("shared-texture-enabled=0");
-        // cefSettings.CefCommandLineArgs.Add("force-device-scale-factor=1");
-        // cefSettings.CefCommandLineArgs.Add("disable-pinch=1");
-        // cefSettings.CefCommandLineArgs.Add("disable-notifications");
-        cefSettings.CefCommandLineArgs.Add("mute-audio=1");
-        cefSettings.CefCommandLineArgs.Add("ignore-certificate-errors=1");
-        cefSettings.CefCommandLineArgs.Add("js-flags=--max_old_space_size=5000");
-        // cefSettings.CefCommandLineArgs.Add("disable-features=sparerendererforsiteperprocess");
-        // cefSettings.CefCommandLineArgs.Add("enable-features=CastMediaRouteProvider");
-        // cefSettings.CefCommandLineArgs.Add("disable-features=CalculateNativeWinOcclusion");
-        // cefSettings.CefCommandLineArgs.Add("uncaught-exception-stack-size=10");
-        ///cefSettings.LogFile = Path.Combine(ClientConfig.ChromeDataPath, "Log.txt");
-        cefSettings.LogSeverity = LogSeverity.Error;
-        cefSettings.IgnoreCertificateErrors = true;
-        if (!Cef.IsInitialized && !Cef.Initialize(cefSettings))
-            throw new ArgumentException("Chrome is not initialized");
+            var cefSettings = new CefSettings
+            {
+                Locale = PryGuardProfileToStart.FakeProfile.CurrentChromeLanguage.ToLocal(),
+                UserAgent = PryGuardProfileToStart.FakeProfile.UserAgent,
+                PersistSessionCookies = true,
+                LogSeverity = LogSeverity.Error
+            };
+
+
+            // Disable GPU Acceleration for stability
+            cefSettings.DisableGpuAcceleration();
+
+            // Ensure there are no conflicting command-line arguments
+            if (!cefSettings.CefCommandLineArgs.ContainsKey("disable-gpu"))
+            {
+                cefSettings.CefCommandLineArgs.Add("disable-gpu", "1");
+            }
+
+            cefSettings.CefCommandLineArgs.Add("disable-gpu-vsync", "1");
+            cefSettings.CefCommandLineArgs.Add("disable-gpu-compositing", "1");
+
+            // WebGL and media stream settings
+            cefSettings.CefCommandLineArgs.Add("enable-webgl-draft-extensions", "1");
+            cefSettings.CefCommandLineArgs.Add("enable-webgl", "1");
+            cefSettings.CefCommandLineArgs.Add("enable-media-stream", "0");
+
+            // Memory and audio settings
+            cefSettings.CefCommandLineArgs.Add("mute-audio", "1");
+            cefSettings.CefCommandLineArgs.Add("js-flags", "--max_old_space_size=5000");
+
+            // Handle ignoring certificate errors for smoother browsing
+            cefSettings.CefCommandLineArgs.Add("ignore-certificate-errors", "1");
+
+            // Initialize Cef if not already initialized
+            if (!Cef.IsInitialized.GetValueOrDefault())
+            {
+                // Perform dependency check and initialize browser context
+                if (!Cef.Initialize(cefSettings, performDependencyCheck: true, browserProcessHandler: null))
+                {
+                    throw new ArgumentException("Chrome is not initialized");
+                }
+            }
+
+        }
     }
 }

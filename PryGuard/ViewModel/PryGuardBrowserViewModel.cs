@@ -20,10 +20,15 @@ using PryGuard.Core.ChromeApi.Proxy;
 using System.Collections.ObjectModel;
 using PryGuard.Core.ChromeApi.Handlers;
 using PryGuard.Services.UI.ListView.ListViewItem;
+using System.Data.SQLite;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
+using System.Windows.Media;
+using PryGuard.View;
+using CefSharp.Wpf;
 
 namespace PryGuard.ViewModel;
+
 public class PryGuardBrowserViewModel : BaseViewModel
 {
     #region Fields
@@ -63,6 +68,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public RelayCommand BackCommand { get; private set; }
     public RelayCommand OpenHistoryCommand { get; private set; }
     public RelayCommand LoadHistoryLinkCommand { get; private set; }
+    public RelayCommand DeleteHistoryCommand { get; private set; }
     public RelayCommand AddressOnKeyDownCommand { get; private set; }
     public RelayCommand OpenContextMenuSettingsCommand { get; private set; }
     public DelegateCommand CloseCommand =>
@@ -73,6 +79,18 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
     #endregion
 
+    private string _cookies;
+    public string Cookies
+    {
+        get => _cookies;
+        set
+        {
+            if (_cookies == value)
+                return;
+            _cookies = value;
+            OnPropertyChanged(nameof(Cookies));
+        }
+    }
     #region Properties
     private CustomTabItem _currentTabItem;
     public CustomTabItem CurrentTabItem
@@ -83,12 +101,17 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private BookmarkManager _bookmarkManager;
 
     public ObservableCollection<Bookmark> Bookmarks => _bookmarkManager?.Bookmarks;
-    private ObservableCollection<PryGuardHistoryItem> _PryGuardHistoryList;
+
+
+    private ObservableCollection<PryGuardHistoryItem> _pryGuardHistoryList;
+
     public ObservableCollection<PryGuardHistoryItem> PryGuardHistoryList
     {
-        get => _PryGuardHistoryList;
-        set => Set(ref _PryGuardHistoryList, value);
+        get => _pryGuardHistoryList;
+        set => Set(ref _pryGuardHistoryList, value);
     }
+
+
 
     private string _address;
     public string Address
@@ -149,6 +172,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         OpenBookmarkCommand = new RelayCommand<Bookmark>(OpenBookmark);
         MinimizeWindowCommand = new RelayCommand(MinimizedWindow);
         MaximizeWindowCommand = new RelayCommand(MaximizedWindow);
+        DeleteHistoryCommand = new RelayCommand(DeleteHistory);
         NormalStateWindowCommand = new RelayCommand(NormalStateWindow);
         AddTabCommand = new RelayCommand(AddTab);
         OpenTabCommand = new RelayCommand(OpenTab);
@@ -161,6 +185,9 @@ public class PryGuardBrowserViewModel : BaseViewModel
         LoadHistoryLinkCommand = new RelayCommand(LoadHistoryLink);
         OpenHistoryCommand = new RelayCommand(AddTabHistory);
         OpenContextMenuSettingsCommand = new RelayCommand(OpenContextMenuSettings);
+
+
+
 
         try
         {
@@ -183,8 +210,24 @@ public class PryGuardBrowserViewModel : BaseViewModel
     {
         PryGuardBrowser browser = await CreateBrowser(isNewPage, _mainIDCounter, _PryGuardProfileToStart);
         _browsers.Add(browser);
+        if (browser.IsBrowserInitialized)
+        {
+            await ParseAndInsertCookies(_PryGuardProfile.Cookies, _PryGuardProfile, browser);
+        }
+        else
+        {
+            browser.IsBrowserInitializedChanged += async (s, e) =>
+            {
+                if (browser.IsBrowserInitialized)
+                {
+                    await ParseAndInsertCookies(_PryGuardProfile.Cookies, _PryGuardProfile, browser);
+                }
+            };
+        }
+
         return browser;
     }
+
     private async Task<PryGuardBrowser> CreateBrowser(bool isNewPage, object id, PryGuardProfile PryGuardProfile)
     {
         if (!isNewPage)
@@ -216,7 +259,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
                 _requestContextSettings.CachePath = str2;
                 _PryGuardProfile.CachePath = Path.Combine(tempPath, path2);
                 _requestContextSettings.PersistSessionCookies = false;
-                _requestContextSettings.PersistUserPreferences = false;
+                
             }
 
             _context = new RequestContext(_requestContextSettings);
@@ -256,9 +299,14 @@ public class PryGuardBrowserViewModel : BaseViewModel
         var PryGuardBrowser = new PryGuardBrowser(_context);
         PryGuardBrowser.LifeSpanHandler = _lifespanHandler;
         PryGuardBrowser.IsBrowserInitializedChanged += PryGuardBrowser_IsBrowserInitializedChanged;
+
+        // Ensure JavaScript is enabled
+        PryGuardBrowser.BrowserSettings.Javascript = CefState.Enabled;  // <-- Added this line
+
         PryGuardBrowser.BrowserSettings.ImageLoading = PryGuardProfile.IsLoadImage ? CefState.Enabled : CefState.Disabled;
         PryGuardBrowser.BrowserSettings.RemoteFonts = CefState.Enabled;
         PryGuardBrowser.BrowserSettings.JavascriptCloseWindows = CefState.Disabled;
+
         if (isNewPage)
         {
             var codeForFakeProfile = _nativeManager.GetCodeForFakeProfile("fakeinject", PryGuardProfile.FakeProfile);
@@ -272,10 +320,12 @@ public class PryGuardBrowserViewModel : BaseViewModel
             PryGuardBrowser.RenderProcessMessageHandler = _renderMessageHandler;
             PryGuardBrowser.LoadHandler = _loadHandler;
         }
+
         PryGuardBrowser.RequestHandler = _requestHandler;
         PryGuardBrowser.JavascriptObjectRepository.Settings.JavascriptBindingApiEnabled = false;
         PryGuardBrowser.JavascriptObjectRepository.Settings.LegacyBindingEnabled = true;
         PryGuardBrowser.JavascriptObjectRepository.NameConverter = new MyCamelCaseNameConverter();
+
         PryGuardBrowser.JavascriptObjectRepository.Register(
             "worker",
             _jsWorker,
@@ -283,12 +333,107 @@ public class PryGuardBrowserViewModel : BaseViewModel
             {
                 Binder = new DefaultBinder(new MyCamelCaseNameConverter())
             });
+
         ExecGeoScript(PryGuardBrowser);
 
         PryGuardBrowser.Tag = id;
-        PryGuardBrowser.Address = "https://google.com/";
+        PryGuardBrowser.Address = "https://www.youtube.com/watch?v=UoONA8VmOvQ&feature=youtu.be";
+
         return PryGuardBrowser;
     }
+
+    private async Task ParseAndInsertCookies(string cookiesInput, PryGuardProfile pryGuardProfile, ChromiumWebBrowser browser)
+    {
+        if (string.IsNullOrWhiteSpace(cookiesInput))
+            return;
+
+        // Get the CookieManager from the global context
+        var cookieManager = browser.GetCookieManager();
+
+        // Each cookie should be on a new line
+        string[] cookiesLines = cookiesInput.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+
+        foreach (var cookieLine in cookiesLines)
+        {
+            if (string.IsNullOrWhiteSpace(cookieLine))
+                continue;
+
+            // Parse each cookie format "CookieName=CookieValue; Domain=http://localhost:8000"
+            var parts = cookieLine.Split(';');
+            if (parts.Length != 2)
+            {
+                // Invalid format, skip
+                continue;
+            }
+
+            var cookieParts = parts[0].Split('=');
+            if (cookieParts.Length != 2)
+            {
+                // Invalid format, skip
+                continue;
+            }
+
+            string cookieName = cookieParts[0].Trim();
+            string cookieValue = cookieParts[1].Trim();
+            string domainInfo = parts[1].Replace("Domain=", "").Trim();
+
+            // Extract protocol and domain from the domainInfo
+            Uri uri;
+
+            try
+            {
+                // Create a Uri to extract components
+                uri = new Uri(domainInfo);
+            }
+            catch (UriFormatException)
+            {
+                // Invalid format, skip
+                continue;
+            }
+
+            string protocol = uri.Scheme; 
+            string domain = uri.Host;
+            int port = uri.Port;
+
+           
+            if (port == -1)
+            {
+                port = protocol == "https" ? 443 : 80;
+            }
+
+            
+            string url = $"{protocol}://{domain}:{port}";
+
+           
+            var cookie = new Cookie
+            {
+                Name = cookieName,
+                Value = cookieValue,
+                Domain = domain, 
+                Path = "/",
+                Expires = DateTime.UtcNow.AddYears(1), 
+                Secure = (protocol == "https"), 
+                HttpOnly = false, 
+            };
+
+            
+            bool success = await cookieManager.SetCookieAsync(url, cookie);
+
+           
+            await cookieManager.FlushStoreAsync();
+
+            if (!success)
+            {
+                Console.WriteLine($"Failed to set cookie for domain: {domain}");
+            }
+        }
+    }
+
+
+
+
+
+
     private void ExecGeoScript(PryGuardBrowser PryGuardBrowser)
     {
         double latitude;
@@ -351,8 +496,8 @@ public class PryGuardBrowserViewModel : BaseViewModel
     }
     private void ProfileFail() { }
     private async void PryGuardBrowser_IsBrowserInitializedChanged(
-        object sender,
-        DependencyPropertyChangedEventArgs e)
+    object sender,
+    DependencyPropertyChangedEventArgs e)
     {
         if (!(bool)e.NewValue)
         {
@@ -363,25 +508,22 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
         using (var client = browser.GetDevToolsClient())
         {
-            var canEmu = await client.Emulation.CanEmulateAsync();
-            if (canEmu.Result)
+            // Removing the CanEmulateAsync check and proceeding directly with emulation
+            await client.Emulation.SetUserAgentOverrideAsync(_PryGuardProfile.FakeProfile.UserAgent);
+            await client.Emulation.SetLocaleOverrideAsync(_PryGuardProfile.FakeProfile.ChromeLanguageInfo.Locale);
+
+            if (_PryGuardProfile.Proxy.IsProxyAuth)
             {
-
-                //await client.Emulation.SetDeviceMetricsOverrideAsync(_PryGuardProfile.FakeProfile.ScreenSize.Width, _PryGuardProfile.FakeProfile.ScreenSize.Height, 1, false);
-                await client.Emulation.SetUserAgentOverrideAsync(_PryGuardProfile.FakeProfile.UserAgent);
-                await client.Emulation.SetLocaleOverrideAsync(_PryGuardProfile.FakeProfile.ChromeLanguageInfo.Locale);
-                if (_PryGuardProfile.Proxy.IsProxyAuth)
+                if (_proxyInfo == null)
                 {
-                    if (_proxyInfo == null)
-                    {
-                        MessageBox.Show("PROXY DONT WORK!");
-                    }
-
-                    await client.Emulation.SetTimezoneOverrideAsync(_proxyInfo.Timezone);
+                    MessageBox.Show("PROXY DOESN'T WORK!");
                 }
+
+                await client.Emulation.SetTimezoneOverrideAsync(_proxyInfo.Timezone);
             }
         }
     }
+
 
     private void Browser_TitleChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
@@ -444,37 +586,61 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private void Browser_LoadingStateChanged(object? sender, LoadingStateChangedEventArgs e)
     {
     }
+
     #endregion
 
     #region HistoryWork
+
+    private void DeleteHistory()
+    {
+        var result = MessageBox.Show("Are you sure you want to delete all browsing history?",
+                                     "Confirm Deletion",
+                                     MessageBoxButton.YesNo,
+                                     MessageBoxImage.Warning);
+
+        if (result == MessageBoxResult.Yes)
+        {
+            PryGuardHistoryList.Clear();
+
+            var doc = JsonSerializer.Serialize(PryGuardHistoryList);
+
+            using (StreamWriter writer = new(_profileHistoryPath))
+            {
+                writer.Write(doc);
+                writer.Close();
+            }
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                _listView.Items.Clear();
+            });
+        }
+        // If the user clicks 'No', do nothing
+    }
+
     private void SaveHistoryJson(string address, string desc)
     {
         if (!File.Exists(_profileHistoryPath))
         {
-            // Ensure the file is created if it doesn't exist
             File.Create(_profileHistoryPath).Close();
         }
 
         Task.Run(() =>
         {
-            // Create a history item with the current date including the year
             var hist = new PryGuardHistoryItem(DateTime.Now.ToString("yyyy/MM/dd HH:mm"),
                 desc, address.Replace("https://", ""));
 
-            // Insert the new history item at the start of the list
-            PryGuardHistoryList.Insert(0, hist);
-
-            // Serialize the history list to JSON
+            // Write to the JSON file in the background thread
             var doc = JsonSerializer.Serialize(PryGuardHistoryList);
-
-            // Write the serialized data to the file
             using StreamWriter writer = new(_profileHistoryPath);
             writer.Write(doc);
             writer.Close();
 
             // Update the UI on the main thread
-            Application.Current.Dispatcher.Invoke(delegate
+            Application.Current.Dispatcher.Invoke(() =>
             {
+                // Insert history item into the ObservableCollection on the UI thread
+                PryGuardHistoryList.Insert(0, hist);
+
                 var listBoxItem = new ListViewItem();
 
                 // Set properties for the list box item
@@ -482,10 +648,13 @@ public class PryGuardBrowserViewModel : BaseViewModel
                 ListViewItemProperties.SetDescHistory(listBoxItem, hist.Description);
                 ListViewItemProperties.SetLinkPreview(listBoxItem, hist.Link[..hist.Link.IndexOf('/')]);
                 ListViewItemProperties.SetFullLink(listBoxItem, hist.Link);
+
+                // Insert into the ListView on the UI thread
                 _listView.Items.Insert(0, listBoxItem);
             });
         });
     }
+
 
     private void LoadHistoryJson()
     {
@@ -496,6 +665,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         reader.Close();
         PryGuardHistoryList = JsonSerializer.Deserialize<ObservableCollection<PryGuardHistoryItem>>(JsonNode.Parse(json).ToString());
     }
+
     private void LoadHistoryLink(object link)
     {
         AddTab();
@@ -509,63 +679,65 @@ public class PryGuardBrowserViewModel : BaseViewModel
             button.ContextMenu.IsOpen = true;
         }
     }
-
-    private void AddListViewItem(PryGuardHistoryItem item)
-    {
-        Application.Current.Dispatcher.Invoke((Action)delegate
-        {
-            var listBoxItem = new ListViewItem();
-
-            ListViewItemProperties.SetTimeHistory(listBoxItem, item.Time);
-            ListViewItemProperties.SetDescHistory(listBoxItem, item.Description);
-            ListViewItemProperties.SetLinkPreview(listBoxItem, item.Link[..item.Link.IndexOf('/')]);
-            ListViewItemProperties.SetFullLink(listBoxItem, item.Link);
-            _listView.Items.Add(listBoxItem);
-        });
-    }
-    private async void LoadHistoryAsListView()
-    {
-        _listView.Items.Clear();
-        Task.Run(() =>
-        {
-            foreach (var item in PryGuardHistoryList)
-            {
-                AddListViewItem(item);
-            }
-        });
-    }
     #endregion
 
     #region Tab Work
     private async void AddTabHistory()
     {
-        if (PryGuardHistoryList.Count == 0) { return; }
-
-        Tabs.Add(new CustomTabItem() { Tag = _mainIDCounter, Content = _listView });
-        CurrentTabItem = Tabs.Last();
-        Address = "PryGuard://history/";
-        var button = new Label
+        Application.Current.Dispatcher.Invoke(() =>
         {
-            Content = "History",
-            AllowDrop = true,
-            Tag = _mainIDCounter
-        };
-        button.DragEnter += BtnTabDragEnter;
-        button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
+            PryGuardHistoryList.Add(new PryGuardHistoryItem("2024/09/21 10:30", "Test Description", "www.google.com"));
+            // Create and add the tab
+            var newTab = new CustomTabItem
+            {
+                Tag = _mainIDCounter,
+                Content = new HistoryView()
+                {
+                    DataContext = this
+                }
+            };
+            Tabs.Add(newTab);
+            CurrentTabItem = newTab;
+            Address = "PryGuard://history/";
+            
+            // Load history when the tab is created
+            LoadHistoryJson(); // Ensure history is loaded
 
-        if (_mainIDCounter == 0) { TabBtnsAndAddTabBtn.Insert(0, button); }
-        else { TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button); }
+            // Create and add the button for the tab
+            Label button = new Label
+            {
+                Content = "History",
+                AllowDrop = true,
+                Tag = _mainIDCounter
+            };
+            button.DragEnter += BtnTabDragEnter;
+            button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
 
-        _mainIDCounter++;
-        LoadHistoryAsListView();
+            // Add the button in the appropriate position
+            if (_mainIDCounter == 0)
+            {
+                TabBtnsAndAddTabBtn.Insert(0, button);
+            }
+            else
+            {
+                TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
+            }
+
+
+            _mainIDCounter++;
+        });
     }
+
+
+
     private async void AddTab()
     {
         var browser = await InitBrowser(_mainIDCounter > 0);
-        //var browser = await InitBrowser(true);
         browser.TitleChanged += Browser_TitleChanged;
         browser.LoadingStateChanged += Browser_LoadingStateChanged;
         browser.AddressChanged += Browser_AddressChanged;
+
+       
 
         var newTabItem = new CustomTabItem()
         {
@@ -573,7 +745,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             Content = browser,
             Title = browser.Title,
             Address = browser.Address,
-            CloseTabCommand = CloseTabCommand  // Set the command
+            CloseTabCommand = CloseTabCommand // Set the command
         };
 
         // Set bindings to keep Title and Address updated
@@ -607,6 +779,8 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
         _mainIDCounter++;
     }
+
+
 
     private void BtnMouseDownForDragAndOpenTab(object sender, MouseButtonEventArgs e)
     {
@@ -675,13 +849,24 @@ public class PryGuardBrowserViewModel : BaseViewModel
         if (tabToSelect != null)
         {
             CurrentTabItem = tabToSelect;
+
             if (CurrentTabItem.Content.ToString().Contains("ListView"))
             {
                 Address = "PryGuard://history/";
             }
-            else { Address = (CurrentTabItem.Content as PryGuardBrowser).Address; }
+            else if (CurrentTabItem.Content is PryGuardBrowser browser)
+            {
+                // Safely cast and access the Address property
+                Address = browser.Address;
+            }
+            else
+            {
+                // Fallback in case it's not a PryGuardBrowser or a ListView (if needed)
+                Address = "PryGuard://default/";
+            }
         }
     }
+
     #endregion
 
     #region Window Work

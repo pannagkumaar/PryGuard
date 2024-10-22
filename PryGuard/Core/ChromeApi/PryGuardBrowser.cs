@@ -3,25 +3,35 @@ using CefSharp.Wpf;
 using PryGuard.Core.ChromeApi.Handlers;
 using System;
 
-namespace PryGuard.Core.ChromeApi;
-public class PryGuardBrowser : ChromiumWebBrowser
+namespace PryGuard.Core.ChromeApi
 {
-    public PryGuardBrowser(RequestContext context) 
+    public class PryGuardBrowser : ChromiumWebBrowser
     {
-        RequestContext = context;
-        MenuHandler = new MenuHandler();
-    }
-    protected override void Dispose(bool disposing)
-    {
-        base.Dispose(disposing);
-        var context = (RequestContext)RequestContext;
+        public PryGuardBrowser(RequestContext context)
+        {
+            RequestContext = context;
+            MenuHandler = new MenuHandler();
+        }
 
-        if (!context.IsDisposed)
-            context.Dispose();
-    }
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            var context = (RequestContext)RequestContext;
 
-    internal void LoadUrl(Uri uri)
-    {
-        throw new NotImplementedException();
+            if (!context.IsDisposed)
+                context.Dispose();
+        }
+
+        // Method to get the CookieManager for this browser
+        public ICookieManager GetCookieManager()
+        {
+            // Provide a null callback if you don't need to handle it
+            return RequestContext.GetCookieManager(null);
+        }
+
+        internal void LoadUrl(Uri uri)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

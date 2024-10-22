@@ -41,7 +41,18 @@ namespace PryGuard.Model
             }
         }
 
-        
+        private string _cookies;
+        public string Cookies
+        {
+            get => _cookies;
+            set
+            {
+                if (_cookies == value)
+                    return;
+                _cookies = value;
+                OnPropertyChanged(nameof(Cookies));
+            }
+        }
 
         private int _id;
         public int Id
