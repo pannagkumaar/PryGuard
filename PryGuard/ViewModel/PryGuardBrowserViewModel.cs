@@ -302,6 +302,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         PryGuardBrowser.BrowserSettings.ImageLoading = PryGuardProfile.IsLoadImage ? CefState.Enabled : CefState.Disabled;
         PryGuardBrowser.BrowserSettings.RemoteFonts = CefState.Enabled;
         PryGuardBrowser.BrowserSettings.JavascriptCloseWindows = CefState.Disabled;
+
         if (isNewPage)
         {
             var codeForFakeProfile = _nativeManager.GetCodeForFakeProfile("fakeinject", PryGuardProfile.FakeProfile);
@@ -315,6 +316,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             PryGuardBrowser.RenderProcessMessageHandler = _renderMessageHandler;
             PryGuardBrowser.LoadHandler = _loadHandler;
         }
+
         PryGuardBrowser.RequestHandler = _requestHandler;
         PryGuardBrowser.JavascriptObjectRepository.Settings.JavascriptBindingApiEnabled = false;
         PryGuardBrowser.JavascriptObjectRepository.Settings.LegacyBindingEnabled = true;
@@ -326,12 +328,147 @@ public class PryGuardBrowserViewModel : BaseViewModel
             {
                 Binder = new DefaultBinder(new MyCamelCaseNameConverter())
             });
+
         ExecGeoScript(PryGuardBrowser);
-        
+
         PryGuardBrowser.Tag = id;
-        PryGuardBrowser.Address = "https://google.com/";
+
+        string htmlContent = @"
+    <!DOCTYPE html>
+    <html lang=""en"">
+    <head>
+        <meta charset=""UTF-8"">
+        <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+        <title>PryGuard Browser</title>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+            body, html {
+                margin: 0;
+                padding: 0;
+                font-family: 'Orbitron', sans-serif;
+                background-color: #050505;
+                color: #ffffff;
+                height: 100vh;
+                overflow: hidden;
+            }
+            .container {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                position: relative;
+                z-index: 1;
+            }
+            .background {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(45deg, #ff0000, #800000);
+                filter: blur(100px);
+                opacity: 0.2;
+                z-index: -1;
+            }
+            .logo {
+                font-size: 4rem;
+                font-weight: bold;
+                color: #ff0000;
+                margin-bottom: 2rem;
+                text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            }
+            .search-form {
+                display: flex;
+                margin-bottom: 2rem;
+            }
+            .search-input {
+                padding: 0.75rem 1.5rem;
+                font-size: 1rem;
+                border: 2px solid #ff0000;
+                border-radius: 25px 0 0 25px;
+                outline: none;
+                width: 400px;
+                background-color: rgba(255, 255, 255, 0.1);
+                color: #ffffff;
+                transition: all 0.3s ease;
+            }
+            .search-input:focus {
+                background-color: rgba(255, 255, 255, 0.2);
+                box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+            }
+            .search-button {
+                padding: 0.75rem 1.5rem;
+                font-size: 1rem;
+                background-color: #ff0000;
+                color: #ffffff;
+                border: 2px solid #ff0000;
+                border-radius: 0 25px 25px 0;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            .search-button:hover {
+                background-color: #cc0000;
+                box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+            }
+            .clock {
+                font-size: 2rem;
+                margin-bottom: 2rem;
+                text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            }
+            .quick-links {
+                display: flex;
+                gap: 1rem;
+                margin-top: 2rem;
+            }
+            .quick-link {
+                padding: 0.5rem 1rem;
+                background-color: rgba(255, 255, 255, 0.1);
+                border-radius: 15px;
+                text-decoration: none;
+                color: #ffffff;
+                transition: all 0.3s ease;
+            }
+            .quick-link:hover {
+                background-color: rgba(255, 0, 0, 0.5);
+                transform: translateY(-5px);
+            }
+        </style>
+    </head>
+    <body>
+        <div class=""background""></div>
+        <div class=""container"">
+            <h1 class=""logo"">PryGuard</h1>
+            <div class=""clock"" id=""clock""></div>
+            <form class=""search-form"" action=""https://www.google.com/search"" method=""get"" target=""_self"">
+                <input type=""text"" name=""q"" class=""search-input"" placeholder=""Search with PryGuard..."" required>
+                <button type=""submit"" class=""search-button"">Search</button>
+            </form>
+            <div class=""quick-links"">
+                <a href=""https://www.github.com"" class=""quick-link"" target=""_self"">GitHub</a>
+                <a href=""https://www.stackoverflow.com"" class=""quick-link"" target=""_self"">Stack Overflow</a>
+                <a href=""https://www.reddit.com"" class=""quick-link"" target=""_self"">Reddit</a>
+                <a href=""https://www.youtube.com"" class=""quick-link"" target=""_self"">YouTube</a>
+            </div>
+        </div>
+        <script>
+            function updateClock() {
+                const now = new Date();
+                const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                document.getElementById('clock').textContent = time;
+            }
+            setInterval(updateClock, 1000);
+            updateClock();
+        </script>
+    </body>
+    </html>";
+
+        // Load HTML content directly into the browser
+        PryGuardBrowser.LoadHtml(htmlContent);
+
         return PryGuardBrowser;
     }
+
     private async Task ParseAndInsertCookies(string cookiesInput, PryGuardProfile pryGuardProfile, ChromiumWebBrowser browser)
     {
         if (string.IsNullOrWhiteSpace(cookiesInput))
@@ -542,14 +679,24 @@ public class PryGuardBrowserViewModel : BaseViewModel
     {
         var browser = sender as PryGuardBrowser;
         var tabItem = Tabs.FirstOrDefault(tab => (int)tab.Tag == (int)browser.Tag);
+
         if (tabItem != null)
         {
-            tabItem.Address = e.NewValue.ToString();
+            // Check if the new value is a `data:` URL
+            string newAddress = e.NewValue.ToString();
+            if (newAddress.StartsWith("data:"))
+            {
+                // Set to a friendly display name or custom URL
+                newAddress = "about:blank"; // or "about:blank" or whatever you prefer
+            }
+
+            tabItem.Address = newAddress;
 
             // Update the Address property of the ViewModel
-            Address = e.NewValue.ToString();
+            Address = newAddress;
         }
     }
+
     private void AddBookmark()
     {
         var customTabItem = Tabs.OfType<CustomTabItem>().FirstOrDefault(tab => tab == CurrentTabItem);
