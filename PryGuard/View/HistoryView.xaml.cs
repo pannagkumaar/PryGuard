@@ -1,29 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using PryGuard.ViewModel;
 
 namespace PryGuard.View
 {
-    /// <summary>
-    /// Interaction logic for HistoryView.xaml
-    /// </summary>
     public partial class HistoryView : UserControl
     {
+        private bool _isDarkTheme;
+
         public HistoryView()
         {
             InitializeComponent();
+            SetLightTheme();
+            themeToggleButton.Content = _isDarkTheme ? "Light Theme" : "Dark Theme";
         }
 
         private void OnLinkClick(object sender, MouseButtonEventArgs e)
@@ -35,6 +26,33 @@ namespace PryGuard.View
                 viewModel?.LoadHistoryLinkCommand.Execute(link);
             }
         }
-    }
 
+        private void SetLightTheme()
+        {
+            var lightTheme = new ResourceDictionary { Source = new Uri("/Services/UI/Themes/LightTheme.xaml", UriKind.Relative) };
+            Resources.MergedDictionaries.Clear();
+            Resources.MergedDictionaries.Add(lightTheme);
+            _isDarkTheme = false;
+        }
+
+        private void SetDarkTheme()
+        {
+            var darkTheme = new ResourceDictionary { Source = new Uri("/Services/UI/Themes/DarkTheme.xaml", UriKind.Relative) };
+            Resources.MergedDictionaries.Clear();
+            Resources.MergedDictionaries.Add(darkTheme);
+            _isDarkTheme = true;
+        }
+
+        private void OnThemeToggle_Checked(object sender, RoutedEventArgs e)
+        {
+            SetDarkTheme();
+            themeToggleButton.Content = "Light Theme";
+        }
+
+        private void OnThemeToggle_Unchecked(object sender, RoutedEventArgs e)
+        {
+            SetLightTheme();
+            themeToggleButton.Content = "Dark Theme";
+        }
+    }
 }

@@ -24,6 +24,9 @@ using System.Data.SQLite;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using PryGuard.View;
 using CefSharp.Wpf;
 
@@ -563,7 +566,58 @@ public class PryGuardBrowserViewModel : BaseViewModel
     }
 
 
+    public async Task CaptureScreenshotAsync(ChromiumWebBrowser browser)
+    {
+        if (browser.IsBrowserInitialized)
+        {
+            var bitmap = new Bitmap((int)browser.ActualWidth, (int)browser.ActualHeight);
+            var browserHost = browser.GetBrowser().GetHost();
 
+            // Render the browser into a bitmap
+            var viewRect = new CefSharp.Structs.Rect(0, 0, (int)browser.ActualWidth, (int)browser.ActualHeight);
+
+            // Take screenshot (you need to implement CaptureBrowserAsBitmap manually or capture from the view if possible)
+            var screenshotBytes = CaptureBrowserAsBitmap(browser);
+
+            // Save screenshot to file
+            var screenshotPath = Path.Combine(_PryGuardProfileToStart.CachePath, "last_visited_site_screenshot.png");
+            using (var fileStream = new FileStream(screenshotPath, FileMode.Create, FileAccess.Write))
+            {
+                await fileStream.WriteAsync(screenshotBytes, 0, screenshotBytes.Length);
+            }
+
+            // Alert message instead of console output
+            MessageBox.Show("Screenshot captured and saved successfully at " + screenshotPath, "Screenshot Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        else
+        {
+            // Alert message instead of console output
+            MessageBox.Show("Browser is not initialized.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private byte[] CaptureBrowserAsBitmap(ChromiumWebBrowser browser)
+    {
+        var viewWidth = (int)browser.ActualWidth;
+        var viewHeight = (int)browser.ActualHeight;
+
+        // Create a new bitmap of the browser size
+        var bitmap = new Bitmap(viewWidth, viewHeight);
+
+        // Render the browser into the bitmap
+        using (var graphics = Graphics.FromImage(bitmap))
+        {
+            // Use System.Drawing.Point instead of System.Windows.Point
+            graphics.CopyFromScreen(new System.Drawing.Point(0, 0), System.Drawing.Point.Empty, new System.Drawing.Size(viewWidth, viewHeight));
+        }
+
+        // Convert the Bitmap to a byte array
+        using (var ms = new MemoryStream())
+        {
+            bitmap.Save(ms, ImageFormat.Png);
+            return ms.ToArray();
+        }
+    }
 
 
 
@@ -1103,26 +1157,53 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private void Back(object arg)
     {
         if (CurrentTabItem == null) return;
-        (CurrentTabItem.Content as PryGuardBrowser).Back();
+
+        if (CurrentTabItem.Content is PryGuardBrowser browser)
+        {
+            browser.Back();
+        }
+        else
+        {
+            // Optionally, handle the case for history/bookmark or do nothing.
+            // MessageBox.Show("Back operation not supported on this tab.");
+        }
     }
+
     private void Forward(object arg)
     {
         if (CurrentTabItem == null) return;
-        (CurrentTabItem.Content as PryGuardBrowser).Forward();
+
+        if (CurrentTabItem.Content is PryGuardBrowser browser)
+        {
+            browser.Forward();
+        }
+        else
+        {
+            // Optionally, handle the case for history/bookmark or do nothing.
+            // MessageBox.Show("Forward operation not supported on this tab.");
+        }
     }
+
     private void Refresh(object arg)
     {
         if (CurrentTabItem == null) return;
 
-        if (CurrentTabItem.Content.ToString().Contains("ListView"))
+        if (CurrentTabItem.Content is PryGuardBrowser browser)
         {
+            browser.Reload();
+        }
+        else if (CurrentTabItem.Content is ListView listView)
+        {
+            // Assuming _listView is your ListView instance
             CurrentTabItem.Content = _listView;
         }
         else
         {
-            (CurrentTabItem.Content as PryGuardBrowser).Reload();
+            // Optionally, handle the case for history/bookmark or do nothing.
+            // MessageBox.Show("Refresh operation not supported on this tab.");
         }
     }
+
     private void NormalStateWindow(object arg)
     {
         //if ((arg as MouseEventArgs).LeftButton == MouseButtonState.Pressed)
@@ -1147,12 +1228,17 @@ public class PryGuardBrowserViewModel : BaseViewModel
         }
     }
 
-    private void CloseWindow(object obj)
+    private async void CloseWindow(object obj)
     {
+        if (CurrentTabItem != null)
+        {
+            var currentBrowser = CurrentTabItem.Content as ChromiumWebBrowser;
+            if (currentBrowser != null)
+            {
+                await CaptureScreenshotAsync(currentBrowser);
+            }
+        }
         ViewManager.Close(this);
-        
-        
-        
     }
     public bool CanClose()
     {

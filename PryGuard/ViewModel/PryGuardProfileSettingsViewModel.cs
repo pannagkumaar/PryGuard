@@ -147,31 +147,103 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     }
     private void SaveProfile(object arg)
     {
+        // Find the profile by Id (if it exists) using FirstOrDefault in all cases
+        var existingProfileTab = PryGuardProfilesVM.ProfileTabs.FirstOrDefault(tab => tab.Id == PryGuardProf.Id);
 
         if (SaveProfileButtonContent == "Create" || SaveProfileButtonContent == "Import")
         {
+            // Close the view and add a new profile tab
             ViewManager.Close(this);
-            PryGuardProfilesVM.ProfileTabs.Add(new ProfileTab(PryGuardProfilesVM)
+
+            // If profile doesn't exist, add it as new
+            if (existingProfileTab == null)
             {
-                Name = PryGuardProf.Name,
-                Id = PryGuardProf.Id,
-                Status = PryGuardProf.Status,
-                Tags = PryGuardProf.Tags,
-                ProxyHostPort = PryGuardProf.Proxy.ProxyAddress == "" && PryGuardProf.Proxy.ProxyPort == 8080 ? "" : PryGuardProf.Proxy.ProxyAddress + ":" + PryGuardProf.Proxy.ProxyPort,
-                ProxyLoginPass = PryGuardProf.Proxy.ProxyLogin == "" && PryGuardProf.Proxy.ProxyPassword == "" ? "" : PryGuardProf.Proxy.ProxyLogin + ":" + PryGuardProf.Proxy.ProxyPassword
-            });
+                PryGuardProfilesVM.ProfileTabs.Add(new ProfileTab(PryGuardProfilesVM)
+                {
+                    Name = PryGuardProf.Name,
+                    Id = PryGuardProf.Id,
+                    Status = PryGuardProf.Status,
+                    Tags = PryGuardProf.Tags,
+                    ProxyHostPort = PryGuardProf.Proxy.ProxyAddress == "" && PryGuardProf.Proxy.ProxyPort == 8080 ? "" : PryGuardProf.Proxy.ProxyAddress + ":" + PryGuardProf.Proxy.ProxyPort,
+                    ProxyLoginPass = PryGuardProf.Proxy.ProxyLogin == "" && PryGuardProf.Proxy.ProxyPassword == "" ? "" : PryGuardProf.Proxy.ProxyLogin + ":" + PryGuardProf.Proxy.ProxyPassword
+                });
+            }
+
             PryGuardProfilesVM.Setting.SaveSettings();
+        }
+        else if (SaveProfileButtonContent == "Save" && PryGuardProf.Status == "NEW")
+        {
+            ViewManager.Close(this);
+
+            if (existingProfileTab != null)
+            {
+                existingProfileTab.Status = "NEW";
+                existingProfileTab.Name = PryGuardProf.Name;
+                existingProfileTab.Tags = PryGuardProf.Tags;
+                existingProfileTab.ProxyHostPort = PryGuardProf.Proxy.ProxyAddress == "" && PryGuardProf.Proxy.ProxyPort == 8080 ? "" : PryGuardProf.Proxy.ProxyAddress + ":" + PryGuardProf.Proxy.ProxyPort;
+                existingProfileTab.ProxyLoginPass = PryGuardProf.Proxy.ProxyLogin == "" && PryGuardProf.Proxy.ProxyPassword == "" ? "" : PryGuardProf.Proxy.ProxyLogin + ":" + PryGuardProf.Proxy.ProxyPassword;
+            }
+
+            PryGuardProfilesVM.Setting.SaveSettings();
+            PryGuardProfilesVM.ProfileTabs.Clear();
+            PryGuardProfilesVM.LoadTabs();
+        }
+        else if (SaveProfileButtonContent == "Save" && PryGuardProf.Status == "BAN")
+        {
+            ViewManager.Close(this);
+
+            if (existingProfileTab != null)
+            {
+                existingProfileTab.Status = "BAN";
+                existingProfileTab.Name = PryGuardProf.Name;
+                existingProfileTab.Tags = PryGuardProf.Tags;
+                existingProfileTab.ProxyHostPort = PryGuardProf.Proxy.ProxyAddress == "" && PryGuardProf.Proxy.ProxyPort == 8080 ? "" : PryGuardProf.Proxy.ProxyAddress + ":" + PryGuardProf.Proxy.ProxyPort;
+                existingProfileTab.ProxyLoginPass = PryGuardProf.Proxy.ProxyLogin == "" && PryGuardProf.Proxy.ProxyPassword == "" ? "" : PryGuardProf.Proxy.ProxyLogin + ":" + PryGuardProf.Proxy.ProxyPassword;
+            }
+
+            PryGuardProfilesVM.Setting.SaveSettings();
+            PryGuardProfilesVM.ProfileTabs.Clear();
+            PryGuardProfilesVM.LoadTabs();
+        }
+        else if (SaveProfileButtonContent == "Save" && PryGuardProf.Status == "READY")
+        {
+            ViewManager.Close(this);
+
+            if (existingProfileTab != null)
+            {
+                existingProfileTab.Status = "READY";
+                existingProfileTab.Name = PryGuardProf.Name;
+                existingProfileTab.Tags = PryGuardProf.Tags;
+                existingProfileTab.ProxyHostPort = PryGuardProf.Proxy.ProxyAddress == "" && PryGuardProf.Proxy.ProxyPort == 8080 ? "" : PryGuardProf.Proxy.ProxyAddress + ":" + PryGuardProf.Proxy.ProxyPort;
+                existingProfileTab.ProxyLoginPass = PryGuardProf.Proxy.ProxyLogin == "" && PryGuardProf.Proxy.ProxyPassword == "" ? "" : PryGuardProf.Proxy.ProxyLogin + ":" + PryGuardProf.Proxy.ProxyPassword;
+            }
+
+            PryGuardProfilesVM.Setting.SaveSettings();
+            PryGuardProfilesVM.ProfileTabs.Clear();
+            PryGuardProfilesVM.LoadTabs();
         }
         else
         {
             PryGuardProf.Status = "UPDATED";
             ViewManager.Close(this);
+
+            if (existingProfileTab != null)
+            {
+                existingProfileTab.Status = "UPDATED";
+                existingProfileTab.Name = PryGuardProf.Name;
+                existingProfileTab.Tags = PryGuardProf.Tags;
+                existingProfileTab.ProxyHostPort = PryGuardProf.Proxy.ProxyAddress == "" && PryGuardProf.Proxy.ProxyPort == 8080 ? "" : PryGuardProf.Proxy.ProxyAddress + ":" + PryGuardProf.Proxy.ProxyPort;
+                existingProfileTab.ProxyLoginPass = PryGuardProf.Proxy.ProxyLogin == "" && PryGuardProf.Proxy.ProxyPassword == "" ? "" : PryGuardProf.Proxy.ProxyLogin + ":" + PryGuardProf.Proxy.ProxyPassword;
+            }
+
             PryGuardProfilesVM.Setting.SaveSettings();
             PryGuardProfilesVM.ProfileTabs.Clear();
             PryGuardProfilesVM.LoadTabs();
         }
+
         PryGuardProf.IsSaved = true;
     }
+
     private void ImportProfile(object arg)
     {
         var savedProfiles = PryGuardProfilesVM.Setting.PryGuardProfiles.Where(p => p.IsSaved).ToList();

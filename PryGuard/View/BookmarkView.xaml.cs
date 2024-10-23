@@ -19,11 +19,15 @@ namespace PryGuard.View
     /// done by tania
     public partial class BookmarkView : UserControl
     {
+        private bool _isDarkTheme;
+
         public BookmarkView()
-        {
-            InitializeComponent();
-            this.DataContext = new PryGuardBrowserViewModel();
-        }
+{
+    InitializeComponent();
+    SetLightTheme(); // This will set the initial theme to light
+    themeToggleButton.Content = "Dark Theme"; // Since the initial theme is light, the button should say "Dark Theme"
+}
+
 
         private void OnLinkClick(object sender, MouseButtonEventArgs e)
         {
@@ -38,6 +42,34 @@ namespace PryGuard.View
             }
 
             e.Handled = true;
+        }
+
+        private void SetLightTheme()
+        {
+            var lightTheme = new ResourceDictionary { Source = new Uri("/Services/UI/Themes/LightTheme.xaml", UriKind.Relative) };
+            Resources.MergedDictionaries.Clear();
+            Resources.MergedDictionaries.Add(lightTheme);
+            _isDarkTheme = false;
+        }
+
+        private void SetDarkTheme()
+        {
+            var darkTheme = new ResourceDictionary { Source = new Uri("/Services/UI/Themes/DarkTheme.xaml", UriKind.Relative) };
+            Resources.MergedDictionaries.Clear();
+            Resources.MergedDictionaries.Add(darkTheme);
+            _isDarkTheme = true;
+        }
+
+        private void OnThemeToggle_Checked(object sender, RoutedEventArgs e)
+        {
+            SetDarkTheme();
+            themeToggleButton.Content = "Light Theme";
+        }
+
+        private void OnThemeToggle_Unchecked(object sender, RoutedEventArgs e)
+        {
+            SetLightTheme();
+            themeToggleButton.Content = "Dark Theme";
         }
 
     }
