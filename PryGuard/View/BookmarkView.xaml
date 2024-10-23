@@ -51,10 +51,14 @@
 
                                     <Button Grid.Column="2" 
                                         Command="{Binding DataContext.RemoveBookmarkCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                        CommandParameter="{Binding}">
-                                                                        <Image Source="{StaticResource DeleteBrowsingHistoryIcon}" 
-                                           Width="16" Height="16" />
-                                    </Button>
+                                        CommandParameter="{Binding}" 
+                                        Background="Transparent" 
+                                        BorderThickness="0">
+                                        <Image Source="{StaticResource DeleteIcon}" 
+                                            Width="16" 
+                                            Height="16" />
+                                   </Button>
+
 
                                 </Grid>
                             </Border>

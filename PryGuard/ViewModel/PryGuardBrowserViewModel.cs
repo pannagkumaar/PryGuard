@@ -72,11 +72,13 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public RelayCommand DeleteHistoryCommand { get; private set; }
     public RelayCommand AddressOnKeyDownCommand { get; private set; }
     public RelayCommand OpenContextMenuSettingsCommand { get; private set; }
+
     public DelegateCommand CloseCommand =>
           _closeCommand ?? (_closeCommand = new DelegateCommand(obj => CloseWindow(obj)));
     public ICommand AddBookmarkCommand { get; }
     public ICommand RemoveBookmarkCommand { get; }
     public ICommand OpenBookmarkCommand { get; }
+    public ICommand OpenDevToolsCommand { get; }
 
     #endregion
 
@@ -186,6 +188,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         LoadHistoryLinkCommand = new RelayCommand(LoadHistoryLink);
         OpenHistoryCommand = new RelayCommand(AddTabHistory);
         OpenContextMenuSettingsCommand = new RelayCommand(OpenContextMenuSettings);
+        OpenDevToolsCommand = new RelayCommand(OpenDevTools);
 
 
 
@@ -824,6 +827,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     #endregion
 
     #region Tab Work
+
     private async void AddTabHistory()
     {
         Application.Current.Dispatcher.Invoke(() =>
@@ -963,6 +967,16 @@ public class PryGuardBrowserViewModel : BaseViewModel
     }
 
 
+    private void OpenDevTools(object obj)
+    {
+        // Assuming CurrentTabItem is your active browser tab
+        var browser = CurrentTabItem.Content as PryGuardBrowser; // Get the browser instance directly
+
+        if (browser != null && browser.IsBrowserInitialized) // Check if the browser is initialized
+        {
+            browser.ShowDevTools(); // Open the Developer Tools
+        }
+    }
 
     private void BtnMouseDownForDragAndOpenTab(object sender, MouseButtonEventArgs e)
     {

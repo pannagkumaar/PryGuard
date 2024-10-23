@@ -100,7 +100,7 @@
             </DrawingGroup>
         </DrawingImage.Drawing>
     </DrawingImage>
-    <DrawingImage x:Key="DeleteBrowsingHistoryIcon">
+    <DrawingImage x:Key="DeleteIcon">
         <DrawingImage.Drawing>
             <DrawingGroup>
                 <GeometryDrawing Brush="#FFFFFFFF" Geometry="M150,200 L350,200 L350,400 L150,400 Z" />

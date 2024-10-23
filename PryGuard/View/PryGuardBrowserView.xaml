@@ -378,8 +378,21 @@
                                     <Image
                             Margin="0,0,8,0"
                             Width="16" Height="16"
-                            Source="{StaticResource DeleteBrowsingHistoryIcon}"/>
+                            Source="{StaticResource DeleteIcon}"/>
                                     <TextBlock Text="Delete Browsing History"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding OpenDevToolsCommand}">
+                            <!-- New MenuItem -->
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image
+                        Margin="0,0,8,0"
+                        Width="16" Height="16"
+                        Source="{StaticResource DeleteIcon}"/>
+                                    <!-- Replace with your DevTools icon -->
+                                    <TextBlock Text="Developer Tools"/>
                                 </StackPanel>
                             </MenuItem.Header>
                         </MenuItem>

@@ -550,7 +550,7 @@
         <Setter Property="Grid.IsSharedSizeScope" Value="true"/>
         <Setter Property="HasDropShadow" Value="True"/>
         <Setter Property="Width" Value="402"/>
-        <Setter Property="Height" Value="458"/>
+        <Setter Property="Height" Value="190"/>
         <Setter Property="Placement" Value="MousePoint"/>
         <Setter Property="HorizontalOffset" Value="-410"/>
         <Setter Property="Template">
