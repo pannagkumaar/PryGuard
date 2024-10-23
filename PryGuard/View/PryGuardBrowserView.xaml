@@ -20,7 +20,8 @@
         BorderBrush="#3F3F3F"
         UseLayoutRounding="True"
         WindowStartupLocation="CenterScreen"
-        WindowState="{Binding CurWindowState, Mode=TwoWay}">
+        WindowState="{Binding CurWindowState, Mode=TwoWay}"
+        ResizeMode="CanResize"  >
     <!--#region DataContext & Resources & WindowChrome-->
     <Window.DataContext>
         <vm:PryGuardBrowserViewModel/>
@@ -56,6 +57,7 @@
     <WindowChrome.WindowChrome>
         <WindowChrome 
             CaptionHeight="0" 
+            
             GlassFrameThickness="10"/>
     </WindowChrome.WindowChrome>
     <!--#endregion-->

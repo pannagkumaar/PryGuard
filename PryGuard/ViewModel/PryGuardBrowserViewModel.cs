@@ -1079,17 +1079,17 @@ public class PryGuardBrowserViewModel : BaseViewModel
     }
     private void MaximizedWindow(object arg)
     {
-        CurWindowState = WindowState.Maximized;
-
-        //if (CurWindowState == WindowState.Maximized)
-        //{
-        //    CurWindowState = WindowState.Normal;
-        //}
-        //else
-        //{
-        //    CurWindowState = WindowState.Maximized;
-        //}
+        // Toggle between maximized and normal window state
+        if (CurWindowState == WindowState.Maximized)
+        {
+            CurWindowState = WindowState.Normal; // Set to normal if it's currently maximized
+        }
+        else
+        {
+            CurWindowState = WindowState.Maximized; // Maximize if it's not already maximized
+        }
     }
+
     private void CloseWindow(object obj)
     {
         ViewManager.Close(this);
