@@ -361,13 +361,13 @@
                                 </StackPanel>
                             </MenuItem.Header>
                         </MenuItem>
-                        <MenuItem Style="{StaticResource ThemeMenuItem}">
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding AddBookmarkTabCommand}">
                             <MenuItem.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <Image
-                            Margin="0,0,8,0"
-                            Width="16" Height="16"
-                            Source="{StaticResource BookmarkIcon}"/>
+                                        Margin="0,0,8,0"
+                                        Width="16" Height="16"
+                                        Source="{StaticResource BookmarkIcon}"/>
                                     <TextBlock Text="Bookmark"/>
                                 </StackPanel>
                             </MenuItem.Header>

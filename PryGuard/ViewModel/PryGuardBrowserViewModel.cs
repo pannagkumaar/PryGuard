@@ -67,6 +67,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public RelayCommand ForwardCommand { get; private set; }
     public RelayCommand BackCommand { get; private set; }
     public RelayCommand OpenHistoryCommand { get; private set; }
+    public RelayCommand AddBookmarkTabCommand { get; private set; }
     public RelayCommand LoadHistoryLinkCommand { get; private set; }
     public RelayCommand DeleteHistoryCommand { get; private set; }
     public RelayCommand AddressOnKeyDownCommand { get; private set; }
@@ -177,7 +178,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         AddTabCommand = new RelayCommand(AddTab);
         OpenTabCommand = new RelayCommand(OpenTab);
         CloseTabCommand = new RelayCommand(CloseTab);
-        
+        AddBookmarkTabCommand = new RelayCommand(AddTabBookmark);
         RefreshCommand = new RelayCommand(Refresh);
         ForwardCommand = new RelayCommand(Forward);
         BackCommand = new RelayCommand(Back);
@@ -444,12 +445,14 @@ public class PryGuardBrowserViewModel : BaseViewModel
                 <input type=""text"" name=""q"" class=""search-input"" placeholder=""Search with PryGuard..."" required>
                 <button type=""submit"" class=""search-button"">Search</button>
             </form>
-            <div class=""quick-links"">
-                <a href=""https://www.github.com"" class=""quick-link"" target=""_self"">GitHub</a>
-                <a href=""https://www.stackoverflow.com"" class=""quick-link"" target=""_self"">Stack Overflow</a>
-                <a href=""https://www.reddit.com"" class=""quick-link"" target=""_self"">Reddit</a>
-                <a href=""https://www.youtube.com"" class=""quick-link"" target=""_self"">YouTube</a>
-            </div>
+             <div class=""quick-links"">
+            <a href=""https://www.github.com"" class=""quick-link"" target=""_self"">GitHub</a>
+            <a href=""https://www.stackoverflow.com"" class=""quick-link"" target=""_self"">Stack Overflow</a>
+            <a href=""https://www.reddit.com"" class=""quick-link"" target=""_self"">Reddit</a>
+            <a href=""https://www.youtube.com"" class=""quick-link"" target=""_self"">YouTube</a>
+            <a href=""https://www.iphey.com"" class=""quick-link"" target=""_self"">IP Hey</a>
+            <a href=""https://amiunique.org"" class=""quick-link"" target=""_self"">Am I Unique</a>
+        </div>
         </div>
         <script>
             function updateClock() {
@@ -866,7 +869,47 @@ public class PryGuardBrowserViewModel : BaseViewModel
             _mainIDCounter++;
         });
     }
+    private async void AddTabBookmark()
+    {
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            var newTab = new CustomTabItem
+            {
+                Tag = _mainIDCounter,
+                Content = new BookmarkView()
+                {
+                    DataContext = this
+                }
+            };
+            Tabs.Add(newTab);
+            CurrentTabItem = newTab;
 
+            Address = "PryGuard://bookmarks/";
+
+            
+
+            Label button = new Label
+            {
+                Content = "Bookmark",
+                AllowDrop = true,
+                Tag = _mainIDCounter
+            };
+
+            button.DragEnter += BtnTabDragEnter;
+            button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
+
+            if (_mainIDCounter == 0)
+            {
+                TabBtnsAndAddTabBtn.Insert(0, button);
+            }
+            else
+            {
+                TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
+            }
+
+            _mainIDCounter++;
+        });
+    }
 
 
     private async void AddTab()
