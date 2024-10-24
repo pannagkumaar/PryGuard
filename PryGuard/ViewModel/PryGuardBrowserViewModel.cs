@@ -20,6 +20,7 @@ using PryGuard.Core.ChromeApi.Proxy;
 using System.Collections.ObjectModel;
 using PryGuard.Core.ChromeApi.Handlers;
 using PryGuard.Services.UI.ListView.ListViewItem;
+using PryGuard.View;
 using System.Data.SQLite;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
@@ -40,6 +41,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private Label _tabBtnToDrag;
     private readonly string _profileHistoryPath;
     private ListView _listView;
+    
 
     #region BrowserSettings & Other
     private List<PryGuardBrowser> _browsers;
@@ -71,6 +73,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public RelayCommand BackCommand { get; private set; }
     public RelayCommand OpenHistoryCommand { get; private set; }
     public RelayCommand AddBookmarkTabCommand { get; private set; }
+    public RelayCommand AddDownloadTabCommand { get; private set; }
     public RelayCommand LoadHistoryLinkCommand { get; private set; }
     public RelayCommand DeleteHistoryCommand { get; private set; }
     public RelayCommand AddressOnKeyDownCommand { get; private set; }
@@ -110,7 +113,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
 
     private ObservableCollection<PryGuardHistoryItem> _pryGuardHistoryList;
-
+   
     public ObservableCollection<PryGuardHistoryItem> PryGuardHistoryList
     {
         get => _pryGuardHistoryList;
@@ -166,6 +169,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
 
         _PryGuardProfileToStart = PryGuardProfileToStart;
+        
         _mainIDCounter = 0;
         Tabs = new();
         _browsers = new();
@@ -184,6 +188,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         OpenTabCommand = new RelayCommand(OpenTab);
         CloseTabCommand = new RelayCommand(CloseTab);
         AddBookmarkTabCommand = new RelayCommand(AddTabBookmark);
+        
         RefreshCommand = new RelayCommand(Refresh);
         ForwardCommand = new RelayCommand(Forward);
         BackCommand = new RelayCommand(Back);
@@ -192,7 +197,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         OpenHistoryCommand = new RelayCommand(AddTabHistory);
         OpenContextMenuSettingsCommand = new RelayCommand(OpenContextMenuSettings);
         OpenDevToolsCommand = new RelayCommand(OpenDevTools);
-
+        
 
 
 
@@ -309,6 +314,13 @@ public class PryGuardBrowserViewModel : BaseViewModel
         PryGuardBrowser.BrowserSettings.ImageLoading = PryGuardProfile.IsLoadImage ? CefState.Enabled : CefState.Disabled;
         PryGuardBrowser.BrowserSettings.RemoteFonts = CefState.Enabled;
         PryGuardBrowser.BrowserSettings.JavascriptCloseWindows = CefState.Disabled;
+        
+        var downloadHandler = new DownloadHandler(); // Pass the view to the handler
+        
+        PryGuardBrowser.DownloadHandler = downloadHandler;
+        
+       
+
 
         if (isNewPage)
         {
@@ -564,6 +576,8 @@ public class PryGuardBrowserViewModel : BaseViewModel
             }
         }
     }
+
+    
 
 
     public async Task CaptureScreenshotAsync(ChromiumWebBrowser browser)
@@ -968,6 +982,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             _mainIDCounter++;
         });
     }
+    
 
 
     private async void AddTab()
