@@ -30,6 +30,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using PryGuard.View;
 using CefSharp.Wpf;
+using PryGuard.View;
 
 namespace PryGuard.ViewModel;
 
@@ -41,6 +42,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private Label _tabBtnToDrag;
     private readonly string _profileHistoryPath;
     private ListView _listView;
+    private DownloadManager _downloadManager;
     
 
     #region BrowserSettings & Other
@@ -188,7 +190,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         OpenTabCommand = new RelayCommand(OpenTab);
         CloseTabCommand = new RelayCommand(CloseTab);
         AddBookmarkTabCommand = new RelayCommand(AddTabBookmark);
-        
+        AddDownloadTabCommand = new RelayCommand(AddDownloadTab);
         RefreshCommand = new RelayCommand(Refresh);
         ForwardCommand = new RelayCommand(Forward);
         BackCommand = new RelayCommand(Back);
@@ -314,12 +316,15 @@ public class PryGuardBrowserViewModel : BaseViewModel
         PryGuardBrowser.BrowserSettings.ImageLoading = PryGuardProfile.IsLoadImage ? CefState.Enabled : CefState.Disabled;
         PryGuardBrowser.BrowserSettings.RemoteFonts = CefState.Enabled;
         PryGuardBrowser.BrowserSettings.JavascriptCloseWindows = CefState.Disabled;
-        
-        var downloadHandler = new DownloadHandler(); // Pass the view to the handler
-        
+
+        var downloadHandler = new DownloadHandler();
         PryGuardBrowser.DownloadHandler = downloadHandler;
-        
-       
+
+        // Ensure DownloadManager.Instance is accessible
+        downloadHandler.DownloadStarted += DownloadManager.Instance.AddDownload;
+        downloadHandler.DownloadUpdated += DownloadManager.Instance.UpdateDownload;
+
+
 
 
         if (isNewPage)
@@ -982,7 +987,47 @@ public class PryGuardBrowserViewModel : BaseViewModel
             _mainIDCounter++;
         });
     }
-    
+
+
+    private void AddDownloadTab()
+    {
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            var downloadsPage = new DownloadPage();
+
+            var newTab = new CustomTabItem
+            {
+                Tag = _mainIDCounter,
+                Content = downloadsPage
+            };
+            Tabs.Add(newTab);
+            CurrentTabItem = newTab;
+
+            Address = "PryGuard://downloads/";
+
+            Label button = new Label
+            {
+                Content = "Downloads",
+                AllowDrop = true,
+                Tag = _mainIDCounter
+            };
+
+            button.DragEnter += BtnTabDragEnter;
+            button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
+
+            if (_mainIDCounter == 0)
+            {
+                TabBtnsAndAddTabBtn.Insert(0, button);
+            }
+            else
+            {
+                TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
+            }
+
+            _mainIDCounter++;
+        });
+    }
+
 
 
     private async void AddTab()
