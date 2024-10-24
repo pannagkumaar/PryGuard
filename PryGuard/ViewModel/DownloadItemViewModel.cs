@@ -85,14 +85,29 @@ public class DownloadItemViewModel : INotifyPropertyChanged
 
     // Command to open the file
     public ICommand OpenFileCommand { get; }
+    public ICommand CancelCommand { get; }
 
     public DownloadItemViewModel(DownloadItem downloadItem)
     {
         Id = downloadItem.Id;
         OpenFileCommand = new RelayCommand(OpenFile, CanOpenFile);
+        CancelCommand = new RelayCommand(CancelDownload, CanCancelDownload);
         Update(downloadItem);
     }
+    private void CancelDownload(object parameter)
+    {
+        DownloadManager.Instance.CancelDownload(Id);
+    }
 
+    private bool CanCancelDownload(object parameter)
+    {
+        return !IsComplete && !IsCancelled;
+    }
+    private void RaiseCommandsCanExecuteChanged()
+    {
+        (CancelCommand as RelayCommand)?.RaiseCanExecuteChanged();
+        (OpenFileCommand as RelayCommand)?.RaiseCanExecuteChanged();
+    }
     public void Update(DownloadItem downloadItem)
     {
         // Only update SuggestedFileName if it's not null or empty

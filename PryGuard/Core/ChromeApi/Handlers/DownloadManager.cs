@@ -1,5 +1,6 @@
 ﻿using CefSharp;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -14,6 +15,7 @@ public class DownloadManager : INotifyPropertyChanged
     public static DownloadManager Instance => _instance.Value;
 
     public ObservableCollection<DownloadItemViewModel> Downloads { get; set; } = new ObservableCollection<DownloadItemViewModel>();
+    private ConcurrentDictionary<int, bool> _cancelledDownloads = new ConcurrentDictionary<int, bool>();
 
     private DownloadManager() { }
 
@@ -36,25 +38,28 @@ public class DownloadManager : INotifyPropertyChanged
         });
     }
 
-
-    public void UpdateDownload(DownloadItem downloadItem)
-{
-    Application.Current.Dispatcher.Invoke(() =>
+    public void CancelDownload(int downloadId)
     {
-        var existingDownload = Downloads.FirstOrDefault(d => d.Id == downloadItem.Id);
-        if (existingDownload != null)
+        _cancelledDownloads[downloadId] = true;
+    }
+
+    public bool IsDownloadCancelled(int downloadId)
+    {
+        return _cancelledDownloads.ContainsKey(downloadId);
+    }
+    public void UpdateDownload(DownloadItem downloadItem)
+    {
+        Application.Current.Dispatcher.Invoke(() =>
         {
-            // Update existing item
-            existingDownload.Update(downloadItem);
-        }
-        // Optionally, do not add a new item here
-        // else
-        // {
-        //     Downloads.Add(new DownloadItemViewModel(downloadItem));
-        //     OnPropertyChanged(nameof(Downloads));
-        // }
-    });
-}
+            var existingDownload = Downloads.FirstOrDefault(d => d.Id == downloadItem.Id);
+            if (existingDownload != null)
+            {
+                // Update existing item
+                existingDownload.Update(downloadItem);
+            }
+        });
+    }
+
 
 
     public event PropertyChangedEventHandler PropertyChanged;

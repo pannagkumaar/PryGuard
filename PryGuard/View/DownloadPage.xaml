@@ -36,7 +36,9 @@
 										<ColumnDefinition Width="3*" />
 										<ColumnDefinition Width="1*" />
 										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
 									</Grid.ColumnDefinitions>
+
 
 									<!-- File Name -->
 									<TextBlock Text="{Binding SuggestedFileName}"
@@ -64,16 +66,29 @@
                                                VerticalAlignment="Center"
                                                Grid.Column="2" />
 
-									<!-- Open File Button -->
+									
+
+									<!-- Cancel Button -->
 									<Button Grid.Column="3"
-                                            Command="{Binding OpenFileCommand}"
-                                            CommandParameter="{Binding FullPath}"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            VerticalAlignment="Center">
+											Command="{Binding CancelCommand}"
+											Background="Transparent"
+											BorderThickness="0"
+											VerticalAlignment="Center">
+										<Image Source="{StaticResource DeleteIcon}"
+											   Width="16"
+											   Height="16" />
+									</Button>
+
+									<!-- Open File Button -->
+									<Button Grid.Column="4"
+											Command="{Binding OpenFileCommand}"
+											CommandParameter="{Binding FullPath}"
+											Background="Transparent"
+											BorderThickness="0"
+											VerticalAlignment="Center">
 										<Image Source="{StaticResource OpenIcon}"
-                                               Width="16"
-                                               Height="16" />
+											   Width="16"
+											   Height="16" />
 									</Button>
 								</Grid>
 							</Border>

@@ -30,5 +30,17 @@ public class DownloadHandler : IDownloadHandler
     public void OnDownloadUpdated(IWebBrowser chromiumWebBrowser, IBrowser browser, DownloadItem downloadItem, IDownloadItemCallback callback)
     {
         DownloadUpdated?.Invoke(downloadItem);
+
+        // Check if the download has been canceled
+        if (DownloadManager.Instance.IsDownloadCancelled(downloadItem.Id))
+        {
+            if (!callback.IsDisposed)
+            {
+                using (callback)
+                {
+                    callback.Cancel();
+                }
+            }
+        }
     }
 }
