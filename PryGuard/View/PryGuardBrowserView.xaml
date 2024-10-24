@@ -390,7 +390,7 @@
                                     <Image
                         Margin="0,0,8,0"
                         Width="16" Height="16"
-                        Source="{StaticResource DeleteIcon}"/>
+                        Source="{StaticResource CodeIcon}"/>
                                     <!-- Replace with your DevTools icon -->
                                     <TextBlock Text="Developer Tools"/>
                                 </StackPanel>
@@ -402,9 +402,9 @@
                                     <Image
                         Margin="0,0,8,0"
                         Width="16" Height="16"
-                        Source="{StaticResource DeleteIcon}"/>
-                                    <!-- Replace with your DevTools icon -->
-                                    <TextBlock Text="Developer Tools"/>
+                        Source="{StaticResource DownloadIcon}"/>
+                                   
+                                    <TextBlock Text="Downloads Page"/>
                                 </StackPanel>
                             </MenuItem.Header>
                         </MenuItem>

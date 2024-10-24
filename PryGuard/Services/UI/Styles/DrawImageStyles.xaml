@@ -60,6 +60,20 @@
             </DrawingGroup>
         </DrawingImage.Drawing>
     </DrawingImage>
+    <DrawingImage x:Key="DownloadIcon">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="White" Geometry="M12,16A1,1,0,0,1,11.29,15.71L7.29,11.71A1,1,0,1,1,8.71,10.29L12,13.59L15.29,10.29A1,1,0,0,1,16.71,11.71L12.71,15.71A1,1,0,0,1,12,16ZM12,16A1,1,0,0,1,11,15V5A1,1,0,0,1,13,5V15A1,1,0,0,1,12,16ZM19,20H5A1,1,0,0,1,5,18H19A1,1,0,0,1,19,20Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="CodeIcon">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="White" Geometry="M553,1399L503,1449q-10,10-23,10t-23-10L-9,983q-10-10-10-23t10-23l466-466q10-10,23-10t23,10l50,50q10,10,10,23t-10,23L160,960l393,393q10,10,10,23t-10,23Zm591-1067L771,1623q-4,13-15.5,19.5T732,1645l-62-17q-13-4-19.5-15.5T648,1588l373-1291q4-13,15.5-19.5t23.5-2.5l62,17q13,4,19.5,15.5t2.5,24.5Zm657,651l-466,466q-10,10-23,10t-23-10l-50-50q-10-10-10-23t10-23l393-393-393-393q-10-10-10-23t10-23l50-50q10-10,23-10t23,10l466,466q10,10,10,23t-10,23Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
 
     <DrawingImage x:Key="PasswordManagerIcon">
         <DrawingImage.Drawing>
