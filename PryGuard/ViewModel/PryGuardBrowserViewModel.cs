@@ -32,6 +32,7 @@ using PryGuard.View;
 using CefSharp.Wpf;
 using PryGuard.View;
 
+
 namespace PryGuard.ViewModel;
 
 public class PryGuardBrowserViewModel : BaseViewModel
@@ -199,7 +200,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         OpenHistoryCommand = new RelayCommand(AddTabHistory);
         OpenContextMenuSettingsCommand = new RelayCommand(OpenContextMenuSettings);
         OpenDevToolsCommand = new RelayCommand(OpenDevTools);
-        
+        CurWindowState = WindowState.Maximized;
 
 
 
@@ -330,6 +331,20 @@ public class PryGuardBrowserViewModel : BaseViewModel
         // Ensure DownloadManager.Instance is accessible
         downloadHandler.DownloadStarted += DownloadManager.Instance.AddDownload;
         downloadHandler.DownloadUpdated += DownloadManager.Instance.UpdateDownload;
+        // Create an instance of your custom context menu handler
+        var menuHandler = new CustomContextMenuHandler();
+
+        // Subscribe to the OpenUrlInNewTabRequested event
+        menuHandler.OpenUrlInNewTabRequested += (url) =>
+        {
+            // Ensure this runs on the UI thread
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                OpenUrlInNewTab(url);
+            });
+        };
+
+        PryGuardBrowser.MenuHandler = menuHandler;
 
 
 
