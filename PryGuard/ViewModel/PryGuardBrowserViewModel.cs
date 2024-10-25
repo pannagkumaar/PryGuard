@@ -1043,9 +1043,9 @@ public class PryGuardBrowserViewModel : BaseViewModel
         browser.TitleChanged += Browser_TitleChanged;
         browser.LoadingStateChanged += Browser_LoadingStateChanged;
         browser.AddressChanged += Browser_AddressChanged;
+        browser.PreviewKeyDown += Browser_PreviewKeyDown;
 
-       
-
+        browser.Focus();
         var newTabItem = new CustomTabItem()
         {
             Tag = _mainIDCounter,
@@ -1092,10 +1092,11 @@ public class PryGuardBrowserViewModel : BaseViewModel
         browser.TitleChanged += Browser_TitleChanged;
         browser.LoadingStateChanged += Browser_LoadingStateChanged;
         browser.AddressChanged += Browser_AddressChanged;
-
+        browser.PreviewKeyDown += Browser_PreviewKeyDown;
         // Navigate the browser to the URL
-        browser.Load(url);
 
+        browser.Load(url);
+        browser.Focus();
         var newTabItem = new CustomTabItem()
         {
             Tag = _mainIDCounter,
@@ -1135,6 +1136,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         }
 
         _mainIDCounter++;
+        
     }
 
 
@@ -1181,8 +1183,23 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
     private void CloseTab(object parameter)
     {
-        if (parameter is not MouseButtonEventArgs mouseArgs || mouseArgs.Source is not TextBlock tb) return;
-        var id = (int)tb.Tag;
+        int id;
+
+        // Check if parameter is MouseButtonEventArgs and get id from there
+        if (parameter is MouseButtonEventArgs mouseArgs && mouseArgs.Source is TextBlock tb)
+        {
+            id = (int)tb.Tag;
+        }
+        else if (CurrentTabItem != null)
+        {
+            // If parameter is not MouseButtonEventArgs, get id from CurrentTabItem
+            id = (int)CurrentTabItem.Tag;
+        }
+        else
+        {
+            // No current tab to close
+            return;
+        }
 
         // Delete from Tabs
         var itemToRemove = Tabs.FirstOrDefault(item => (int)item.Tag == id);
@@ -1196,6 +1213,10 @@ public class PryGuardBrowserViewModel : BaseViewModel
                 int currentIndex = Tabs.IndexOf(itemToRemove);
                 CurrentTabItem = currentIndex > 0 ? Tabs[currentIndex - 1] : Tabs.First();
             }
+            else
+            {
+                CurrentTabItem = null;
+            }
         }
 
         // Delete from TabBtns
@@ -1208,6 +1229,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         // Delete from Browsers
         _browsers = _browsers.Where(item => (int)item.Tag != id).ToList();
     }
+
 
 
     private void OpenTab(object arg)
@@ -1237,6 +1259,155 @@ public class PryGuardBrowserViewModel : BaseViewModel
     #endregion
 
     #region Window Work
+    private void Browser_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        var browser = sender as IWebBrowser;
+
+        if (browser == null)
+            return;
+
+        // Check for Ctrl+P (Print)
+        if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.P)
+        {
+            browser.GetBrowserHost().Print();
+            e.Handled = true;
+        }
+        // Check for F12 (Developer Tools)
+        else if (e.Key == Key.F12)
+        {
+            browser.ShowDevTools();
+            e.Handled = true;
+        }
+        // Check for Ctrl+Shift+I (Developer Tools)
+        else if (e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift) && e.Key == Key.I)
+        {
+            browser.ShowDevTools();
+            e.Handled = true;
+        }
+        // Check for Ctrl+R (Reload)
+        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.R)
+        {
+            browser.Reload();
+            e.Handled = true;
+        }
+        // Check for Ctrl+T (New Tab)
+        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.T)
+        {
+            AddTab();
+            e.Handled = true;
+        }
+        //check for Ctrl+H (History)
+        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.H)
+        {
+            AddTabHistory();
+            e.Handled = true;
+        }   
+        //check for Ctrl+B (Bookmark)
+        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.B)
+        {
+            AddTabBookmark();
+            e.Handled = true;
+        }   
+        //check for Ctrl+J (Downloads)
+        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.J)
+        {
+            AddDownloadTab();
+            e.Handled = true;
+        }
+        // Check for Ctrl+W (Close Tab)
+        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.W)
+        {
+            CloseTab(null);
+            e.Handled = true;
+        }
+
+        // Ctrl + '+' (Zoom In)
+        if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && (e.Key == Key.OemPlus || e.Key == Key.Add))
+        {
+            browser.GetZoomLevelAsync().ContinueWith(task =>
+            {
+                var currentZoomLevel = task.Result;
+                var newZoomLevel = currentZoomLevel + 0.1;
+                browser.SetZoomLevel(newZoomLevel);
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+            e.Handled = true;
+        }
+        // Ctrl + '-' (Zoom Out)
+        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && (e.Key == Key.OemMinus || e.Key == Key.Subtract))
+        {
+            browser.GetZoomLevelAsync().ContinueWith(task =>
+            {
+                var currentZoomLevel = task.Result;
+                var newZoomLevel = currentZoomLevel - 0.1;
+                browser.SetZoomLevel(newZoomLevel);
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+            e.Handled = true;
+        }
+        // Ctrl + '0' (Reset Zoom)
+        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.D0)
+        {
+            browser.SetZoomLevel(0);
+            e.Handled = true;
+        }
+        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.S)
+        {
+            SavePage(browser);
+            e.Handled = true;
+        }
+        // Check for Ctrl+Z (Undo)
+        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.Z)
+        {
+            browser.GetFocusedFrame()?.Undo();
+            e.Handled = true;
+        }
+    }
+
+
+
+
+
+
+ 
+    private void SavePage(IWebBrowser browser)
+    {
+        // Get the main (focused) frame
+        var frame = browser.GetFocusedFrame();
+
+        if (frame == null)
+            return;
+
+        // Get the HTML source asynchronously
+        frame.GetSourceAsync().ContinueWith(taskHtml =>
+        {
+            var html = taskHtml.Result;
+
+            // Open a "Save As" dialog on the UI thread
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var saveFileDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    Filter = "HTML Files (*.html)|*.html|All Files (*.*)|*.*",
+                    FileName = "Untitled.html"
+                };
+
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    // Save the HTML content to the selected file
+                    try
+                    {
+                        File.WriteAllText(saveFileDialog.FileName, html);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle exceptions (e.g., display an error message)
+                        MessageBox.Show($"Error saving file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            });
+        });
+    }
+
+
     private void AddressOnKeyDown(object arg)
     {
         if ((arg as KeyEventArgs).Key == Key.Enter)

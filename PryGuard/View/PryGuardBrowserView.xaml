@@ -26,7 +26,10 @@
     <Window.DataContext>
         <vm:PryGuardBrowserViewModel/>
     </Window.DataContext>
-
+    <Window.InputBindings>
+        <KeyBinding Key="W" Modifiers="Control" Command="{Binding CloseTabCommand}" />
+        <KeyBinding Key="T" Modifiers="Control" Command="{Binding AddTabCommand}" />
+    </Window.InputBindings>
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
