@@ -8,7 +8,9 @@ namespace PryGuard.Core.ChromeApi.Handlers
     /// </summary>
     public class LifespanHandler : ILifeSpanHandler
     {
-        bool ILifeSpanHandler.OnBeforePopup(
+        public event Action<string> PopupRequested;
+
+        public bool OnBeforePopup(
             IWebBrowser browserControl,
             IBrowser browser,
             IFrame frame,
@@ -24,18 +26,12 @@ namespace PryGuard.Core.ChromeApi.Handlers
         {
             newBrowser = null;
 
-            // Set the window as a popup and pass the required parameters.
-            IntPtr parentHandle = browserControl.GetBrowserHost().GetWindowHandle();
-            windowInfo.SetAsPopup(parentHandle, targetUrl); // Pass parentHandle and targetUrl
+            // Cancel the popup
+            // Notify the main application to open the URL in a new tab
+            PopupRequested?.Invoke(targetUrl);
 
-            // Optionally set the popup window size and position here
-            windowInfo.Width = popupFeatures.Width.GetValueOrDefault(800);
-            windowInfo.Height = popupFeatures.Height.GetValueOrDefault(600);
-            windowInfo.X = popupFeatures.X.GetValueOrDefault(100);
-            windowInfo.Y = popupFeatures.Y.GetValueOrDefault(100);
-
-            // Allow the popup to open (return false)
-            return false;
+            // Return true to cancel the popup
+            return true;
         }
 
         void ILifeSpanHandler.OnAfterCreated(

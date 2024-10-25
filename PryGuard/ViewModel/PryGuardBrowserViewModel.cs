@@ -253,7 +253,14 @@ public class PryGuardBrowserViewModel : BaseViewModel
             _requestHandler = new RequestHandler(_blockManager);
             _requestContextSettings = new RequestContextSettings();
             _lifespanHandler = new LifespanHandler();
-
+            _lifespanHandler.PopupRequested += (url) =>
+            {
+                // Ensure this is executed on the UI thread
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    OpenUrlInNewTab(url);
+                });
+            };
             if (_PryGuardProfile.IsLoadCacheInMemory)
             {
                 _requestContextSettings.CachePath = _PryGuardProfile.CachePath;
@@ -472,7 +479,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             <a href=""https://www.github.com"" class=""quick-link"" target=""_self"">GitHub</a>
             <a href=""https://www.stackoverflow.com"" class=""quick-link"" target=""_self"">Stack Overflow</a>
             <a href=""https://www.reddit.com"" class=""quick-link"" target=""_self"">Reddit</a>
-            <a href=""https://www.youtube.com"" class=""quick-link"" target=""_self"">YouTube</a>
+            <a href=""https://www.youtube.com"" class=""quick-link"" target=""_blank"">YouTube</a>
             <a href=""https://www.iphey.com"" class=""quick-link"" target=""_self"">IP Hey</a>
             <a href=""https://amiunique.org"" class=""quick-link"" target=""_self"">Am I Unique</a>
         </div>
@@ -1038,6 +1045,56 @@ public class PryGuardBrowserViewModel : BaseViewModel
         browser.AddressChanged += Browser_AddressChanged;
 
        
+
+        var newTabItem = new CustomTabItem()
+        {
+            Tag = _mainIDCounter,
+            Content = browser,
+            Title = browser.Title,
+            Address = browser.Address,
+            CloseTabCommand = CloseTabCommand // Set the command
+        };
+
+        // Set bindings to keep Title and Address updated
+        browser.TitleChanged += (s, e) => newTabItem.Title = browser.Title;
+        browser.AddressChanged += (s, e) => newTabItem.Address = browser.Address;
+
+        Tabs.Add(newTabItem);
+        CurrentTabItem = Tabs.Last();
+
+        var button = new Label
+        {
+            Content = newTabItem.Title,
+            AllowDrop = true,
+            Tag = _mainIDCounter,
+            DataContext = newTabItem
+        };
+
+        button.SetBinding(Label.ContentProperty, new Binding("Title")); // Bind button content to Title
+
+        button.DragEnter += BtnTabDragEnter;
+        button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
+
+        if (_mainIDCounter == 0)
+        {
+            TabBtnsAndAddTabBtn.Insert(0, button);
+        }
+        else
+        {
+            TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
+        }
+
+        _mainIDCounter++;
+    }
+    private async void OpenUrlInNewTab(string url)
+    {
+        var browser = await InitBrowser(_mainIDCounter > 0);
+        browser.TitleChanged += Browser_TitleChanged;
+        browser.LoadingStateChanged += Browser_LoadingStateChanged;
+        browser.AddressChanged += Browser_AddressChanged;
+
+        // Navigate the browser to the URL
+        browser.Load(url);
 
         var newTabItem = new CustomTabItem()
         {
