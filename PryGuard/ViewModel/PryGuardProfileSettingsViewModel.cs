@@ -161,7 +161,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
                 PryGuardProfilesVM.ProfileTabs.Add(new ProfileTab(PryGuardProfilesVM)
                 {
                     Name = PryGuardProf.Name,
-                    Id = PryGuardProf.Id,
+                    Id = PryGuardProf.Id, 
                     Status = PryGuardProf.Status,
                     Tags = PryGuardProf.Tags,
                     ProxyHostPort = PryGuardProf.Proxy.ProxyAddress == "" && PryGuardProf.Proxy.ProxyPort == 8080 ? "" : PryGuardProf.Proxy.ProxyAddress + ":" + PryGuardProf.Proxy.ProxyPort,
@@ -170,6 +170,8 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             }
 
             PryGuardProfilesVM.Setting.SaveSettings();
+            PryGuardProfilesVM.ProfileTabs.Clear();
+            PryGuardProfilesVM.LoadTabs();
         }
         else if (SaveProfileButtonContent == "Save" && PryGuardProf.Status == "NEW")
         {

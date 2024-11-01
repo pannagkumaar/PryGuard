@@ -120,24 +120,34 @@ public class PryGuardProfilesViewModel : BaseViewModel
     }
     private void DeleteProfile(object arg)
     {
-        var profilesToRemove = Setting.PryGuardProfiles.Where(profile => profile.Id == (int)arg).ToList();
-        foreach (var profile in profilesToRemove)
+        int profileIdToDelete = (int)arg;
+
+        // Find the profile with the exact matching ID
+        var profileToRemove = Setting.PryGuardProfiles.FirstOrDefault(profile => profile.Id == profileIdToDelete);
+
+        if (profileToRemove != null)
         {
-            if (Directory.Exists(profile.CachePath))
+            if (Directory.Exists(profileToRemove.CachePath))
             {
-                Directory.Delete(profile.CachePath, true);
+                Directory.Delete(profileToRemove.CachePath, true);
             }
-            Setting.PryGuardProfiles.Remove(profile);
+            Setting.PryGuardProfiles.Remove(profileToRemove);
+        }
+        else
+        {
+            // Handle the case where the profile isn't found
+            // Perhaps log a warning or notify the user
         }
 
-        var tabsToRemove = ProfileTabs.Where(item => item.Id == (int)arg).ToList();
-        foreach (var item in tabsToRemove)
+        var tabToRemove = ProfileTabs.FirstOrDefault(item => item.Id == profileIdToDelete);
+        if (tabToRemove != null)
         {
-            ProfileTabs.Remove(item);
+            ProfileTabs.Remove(tabToRemove);
         }
 
         Setting.SaveSettings();
     }
+
     private void RefreshProfiles(object arg)
     {
         ProfileTabs.Clear();

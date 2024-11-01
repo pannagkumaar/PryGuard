@@ -30,6 +30,21 @@
             </DrawingGroup>
         </DrawingImage.Drawing>
     </DrawingImage>
+    <DrawingImage x:Key="IncognitoIcon">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Transform>
+                    <ScaleTransform ScaleX="1" ScaleY="1.2" />
+                </DrawingGroup.Transform>
+                <GeometryDrawing Brush="#FFFFFFFF" Geometry="M180,120 L320,120 L320,160 L180,160 Z" />
+                <GeometryDrawing Brush="#FFFFFFFF" Geometry="M150,160 L350,160 L350,180 L150,180 Z" />
+                <GeometryDrawing Brush="#FFFFFFFF" Geometry="M180,200 A30,30 0 1 1 240,200 A30,30 0 1 1 180,200 Z" />
+                <GeometryDrawing Brush="#FFFFFFFF" Geometry="M260,200 A30,30 0 1 1 320,200 A30,30 0 1 1 260,200 Z" />
+                <GeometryDrawing Brush="#FFFFFFFF" Geometry="M240,210 L260,210 L260,220 L240,220 Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
     <DrawingImage x:Key="HistoryBrowserIcon">
         <DrawingImage.Drawing>
             <DrawingGroup ClipGeometry="M0,0 V512 H512 V0 H0 Z">
