@@ -530,7 +530,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             <a href=""https://www.stackoverflow.com"" class=""quick-link"" target=""_self"">Stack Overflow</a>
             <a href=""https://www.reddit.com"" class=""quick-link"" target=""_self"">Reddit</a>
             <a href=""https://www.youtube.com"" class=""quick-link"" target=""_blank"">YouTube</a>
-            <a href=""https://www.iphey.com"" class=""quick-link"" target=""_self"">IP Hey</a>
+            <a href=""https://iphey.com"" class=""quick-link"" target=""_self"">IP Hey</a>
             <a href=""https://amiunique.org"" class=""quick-link"" target=""_self"">Am I Unique</a>
         </div>
         </div>

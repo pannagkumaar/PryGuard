@@ -300,8 +300,14 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
 
     private void CloseProfileSettings(object arg)
     {
+        if (!PryGuardProf.IsSaved && !IsEdit)
+        {
+            // Remove the unsaved profile from the list
+            PryGuardProfilesVM.Setting.PryGuardProfiles.Remove(PryGuardProf);
+        }
         ViewManager.Close(this);
     }
+
     private void CloseWindowState(object arg)
     {
         WindowState = WindowState.Minimized;

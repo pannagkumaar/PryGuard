@@ -114,10 +114,14 @@ public class PryGuardProfilesViewModel : BaseViewModel
     private void CreateProfile(object arg)
     {
         Setting.PryGuardProfiles.Add(PryGuardProfile.GenerateNewProfile("Profile"));
-        PryGuardProfileSettingsVM = new PryGuardProfileSettingsViewModel(Setting.PryGuardProfiles.Last());
+        PryGuardProfileSettingsVM = new PryGuardProfileSettingsViewModel(Setting.PryGuardProfiles.Last())
+        {
+            IsEdit = false // Set IsEdit to false for new profiles
+        };
         this.NextStep(PryGuardProfileSettingsVM);
         PryGuardProfileSettingsVM.PryGuardProfilesVM = this;
     }
+
     private void DeleteProfile(object arg)
     {
         int profileIdToDelete = (int)arg;
