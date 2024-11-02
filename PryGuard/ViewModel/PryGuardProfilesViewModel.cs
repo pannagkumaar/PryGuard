@@ -8,6 +8,8 @@ using PryGuard.Services.Commands;
 using PryGuard.Services.Settings;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using PryGuard.Services.Helpers;
+using System.Diagnostics;
 
 namespace PryGuard.ViewModel;
 public class PryGuardProfilesViewModel : BaseViewModel
@@ -27,6 +29,7 @@ public class PryGuardProfilesViewModel : BaseViewModel
     #endregion
 
     #region Properties
+    public ObservableCollection<string> SavedProxies { get; set; }
     private ObservableCollection<ProfileTab> _profileTabs;
     public ObservableCollection<ProfileTab> ProfileTabs
     {
@@ -101,6 +104,7 @@ public class PryGuardProfilesViewModel : BaseViewModel
         ProfileTabs = new();
         Setting = new();
         Task.Run(() => { LoadTabs(); });
+        
     }
     #endregion
 
@@ -124,13 +128,19 @@ public class PryGuardProfilesViewModel : BaseViewModel
 
     private void DeleteProfile(object arg)
     {
+        LoadSavedProxies(); 
         int profileIdToDelete = (int)arg;
 
         // Find the profile with the exact matching ID
         var profileToRemove = Setting.PryGuardProfiles.FirstOrDefault(profile => profile.Id == profileIdToDelete);
 
+        string proxyToRemove = null;
+
         if (profileToRemove != null)
         {
+            // Get the proxy associated with the profile
+            proxyToRemove = ConstructProxyString(profileToRemove.Proxy);
+
             if (Directory.Exists(profileToRemove.CachePath))
             {
                 Directory.Delete(profileToRemove.CachePath, true);
@@ -149,8 +159,58 @@ public class PryGuardProfilesViewModel : BaseViewModel
             ProfileTabs.Remove(tabToRemove);
         }
 
+        // Now, remove the proxy if it's not used by any other profiles
+        if (!string.IsNullOrEmpty(proxyToRemove))
+        {
+            bool isProxyUsedElsewhere = IsProxyUsedElsewhere(proxyToRemove, profileIdToDelete);
+
+            if (!isProxyUsedElsewhere)
+            {
+                
+                // Remove the proxy from SavedProxies
+                if (SavedProxies.Contains(proxyToRemove))
+                {
+                    int length = SavedProxies.Count;
+                    SavedProxies.Remove(proxyToRemove);
+
+                     length = SavedProxies.Count;
+                    // Save the updated list of saved proxies
+                    SaveSavedProxies();
+                }
+            }
+        }
+
         Setting.SaveSettings();
     }
+    // Method to construct the proxy string from ProxySettings
+private string ConstructProxyString(ProxySettings proxy)
+{
+    if (proxy == null || string.IsNullOrEmpty(proxy.ProxyAddress))
+        return null;
+
+    if (!string.IsNullOrEmpty(proxy.ProxyLogin) && !string.IsNullOrEmpty(proxy.ProxyPassword))
+    {
+        return $"{proxy.ProxyAddress}:{proxy.ProxyPort}:{proxy.ProxyLogin}:{proxy.ProxyPassword}";
+    }
+    else
+    {
+        return $"{proxy.ProxyAddress}:{proxy.ProxyPort}";
+    }
+}
+
+// Method to check if the proxy is used by other profiles
+private bool IsProxyUsedElsewhere(string proxyString, int excludingProfileId)
+{
+    return Setting.PryGuardProfiles.Any(profile =>
+    {
+        if (profile.Id == excludingProfileId)
+            return false;
+
+        string profileProxyString = ConstructProxyString(profile.Proxy);
+        return proxyString == profileProxyString;
+    });
+}
+
 
     private void RefreshProfiles(object arg)
     {
@@ -211,7 +271,26 @@ public class PryGuardProfilesViewModel : BaseViewModel
             Setting.SaveSettings();
         }
     }
+    public void LoadSavedProxies()
+    {
+        var path = Path.Combine(ClientConfig.ChromeDataPath, "SavedProxies.txt");
+        if (File.Exists(path))
+        {
+            var lines = File.ReadAllLines(path);
+            SavedProxies = new ObservableCollection<string>(lines);
+        }
+        else
+        {
+            SavedProxies = new ObservableCollection<string>();
+        }
+    }
 
+
+    public void SaveSavedProxies()
+    {
+        var path = Path.Combine(ClientConfig.ChromeDataPath, "SavedProxies.txt");
+        File.WriteAllLines(path, SavedProxies);
+    }
     public void LoadTabs()
     {
         foreach (var item in Setting.PryGuardProfiles)
