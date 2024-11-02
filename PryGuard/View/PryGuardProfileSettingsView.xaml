@@ -244,6 +244,7 @@
                     Margin="10,10,0,0"/>
                 <RadioButton 
                     Grid.Row="3"
+                    x:Name="rbSavedProxies"
                     Style="{StaticResource ThemeRadioBSettingsMainTheme}"
                     Content="SAVED PROXIES"
                     HorizontalAlignment="Right"
@@ -340,10 +341,20 @@
                         </StackPanel>
                     </Button>
                 </StackPanel>
+                <ComboBox
+                    Grid.Row="3"
+                    Width="363"
+                    Height="22"
+                    Margin="14,35,0,0"
+                    Style="{StaticResource ThemeCombobox}"
+                    Visibility="{Binding IsChecked, ElementName=rbSavedProxies, Converter={StaticResource b2v}}"
+                    ItemsSource="{Binding SavedProxies}"
+                    SelectedItem="{Binding PryGuardProf.Proxy.ProxyLine}"
+                     />
                 <!--#endregion-->
 
                 <!--#region Cookie-->
-               
+
                 <StackPanel Grid.Row="4" Orientation="Horizontal">
                     <TextBox
                         Style="{StaticResource ThemeTextbox}"
@@ -1280,12 +1291,12 @@
 
                 <!--#region Proxy-->
                 <TextBlock
-                    Grid.Row="4"
+                    Grid.Row="3"
                     Grid.Column="0"
                     Style="{StaticResource ProfileSettingsSummary}"
                     Text="Proxy:"
                     FontWeight="SemiBold"
-                    Margin="10,0,0,0"/>
+                    Margin="10,0,0,0" Grid.RowSpan="2" VerticalAlignment="Bottom"/>
                 <TextBlock
                     Grid.Row="4"
                     Grid.Column="1"
