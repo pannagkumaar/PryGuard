@@ -90,8 +90,35 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public ICommand OpenBookmarkCommand { get; }
     public ICommand OpenDevToolsCommand { get; }
     public ICommand ToggleIncognitoModeCommand { get; }
+    public ICommand ShowFindBarCommand { get; }
+    public ICommand CloseFindBarCommand { get; }
+    public ICommand FindNextCommand { get; }
+    public ICommand FindPreviousCommand { get; }
+    public Action FocusSearchTextBoxAction { get; set; }
 
     #endregion
+    private bool _isFindBarVisible;
+    public bool IsFindBarVisible
+    {
+        get => _isFindBarVisible;
+        set
+        {
+            _isFindBarVisible = value;
+            OnPropertyChanged(nameof(IsFindBarVisible));
+        }
+    }
+
+    private string _searchText;
+    public string SearchText
+    {
+        get => _searchText;
+        set
+        {
+            _searchText = value;
+            OnPropertyChanged(nameof(SearchText));
+            PerformSearch(); // Perform search as the user types
+        }
+    }
 
     private string _cookies;
     public string Cookies
@@ -219,6 +246,10 @@ public class PryGuardBrowserViewModel : BaseViewModel
         OpenContextMenuSettingsCommand = new RelayCommand(OpenContextMenuSettings);
         ToggleIncognitoModeCommand = new RelayCommand(ToggleIncognitoMode);
         OpenDevToolsCommand = new RelayCommand(OpenDevTools);
+        ShowFindBarCommand = new RelayCommand(ShowFindBar);
+        CloseFindBarCommand = new RelayCommand(CloseFindBar);
+        FindNextCommand = new RelayCommand(FindNext);
+        FindPreviousCommand = new RelayCommand(FindPrevious);
         CurWindowState = WindowState.Maximized;
 
 
@@ -1420,7 +1451,68 @@ public class PryGuardBrowserViewModel : BaseViewModel
     }
 
     #endregion
+    #region find work
+    private void ShowFindBar()
+    {
+        IsFindBarVisible = true;
+        //FocusSearchTextBoxAction?.Invoke();
+        
+    }
 
+    private void CloseFindBar()
+    {
+        IsFindBarVisible = false;
+        // Stop finding
+        var browser = CurrentTabItem?.Content as PryGuardBrowser;
+        browser?.GetBrowserHost()?.StopFinding(true);
+        SearchText = string.Empty;
+    }
+
+    private void FindNext()
+    {
+        var browser = CurrentTabItem?.Content as PryGuardBrowser;
+        var browserHost = browser?.GetBrowserHost();
+
+        if (!string.IsNullOrEmpty(SearchText) && browserHost != null)
+        {
+            // Call Find with the "resume" parameter set to true to move to the next match
+            browserHost.Find(SearchText, forward: true, findNext: true, matchCase: false);
+        }
+    }
+
+    private void FindPrevious()
+    {
+        var browser = CurrentTabItem?.Content as PryGuardBrowser;
+        var browserHost = browser?.GetBrowserHost();
+
+        if (!string.IsNullOrEmpty(SearchText) && browserHost != null)
+        {
+            // Call Find with the "resume" parameter set to true to move to the previous match
+            browserHost.Find(SearchText, forward: false, findNext: true, matchCase: false);
+        }
+    }
+
+
+    private void PerformSearch(bool forward = true)
+    {
+        var browser = CurrentTabItem?.Content as PryGuardBrowser;
+        var browserHost = browser?.GetBrowserHost();
+
+        if (string.IsNullOrEmpty(SearchText))
+        {
+            // Stop finding when the search text is empty to clear previous results
+            browserHost?.StopFinding(true);
+            return;
+        }
+
+        if (browserHost != null)
+        {
+            browserHost.Find(SearchText, forward, false, false);
+        }
+    }
+
+
+    #endregion
     #region Window Work
     private void Browser_PreviewKeyDown(object sender, KeyEventArgs e)
     {
@@ -1523,6 +1615,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             browser.GetFocusedFrame()?.Undo();
             e.Handled = true;
         }
+
     }
 
 
