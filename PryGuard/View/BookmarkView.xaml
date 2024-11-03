@@ -70,15 +70,19 @@
                                                PreviewMouseLeftButtonDown="OnLinkClick" />
 
                                     <!-- Trash can icon as the remove button -->
+                                    <!-- BookmarkDeleteButton.xaml or within your Bookmark ItemTemplate -->
                                     <Button Grid.Column="2" 
-                                         Command="{Binding DataContext.RemoveBookmarkCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                         CommandParameter="{Binding}" 
-                                         Background="Transparent" 
-                                         BorderThickness="0">
+        Command="{Binding DataContext.RemoveBookmarkCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+        CommandParameter="{Binding}" 
+        Background="Transparent" 
+        BorderThickness="0"
+        ToolTip="Delete Bookmark">
                                         <Image Source="{StaticResource DeleteIcon}" 
-                                             Width="16" 
-                                             Height="16" />
+           Width="16" 
+           Height="16" />
                                     </Button>
+
+
                                 </Grid>
                             </Border>
                         </DataTemplate>

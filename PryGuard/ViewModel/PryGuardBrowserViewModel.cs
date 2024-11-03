@@ -31,6 +31,7 @@ using System.IO;
 using PryGuard.View;
 using CefSharp.Wpf;
 using PryGuard.View;
+using CefSharp.DevTools.Autofill;
 
 
 namespace PryGuard.ViewModel;
@@ -72,6 +73,8 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public RelayCommand AddIncognitoTabCommand { get; private set; }
     public RelayCommand OpenTabCommand { get; private set; }
     public RelayCommand CloseTabCommand { get; private set; }
+    public RelayCommand<PryGuardHistoryItem> DeleteHistoryItemCommand { get; set; }
+    public RelayCommand<Bookmark> RemoveBookmarkCommand { get;  set; }
     public RelayCommand RefreshCommand { get; private set; }
     public RelayCommand ForwardCommand { get; private set; }
     public RelayCommand BackCommand { get; private set; }
@@ -86,7 +89,6 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public DelegateCommand CloseCommand =>
           _closeCommand ?? (_closeCommand = new DelegateCommand(obj => CloseWindow(obj)));
     public ICommand AddBookmarkCommand { get; }
-    public ICommand RemoveBookmarkCommand { get; }
     public ICommand OpenBookmarkCommand { get; }
     public ICommand OpenDevToolsCommand { get; }
     public ICommand ToggleIncognitoModeCommand { get; }
@@ -242,6 +244,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         BackCommand = new RelayCommand(Back);
         AddressOnKeyDownCommand = new RelayCommand(AddressOnKeyDown);
         LoadHistoryLinkCommand = new RelayCommand(LoadHistoryLink);
+        DeleteHistoryItemCommand = new RelayCommand<PryGuardHistoryItem>(DeleteHistoryItem);
         OpenHistoryCommand = new RelayCommand(AddTabHistory);
         OpenContextMenuSettingsCommand = new RelayCommand(OpenContextMenuSettings);
         ToggleIncognitoModeCommand = new RelayCommand(ToggleIncognitoMode);
@@ -892,6 +895,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     {
         _bookmarkManager.RemoveBookmark(bookmark);
     }
+
     private void Browser_LoadingStateChanged(object? sender, LoadingStateChangedEventArgs e)
     {
     }
@@ -969,6 +973,33 @@ public class PryGuardBrowserViewModel : BaseViewModel
                 Console.WriteLine($"Error saving history: {ex.Message}");
             }
         });
+    }
+
+    private void SaveHistoryList()
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(PryGuardHistoryList, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(_profileHistoryPath, json);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error saving history: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    public void DeleteHistoryItem(PryGuardHistoryItem historyItem)
+    {
+        if (historyItem == null)
+        {
+            MessageBox.Show("No history item selected for deletion.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+        // Remove the item from the ObservableCollection
+        PryGuardHistoryList.Remove(historyItem);
+
+        SaveHistoryList();
+        
     }
 
     private void LoadHistoryJson()

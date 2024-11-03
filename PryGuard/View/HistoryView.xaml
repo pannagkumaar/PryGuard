@@ -73,15 +73,18 @@
                        MouseLeftButtonUp="OnLinkClick" />
 
                                     <!-- New delete button -->
+                                    <!-- HistoryDeleteButton.xaml or within your History ItemTemplate -->
                                     <Button Grid.Column="2" 
-Command="{Binding DataContext.RemoveBookmarkCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-CommandParameter="{Binding}" 
-Background="Transparent" 
-BorderThickness="0">
+        Command="{Binding DataContext.DeleteHistoryItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+        CommandParameter="{Binding}" 
+        Background="Transparent" 
+        BorderThickness="0"
+        ToolTip="Delete History Item">
                                         <Image Source="{StaticResource DeleteIcon}" 
-    Width="16" 
-    Height="16" />
+           Width="16" 
+           Height="16" />
                                     </Button>
+
                                 </Grid>
                             </Border>
                         </DataTemplate>
