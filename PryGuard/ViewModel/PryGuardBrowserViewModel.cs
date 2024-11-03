@@ -310,7 +310,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         {
             _blockManager = new BlockManager();
             _nativeManager = new NativeSourceManager();
-            _blockManager.IsWork = _PryGuardProfile.IsAdBlock;
+            _blockManager.IsActive = _PryGuardProfile.IsAdBlock;
             _requestHandler = new RequestHandler(_blockManager);
             _requestContextSettings = new RequestContextSettings();
             _lifespanHandler = new LifespanHandler();
