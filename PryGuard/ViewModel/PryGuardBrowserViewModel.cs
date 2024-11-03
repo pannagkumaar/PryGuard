@@ -674,58 +674,58 @@ public class PryGuardBrowserViewModel : BaseViewModel
     
 
 
-    public async Task CaptureScreenshotAsync(ChromiumWebBrowser browser)
-    {
-        if (browser.IsBrowserInitialized)
-        {
-            var bitmap = new Bitmap((int)browser.ActualWidth, (int)browser.ActualHeight);
-            var browserHost = browser.GetBrowser().GetHost();
+    //public async Task CaptureScreenshotAsync(ChromiumWebBrowser browser)
+    //{
+    //    if (browser.IsBrowserInitialized)
+    //    {
+    //        var bitmap = new Bitmap((int)browser.ActualWidth, (int)browser.ActualHeight);
+    //        var browserHost = browser.GetBrowser().GetHost();
 
-            // Render the browser into a bitmap
-            var viewRect = new CefSharp.Structs.Rect(0, 0, (int)browser.ActualWidth, (int)browser.ActualHeight);
+    //        // Render the browser into a bitmap
+    //        var viewRect = new CefSharp.Structs.Rect(0, 0, (int)browser.ActualWidth, (int)browser.ActualHeight);
 
-            // Take screenshot (you need to implement CaptureBrowserAsBitmap manually or capture from the view if possible)
-            var screenshotBytes = CaptureBrowserAsBitmap(browser);
+    //        // Take screenshot (you need to implement CaptureBrowserAsBitmap manually or capture from the view if possible)
+    //        var screenshotBytes = CaptureBrowserAsBitmap(browser);
 
-            // Save screenshot to file
-            var screenshotPath = Path.Combine(_PryGuardProfileToStart.CachePath, "last_visited_site_screenshot.png");
-            using (var fileStream = new FileStream(screenshotPath, FileMode.Create, FileAccess.Write))
-            {
-                await fileStream.WriteAsync(screenshotBytes, 0, screenshotBytes.Length);
-            }
+    //        // Save screenshot to file
+    //        var screenshotPath = Path.Combine(_PryGuardProfileToStart.CachePath, "last_visited_site_screenshot.png");
+    //        using (var fileStream = new FileStream(screenshotPath, FileMode.Create, FileAccess.Write))
+    //        {
+    //            await fileStream.WriteAsync(screenshotBytes, 0, screenshotBytes.Length);
+    //        }
 
-            // Alert message instead of console output
-            MessageBox.Show("Screenshot captured and saved successfully at " + screenshotPath, "Screenshot Saved", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-        else
-        {
-            // Alert message instead of console output
-            MessageBox.Show("Browser is not initialized.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-    }
+    //        // Alert message instead of console output
+    //        MessageBox.Show("Screenshot captured and saved successfully at " + screenshotPath, "Screenshot Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+    //    }
+    //    else
+    //    {
+    //        // Alert message instead of console output
+    //        MessageBox.Show("Browser is not initialized.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+    //    }
+    //}
 
-    private byte[] CaptureBrowserAsBitmap(ChromiumWebBrowser browser)
-    {
-        var viewWidth = (int)browser.ActualWidth;
-        var viewHeight = (int)browser.ActualHeight;
+    //private byte[] CaptureBrowserAsBitmap(ChromiumWebBrowser browser)
+    //{
+    //    var viewWidth = (int)browser.ActualWidth;
+    //    var viewHeight = (int)browser.ActualHeight;
 
-        // Create a new bitmap of the browser size
-        var bitmap = new Bitmap(viewWidth, viewHeight);
+    //    // Create a new bitmap of the browser size
+    //    var bitmap = new Bitmap(viewWidth, viewHeight);
 
-        // Render the browser into the bitmap
-        using (var graphics = Graphics.FromImage(bitmap))
-        {
-            // Use System.Drawing.Point instead of System.Windows.Point
-            graphics.CopyFromScreen(new System.Drawing.Point(0, 0), System.Drawing.Point.Empty, new System.Drawing.Size(viewWidth, viewHeight));
-        }
+    //    // Render the browser into the bitmap
+    //    using (var graphics = Graphics.FromImage(bitmap))
+    //    {
+    //        // Use System.Drawing.Point instead of System.Windows.Point
+    //        graphics.CopyFromScreen(new System.Drawing.Point(0, 0), System.Drawing.Point.Empty, new System.Drawing.Size(viewWidth, viewHeight));
+    //    }
 
-        // Convert the Bitmap to a byte array
-        using (var ms = new MemoryStream())
-        {
-            bitmap.Save(ms, ImageFormat.Png);
-            return ms.ToArray();
-        }
-    }
+    //    // Convert the Bitmap to a byte array
+    //    using (var ms = new MemoryStream())
+    //    {
+    //        bitmap.Save(ms, ImageFormat.Png);
+    //        return ms.ToArray();
+    //    }
+    //}
 
 
 
@@ -1774,14 +1774,14 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
     private async void CloseWindow(object obj)
     {
-        if (CurrentTabItem != null)
-        {
-            var currentBrowser = CurrentTabItem.Content as ChromiumWebBrowser;
-            if (currentBrowser != null)
-            {
-                await CaptureScreenshotAsync(currentBrowser);
-            }
-        }
+        //if (CurrentTabItem != null)
+        //{
+        //    var currentBrowser = CurrentTabItem.Content as ChromiumWebBrowser;
+        //    if (currentBrowser != null)
+        //    {
+        //        await CaptureScreenshotAsync(currentBrowser);
+        //    }
+        //}
         ViewManager.Close(this);
     }
     public bool CanClose()
