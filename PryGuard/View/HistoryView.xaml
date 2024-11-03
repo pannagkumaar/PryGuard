@@ -74,13 +74,13 @@
 
                                     <!-- New delete button -->
                                     <!-- HistoryDeleteButton.xaml or within your History ItemTemplate -->
-                                    <Button Grid.Column="2" 
+                                    <Button Grid.Column="3" 
         Command="{Binding DataContext.DeleteHistoryItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
         CommandParameter="{Binding}" 
         Background="Transparent" 
         BorderThickness="0"
         ToolTip="Delete History Item">
-                                        <Image Source="{StaticResource DeleteIcon}" 
+                                        <Image Source="{DynamicResource DeleteIcon}" 
            Width="16" 
            Height="16" />
                                     </Button>

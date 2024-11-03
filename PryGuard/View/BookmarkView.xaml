@@ -77,7 +77,7 @@
         Background="Transparent" 
         BorderThickness="0"
         ToolTip="Delete Bookmark">
-                                        <Image Source="{StaticResource DeleteIcon}" 
+                                        <Image Source="{DynamicResource DeleteIcon}" 
            Width="16" 
            Height="16" />
                                     </Button>
