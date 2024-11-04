@@ -192,14 +192,34 @@ public class FakeProfile : INotifyPropertyChanged
     private WebGLSetting _webGL;
     public WebGLSetting WebGL
     {
-        get => _webGL;
+        get
+        {
+            Debug.WriteLine("Getting WebGL value...");
+            LogWebGL(_webGL);
+            return _webGL;
+        }
         set
         {
             if (_webGL == value)
                 return;
+            Debug.WriteLine("Setting WebGL value...");
+            LogWebGL(value);
             _webGL = value;
             OnPropertyChanged(nameof(WebGL));
         }
+    }
+
+    private void LogWebGL(WebGLSetting webGL)
+    {
+        if (webGL == null)
+        {
+            Debug.WriteLine("WebGL is null.");
+            return;
+        }
+
+        Debug.WriteLine($"WebGL UNMASKED_VENDOR: {WebGLSetting.UNMASKED_VENDOR}");
+        Debug.WriteLine($"WebGL UNMASKED_RENDERER: {WebGLSetting.UNMASKED_RENDERER}");
+        // Add more properties of WebGLSetting if needed
     }
 
     private MediaDevicesSettings _mediaDevicesSettings;

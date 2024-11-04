@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom WebGL Info Injection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Injected WebGL Fingerprint Information</h1>
+    <pre id="webgl-info">Loading...</pre>
+
+    <script>
+        // Inject custom WebGL info by overriding getParameter method
+        (function() {
+            const originalGetParameter = WebGLRenderingContext.prototype.getParameter;
+            WebGLRenderingContext.prototype.getParameter = function(parameter) {
+                if (parameter === this.getExtension('WEBGL_debug_renderer_info')?.UNMASKED_VENDOR_WEBGL) {
+                    return 'Custom Vendor';
+                }
+                if (parameter === this.getExtension('WEBGL_debug_renderer_info')?.UNMASKED_RENDERER_WEBGL) {
+                    return 'Custom Renderer';
+                }
+                return originalGetParameter.call(this, parameter);
+            };
+        })();
+
+        function getWebGLFingerprint() {
+            // Create a canvas element
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+
+            // Check if WebGL is supported
+            if (!gl) {
+                return 'WebGL is not supported on this browser.';
+            }
+
+            // Retrieve WebGL information
+            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            const vendor = debugInfo ? gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) : 'Unknown';
+            const renderer = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'Unknown';
+
+            // Get the user agent information
+            const userAgent = navigator.userAgent;
+
+            return `Vendor: ${vendor}\nRenderer: ${renderer}\nUser Agent: ${userAgent}`;
+        }
+
+        // Update the pre element with injected WebGL info
+        document.getElementById('webgl-info').textContent = getWebGLFingerprint();
+    </script>
+</body>
+</html>
+

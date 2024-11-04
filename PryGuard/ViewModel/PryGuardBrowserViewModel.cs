@@ -351,7 +351,8 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
         if (isNewPage)
         {
-            var codeForFakeProfile = _nativeManager.GetCodeForFakeProfile("fakeinject", PryGuardProfile.FakeProfile);
+            var codeForFakeProfile = _nativeManager.GetCodeForFakeProfile("" +
+                "fakeinject", PryGuardProfile.FakeProfile);
             _renderMessageHandler = new RenderMessageHandler(codeForFakeProfile);
             PryGuardBrowser.RenderProcessMessageHandler = _renderMessageHandler;
             _loadHandler = new LoadHandler("777", codeForFakeProfile, () => { ProfileFail(); });
