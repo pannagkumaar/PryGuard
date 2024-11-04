@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Browser Fingerprinting Attributes</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin-bottom: 10px; }
+        .attribute { font-weight: bold; }
+        pre { background-color: #f4f4f4; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Browser Fingerprinting Attributes</h1>
+    <ul id="attributes-list">
+        <!-- Attributes will be injected here -->
+    </ul>
+
+    <script>
+        async function collectAttributes() {
+            const attributes = {};
+
+            // User Agent
+            attributes['UserAgent'] = navigator.userAgent;
+
+            // Browser Type
+            attributes['BrowserType'] = (() => {
+                if (navigator.userAgent.indexOf("Chrome") != -1) return "Chrome";
+                if (navigator.userAgent.indexOf("Firefox") != -1) return "Firefox";
+                if (navigator.userAgent.indexOf("Safari") != -1) return "Safari";
+                if (navigator.userAgent.indexOf("Edge") != -1) return "Edge";
+                return "Unknown";
+            })();
+
+            // OS Version
+            attributes['OSVersion'] = navigator.platform;
+
+            // Is X64
+            attributes['IsX64'] = navigator.userAgent.includes('x86_64') || navigator.userAgent.includes('Win64');
+
+            // Do Not Track
+            attributes['IsSendDoNotTrack'] = navigator.doNotTrack == "1";
+
+            // CPU Concurrency
+            attributes['CpuConcurrency'] = navigator.hardwareConcurrency;
+
+            // Memory (approximate)
+            if ('deviceMemory' in navigator) {
+                attributes['MemoryAvailable'] = navigator.deviceMemory + " GB";
+            }
+
+            // Screen Size
+            attributes['ScreenSize'] = `${screen.width}x${screen.height}`;
+
+            // Fonts
+            attributes['Fonts'] = await getFonts();
+
+            // WebGL Information
+            attributes['WebGL'] = getWebGLInfo();
+
+            // Media Devices
+            attributes['MediaDevicesSettings'] = await getMediaDevices();
+
+            // WebRTC Settings
+            attributes['WebRtcSettings'] = await getWebRTCSettings();
+
+            // Geolocation
+            attributes['GeoSettings'] = await getGeolocation();
+
+            // Timezone
+            attributes['TimezoneSetting'] = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+            // Display attributes
+            displayAttributes(attributes);
+        }
+
+        function displayAttributes(attributes) {
+            const list = document.getElementById('attributes-list');
+
+            for (const key in attributes) {
+                const li = document.createElement('li');
+                li.innerHTML = `<span class="attribute">${key}:</span> ${formatAttribute(attributes[key])}`;
+                list.appendChild(li);
+            }
+        }
+
+        function formatAttribute(value) {
+            if (typeof value === 'object') {
+                return `<pre>${JSON.stringify(value, null, 2)}</pre>`;
+            }
+            return value;
+        }
+
+        async function getFonts() {
+            // Detect installed fonts
+            const fontList = ["Arial", "Verdana", "Times New Roman", "Courier New", "Courier", "Impact", "Comic Sans MS", "Georgia", "Palatino", "Garamond", "Bookman", "Trebuchet MS", "Arial Black", "Helvetica"];
+            const availableFonts = [];
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            const baseFont = 'monospace';
+            context.font = '72px monospace';
+            const baselineSize = context.measureText('A').width;
+
+            for (const font of fontList) {
+                context.font = `72px "${font}", ${baseFont}`;
+                const currentSize = context.measureText('A').width;
+                if (baselineSize !== currentSize) {
+                    availableFonts.push(font);
+                }
+            }
+            return availableFonts;
+        }
+
+        function getWebGLInfo() {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!gl) return {};
+
+            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            const info = {
+                renderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL),
+                vendor: gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
+                version: gl.getParameter(gl.VERSION),
+                shadingLanguageVersion: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
+                extensions: gl.getSupportedExtensions()
+            };
+            return info;
+        }
+
+        async function getMediaDevices() {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                const audioDevices = devices.filter(device => device.kind === 'audioinput');
+                return {
+                    videoDevices: videoDevices.length,
+                    audioDevices: audioDevices.length,
+                    devicesList: devices.map(device => ({ kind: device.kind, label: device.label }))
+                };
+            } catch (err) {
+                return { error: err.message };
+            }
+        }
+
+        async function getWebRTCSettings() {
+            const rtcConfig = { iceServers: [{ urls: ["stun:stun.l.google.com:19302"] }] };
+            const peerConnection = new RTCPeerConnection(rtcConfig);
+            return {
+                iceGatheringState: peerConnection.iceGatheringState,
+                signalingState: peerConnection.signalingState,
+                iceConnectionState: peerConnection.iceConnectionState
+            };
+        }
+
+        async function getGeolocation() {
+            return new Promise((resolve) => {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            resolve({
+                                latitude: position.coords.latitude,
+                                longitude: position.coords.longitude,
+                                accuracy: position.coords.accuracy
+                            });
+                        },
+                        (error) => {
+                            resolve({ error: error.message });
+                        }
+                    );
+                } else {
+                    resolve({ error: "Geolocation not supported" });
+                }
+            });
+        }
+
+        collectAttributes();
+    </script>
+</body>
+</html>
