@@ -86,6 +86,8 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public RelayCommand AddressOnKeyDownCommand { get; private set; }
     public RelayCommand OpenContextMenuSettingsCommand { get; private set; }
 
+
+
     public DelegateCommand CloseCommand =>
           _closeCommand ?? (_closeCommand = new DelegateCommand(obj => CloseWindow(obj)));
     public ICommand AddBookmarkCommand { get; }
@@ -298,10 +300,12 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private async Task<PryGuardBrowser> InitIncognitoBrowser()
     {
         var browser = await CreateBrowser(isNewPage: true, id: _mainIDCounter, profile: _PryGuardProfileToStart, incognitoCache: _incognitoCache);
+        browser.IsIncognito = true; // Set incognito mode
         _browsers.Add(browser);
-        _mainIDCounter++; // Increment the ID counter for uniqueness
+        _mainIDCounter++;
         return browser;
     }
+
 
 
 
@@ -317,13 +321,14 @@ public class PryGuardBrowserViewModel : BaseViewModel
             _requestHandler = new RequestHandler(_blockManager);
             _requestContextSettings = new RequestContextSettings();
             _lifespanHandler = new LifespanHandler();
-            _lifespanHandler.PopupRequested += (url) =>
+            _lifespanHandler.PopupRequested += (url, isIncognito) =>
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    OpenUrlInNewTab(url);
+                    OpenUrlInNewTab(url, isIncognito);
                 });
             };
+
 
             // Set up cache path
             if (_PryGuardProfile.IsLoadCacheInMemory && incognitoCache == null)
@@ -376,11 +381,15 @@ public class PryGuardBrowserViewModel : BaseViewModel
             }
 
             isNewPage = true;
-            return InitBasicSettingsBrowser(isNewPage, id, profile);
+            var browser = InitBasicSettingsBrowser(isNewPage, id, profile);
+            browser.IsIncognito = incognitoCache != null; // Set based on incognitoCache
+            return browser;
         }
         else
         {
-            return InitBasicSettingsBrowser(isNewPage, id, profile);
+            var browser = InitBasicSettingsBrowser(isNewPage, id, profile);
+            browser.IsIncognito = incognitoCache != null; // Set based on incognitoCache
+            return browser;
         }
     }
 
@@ -561,12 +570,12 @@ public class PryGuardBrowserViewModel : BaseViewModel
                 <button type=""submit"" class=""search-button"">Search</button>
             </form>
              <div class=""quick-links"">
-            <a href=""https://www.github.com"" class=""quick-link"" target=""_self"">GitHub</a>
-            <a href=""https://www.stackoverflow.com"" class=""quick-link"" target=""_self"">Stack Overflow</a>
-            <a href=""https://www.reddit.com"" class=""quick-link"" target=""_self"">Reddit</a>
+            <a href=""https://www.github.com"" class=""quick-link"" target=""_blank"">GitHub</a>
+            <a href=""https://www.stackoverflow.com"" class=""quick-link"" target=""_blank"">Stack Overflow</a>
+            <a href=""https://www.reddit.com"" class=""quick-link"" target=""_blank"">Reddit</a>
             <a href=""https://www.youtube.com"" class=""quick-link"" target=""_blank"">YouTube</a>
-            <a href=""https://iphey.com"" class=""quick-link"" target=""_self"">IP Hey</a>
-            <a href=""https://amiunique.org"" class=""quick-link"" target=""_self"">Am I Unique</a>
+            <a href=""https://iphey.com"" class=""quick-link"" target=""_blank"">IP Hey</a>
+            <a href=""https://amiunique.org"" class=""quick-link"" target=""_blank"">Am I Unique</a>
         </div>
         </div>
         <script>
@@ -905,21 +914,20 @@ public class PryGuardBrowserViewModel : BaseViewModel
     #region HistoryWork
 
     public void ToggleIncognitoMode()
+{
+    if (IsIncognitoMode)
     {
-        if (IsIncognitoMode)
-        {
-            // Turn off incognito mode and close the incognito tab
-            CloseCurrentTabIfIncognito();
-            IsIncognitoMode = false;
-        }
-        else
-        {
-            // Turn on incognito mode and add a new incognito tab
-            IsIncognitoMode = true;
-            AddIncognitoTab();
-        }
-        OnPropertyChanged(nameof(IncognitoModeText));
+        CloseCurrentTabIfIncognito();
+        IsIncognitoMode = false;
     }
+    else
+    {
+        IsIncognitoMode = true;
+        AddIncognitoTab();
+    }
+    OnPropertyChanged(nameof(IncognitoModeText));
+}
+
 
     private void DeleteHistory()
     {
@@ -1293,7 +1301,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             }
 
             // Clear temporary incognito data
-            var incognitoPath = Path.Combine(Path.GetTempPath(), "PryGuardTempCache_" + _mainIDCounter);
+            var incognitoPath = Path.Combine(Path.GetTempPath(), "PryGuardTempCache_" + incognitoTab.Tag);
             if (Directory.Exists(incognitoPath))
             {
                 Directory.Delete(incognitoPath, true);
@@ -1305,27 +1313,40 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
 
 
-    private async void OpenUrlInNewTab(string url)
+
+    private async void OpenUrlInNewTab(string url, bool isIncognito = false)
     {
-        var browser = await InitBrowser(_mainIDCounter > 0);
+        PryGuardBrowser browser;
+
+        if (isIncognito)
+        {
+            browser = await InitIncognitoBrowser();
+        }
+        else
+        {
+            browser = await InitBrowser(_mainIDCounter > 0);
+        }
+
+        // Common setup code
         browser.TitleChanged += Browser_TitleChanged;
         browser.LoadingStateChanged += Browser_LoadingStateChanged;
         browser.AddressChanged += Browser_AddressChanged;
         browser.PreviewKeyDown += Browser_PreviewKeyDown;
-        // Navigate the browser to the URL
 
         browser.Load(url);
         browser.Focus();
+
         var newTabItem = new CustomTabItem()
         {
             Tag = _mainIDCounter,
             Content = browser,
             Title = browser.Title,
             Address = browser.Address,
-            CloseTabCommand = CloseTabCommand // Set the command
+            CloseTabCommand = CloseTabCommand,
+            IsIncognito = isIncognito // Set the incognito status
         };
 
-        // Set bindings to keep Title and Address updated
+        // Bindings
         browser.TitleChanged += (s, e) => newTabItem.Title = browser.Title;
         browser.AddressChanged += (s, e) => newTabItem.Address = browser.Address;
 
@@ -1340,23 +1361,14 @@ public class PryGuardBrowserViewModel : BaseViewModel
             DataContext = newTabItem
         };
 
-        button.SetBinding(Label.ContentProperty, new Binding("Title")); // Bind button content to Title
-
+        button.SetBinding(Label.ContentProperty, new Binding("Title"));
         button.DragEnter += BtnTabDragEnter;
         button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
 
-        if (_mainIDCounter == 0)
-        {
-            TabBtnsAndAddTabBtn.Insert(0, button);
-        }
-        else
-        {
-            TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
-        }
-
+        TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
         _mainIDCounter++;
-        
     }
+
 
 
     private void OpenDevTools(object obj)
@@ -1583,24 +1595,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             AddTab();
             e.Handled = true;
         }
-        //check for Ctrl+H (History)
-        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.H)
-        {
-            AddTabHistory();
-            e.Handled = true;
-        }   
-        //check for Ctrl+B (Bookmark)
-        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.B)
-        {
-            AddTabBookmark();
-            e.Handled = true;
-        }   
-        //check for Ctrl+J (Downloads)
-        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.J)
-        {
-            AddDownloadTab();
-            e.Handled = true;
-        }
+       
         // Check for Ctrl+W (Close Tab)
         else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.W)
         {

@@ -8,31 +8,34 @@ namespace PryGuard.Core.ChromeApi.Handlers
     /// </summary>
     public class LifespanHandler : ILifeSpanHandler
     {
-        public event Action<string> PopupRequested;
+        public event Action<string, bool> PopupRequested;
 
         public bool OnBeforePopup(
-            IWebBrowser browserControl,
-            IBrowser browser,
-            IFrame frame,
-            string targetUrl,
-            string targetFrameName,
-            WindowOpenDisposition targetDisposition,
-            bool userGesture,
-            IPopupFeatures popupFeatures,
-            IWindowInfo windowInfo,
-            IBrowserSettings browserSettings,
-            ref bool noJavascriptAccess,
-            out IWebBrowser newBrowser)
+       IWebBrowser browserControl,
+       IBrowser browser,
+       IFrame frame,
+       string targetUrl,
+       string targetFrameName,
+       WindowOpenDisposition targetDisposition,
+       bool userGesture,
+       IPopupFeatures popupFeatures,
+       IWindowInfo windowInfo,
+       IBrowserSettings browserSettings,
+       ref bool noJavascriptAccess,
+       out IWebBrowser newBrowser)
         {
             newBrowser = null;
 
-            // Cancel the popup
-            // Notify the main application to open the URL in a new tab
-            PopupRequested?.Invoke(targetUrl);
+            // Cast the browser control to PryGuardBrowser to access IsIncognito
+            var pryGuardBrowser = browserControl as PryGuardBrowser;
+            bool isIncognito = pryGuardBrowser?.IsIncognito ?? false;
 
-            // Return true to cancel the popup
-            return true;
+            // Invoke the event with both parameters
+            PopupRequested?.Invoke(targetUrl, isIncognito);
+
+            return true; // Cancel the popup
         }
+
 
         void ILifeSpanHandler.OnAfterCreated(
             IWebBrowser browserControl,

@@ -30,6 +30,9 @@
         <KeyBinding Key="W" Modifiers="Control" Command="{Binding CloseTabCommand}" />
         <KeyBinding Key="T" Modifiers="Control" Command="{Binding AddTabCommand}" />
         <KeyBinding Key="F" Modifiers="Control" Command="{Binding ShowFindBarCommand}" />
+        <KeyBinding Key="H" Modifiers="Control" Command="{Binding OpenHistoryCommand}"/>
+        <KeyBinding Key="B" Modifiers="Control" Command="{Binding AddBookmarkTabCommand }"/>
+        <KeyBinding Key="J" Modifiers="Control" Command="{Binding AddDownloadTabCommand}"/>
     </Window.InputBindings>
     <Window.Resources>
         <ResourceDictionary>

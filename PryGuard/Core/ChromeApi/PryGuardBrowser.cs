@@ -7,6 +7,7 @@ namespace PryGuard.Core.ChromeApi
 {
     public class PryGuardBrowser : ChromiumWebBrowser
     {
+        public bool IsIncognito { get; set; }
         public PryGuardBrowser(RequestContext context)
         {
             RequestContext = context;
