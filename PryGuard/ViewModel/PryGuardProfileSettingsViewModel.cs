@@ -17,6 +17,8 @@ using PryGuard.Services.Helpers;
 using System.Xml.Linq;
 using PryGuard.Model;
 using System.Linq;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace PryGuard.ViewModel;
 public class PryGuardProfileSettingsViewModel : BaseViewModel
@@ -29,6 +31,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     public RelayCommand SaveProfileCommand { get; private set; }
     public ICommand NewFingerprintCommand { get; }
     public ObservableCollection<string> Renderers { get; }
+    public ObservableCollection<string> SavedProxies { get; set; }
 
     #endregion
 
@@ -93,6 +96,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         get => _saveProfileButtonContent;
         set => Set(ref _saveProfileButtonContent, value);
     }
+
     public bool IsEdit { get; set; }
 
     private Brush _tbProxyBrush = Brushes.White;
@@ -101,7 +105,22 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         get => _tbProxyBrush;
         set => Set(ref _tbProxyBrush, value);
     }
+    private string _selectedSavedProxy;
+    public string SelectedSavedProxy
+    {
+        get => _selectedSavedProxy;
+        set
+        {
+            _selectedSavedProxy = value;
+            OnPropertyChanged(nameof(SelectedSavedProxy));
 
+            if (!string.IsNullOrEmpty(_selectedSavedProxy))
+            {
+                // Parse the selected proxy string and update PryGuardProf.Proxy
+                ParseAndSetProxy(_selectedSavedProxy);
+            }
+        }
+    }
     //private PryGuardProfile _PryGuardProf;
     //public PryGuardProfile PryGuardProf
     //{
@@ -123,6 +142,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         ImportProfileCommand = new RelayCommand(ImportProfile);
         PryGuardProf = PryGuardProfile;
         Renderers = new ObservableCollection<string>(WebGLFactory.Renderers);
+        LoadSavedProxies();
     }
     #endregion
 
@@ -149,7 +169,29 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     {
         // Find the profile by Id (if it exists) using FirstOrDefault in all cases
         var existingProfileTab = PryGuardProfilesVM.ProfileTabs.FirstOrDefault(tab => tab.Id == PryGuardProf.Id);
+        
+        if (!string.IsNullOrEmpty(PryGuardProf.Proxy.ProxyAddress))
+        {
+            // Construct the proxy string conditionally based on authentication
+            string proxyString;
+            if (!string.IsNullOrEmpty(PryGuardProf.Proxy.ProxyLogin) && !string.IsNullOrEmpty(PryGuardProf.Proxy.ProxyPassword))
+            {
+                // Include authentication details
+                proxyString = $"{PryGuardProf.Proxy.ProxyAddress}:{PryGuardProf.Proxy.ProxyPort}:{PryGuardProf.Proxy.ProxyLogin}:{PryGuardProf.Proxy.ProxyPassword}";
+            }
+            else
+            {
+                // No authentication, exclude login and password
+                proxyString = $"{PryGuardProf.Proxy.ProxyAddress}:{PryGuardProf.Proxy.ProxyPort}";
+            }
 
+            // Add the proxy string to the saved proxies if it's not already present
+            if (!SavedProxies.Contains(proxyString))
+            {
+                SavedProxies.Add(proxyString);
+                SaveSavedProxies();
+            }
+        }
         if (SaveProfileButtonContent == "Create" || SaveProfileButtonContent == "Import")
         {
             // Close the view and add a new profile tab
@@ -170,6 +212,8 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             }
 
             PryGuardProfilesVM.Setting.SaveSettings();
+            PryGuardProfilesVM.ProfileTabs.Clear();
+            PryGuardProfilesVM.LoadTabs();
         }
         else if (SaveProfileButtonContent == "Save" && PryGuardProf.Status == "NEW")
         {
@@ -243,6 +287,44 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
 
         PryGuardProf.IsSaved = true;
     }
+    private void ParseAndSetProxy(string proxyString)
+    {
+        var parts = proxyString.Split(':');
+
+        if (parts.Length == 2 || parts.Length == 4)
+        {
+            // Create a new ProxySettings instance
+            var proxySettings = new ProxySettings
+            {
+                ProxyAddress = parts[0],
+                ProxyPort = int.TryParse(parts[1], out int port) ? port : 8080,
+                IsCustomProxy = true
+            };
+
+            if (parts.Length == 4)
+            {
+                // Proxy with authentication
+                proxySettings.ProxyLogin = parts[2];
+                proxySettings.ProxyPassword = parts[3];
+                proxySettings.IsProxyAuth = true;
+            }
+            else
+            {
+                // Proxy without authentication
+                proxySettings.ProxyLogin = null;
+                proxySettings.ProxyPassword = null;
+                proxySettings.IsProxyAuth = false;
+            }
+
+            // Set the proxy type (adjust as needed)
+            proxySettings.IsHTTP = true; // Assuming HTTP for simplicity
+            proxySettings.IsSOCKS4 = false;
+            proxySettings.IsSOCKS5 = false;
+
+            // Update the profile's proxy settings
+            PryGuardProf.Proxy = proxySettings;
+        }
+    }
 
     private void ImportProfile(object arg)
     {
@@ -298,11 +380,40 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
 
     private void CloseProfileSettings(object arg)
     {
+        if (!PryGuardProf.IsSaved && !IsEdit)
+        {
+            // Remove the unsaved profile from the list
+            PryGuardProfilesVM.Setting.PryGuardProfiles.Remove(PryGuardProf);
+        }
         ViewManager.Close(this);
     }
+
     private void CloseWindowState(object arg)
     {
         WindowState = WindowState.Minimized;
     }
+    #endregion
+    #region proxywork
+    public void LoadSavedProxies()
+    {
+        var path = Path.Combine(ClientConfig.ChromeDataPath, "SavedProxies.txt");
+        if (File.Exists(path))
+        {
+            var lines = File.ReadAllLines(path);
+            SavedProxies = new ObservableCollection<string>(lines);
+        }
+        else
+        {
+            SavedProxies = new ObservableCollection<string>();
+        }
+    }
+
+
+    public void SaveSavedProxies()
+    {
+        var path = Path.Combine(ClientConfig.ChromeDataPath, "SavedProxies.txt");
+        File.WriteAllLines(path, SavedProxies);
+    }
+
     #endregion
 }

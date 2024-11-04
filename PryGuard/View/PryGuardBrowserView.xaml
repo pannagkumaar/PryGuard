@@ -7,7 +7,7 @@
         xmlns:panel="clr-namespace:PryGuard.Services.UI.Panel"
         xmlns:vm="clr-namespace:PryGuard.ViewModel"
         xmlns:views="clr-namespace:PryGuard.View"
-        
+        xmlns:conv="clr-namespace:PryGuard.Services.UI.Converters"
 
         mc:Ignorable="d"
         Background="White"
@@ -29,6 +29,7 @@
     <Window.InputBindings>
         <KeyBinding Key="W" Modifiers="Control" Command="{Binding CloseTabCommand}" />
         <KeyBinding Key="T" Modifiers="Control" Command="{Binding AddTabCommand}" />
+        <KeyBinding Key="F" Modifiers="Control" Command="{Binding ShowFindBarCommand}" />
     </Window.InputBindings>
     <Window.Resources>
         <ResourceDictionary>
@@ -54,6 +55,7 @@
                     </Button.InputBindings>
                 </Button>
             </DataTemplate>
+            <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         </ResourceDictionary>
     </Window.Resources>
 
@@ -68,9 +70,15 @@
     <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <!-- Existing row for tab buttons -->
+            <RowDefinition Height="Auto"/>
+            <!-- Existing row for browser buttons -->
+            <!-- New RowDefinition for the search bar -->
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
+            <!-- Existing row for content -->
         </Grid.RowDefinitions>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="160" />
@@ -177,6 +185,7 @@
                 <RowDefinition Height="30"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
+            
 
             <!--Button "Back"-->
             <StackPanel 
@@ -386,6 +395,17 @@
                                 </StackPanel>
                             </MenuItem.Header>
                         </MenuItem>
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding ToggleIncognitoModeCommand}">
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image
+                            Margin="0,0,8,0"
+                            Width="16" Height="16"
+                            Source="{StaticResource IncognitoIcon}"/>
+                                    <TextBlock Text="{Binding IncognitoModeText}"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
                         <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding OpenDevToolsCommand}">
                             <!-- New MenuItem -->
                             <MenuItem.Header>
@@ -457,7 +477,84 @@
             </ItemsControl>
         </Grid>
         <!--#endregion-->
+        <Grid
+    Grid.Row="2"
+    Grid.ColumnSpan="2"
+    Background="#35363A"
+    Visibility="{Binding IsFindBarVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+    Margin="0"
+    Height="24">
+            <!-- Reduced height from 30 to 24 -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <!-- Remove or adjust buttons as needed -->
+                <!-- If you decide to keep the buttons, make them smaller -->
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
+            <!-- Search TextBox -->
+            <TextBox
+    x:Name="findTextBox"
+    Grid.Column="0"
+    Margin="10,0,0,0"
+    VerticalAlignment="Center"
+    Height="20" 
+    Padding="5,0,5,0"
+    VerticalContentAlignment="Center"
+    Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
+                <TextBox.Style>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Background" Value="#202124"/>
+                        <Setter Property="BorderBrush" Value="#202124"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Setter Property="CaretBrush" Value="White"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsFindBarVisible}" Value="True">
+                                <Setter Property="FocusManager.FocusedElement" Value="{Binding RelativeSource={RelativeSource Self}}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+
+            <!-- Optionally remove the "Next" and "Previous" buttons if they are no longer needed -->
+            <!-- Or keep them but adjust their size -->
+            <!-- Find Next Button -->
+            <Button
+        Grid.Column="1"
+        Content="Next"
+        Command="{Binding FindNextCommand}"
+        Margin="5,0,0,0"
+        VerticalAlignment="Center"
+        Height="20"
+        Width="40" />
+            <!-- Reduced size -->
+
+            <!-- Find Previous Button -->
+            <Button
+        Grid.Column="2"
+        Content="Prev"
+        Command="{Binding FindPreviousCommand}"
+        Margin="5,0,0,0"
+        VerticalAlignment="Center"
+        Height="20"
+        Width="40" />
+            <!-- Reduced size -->
+
+            <!-- Close Search Bar Button -->
+            <Button
+        Grid.Column="3"
+        Content="Close"
+        Command="{Binding CloseFindBarCommand}"
+        Margin="5,0,10,0" 
+                VerticalAlignment="Center"
+        Height="20"
+        Width="40" />
+                <!-- Reduced size -->
+        </Grid>
         <!--#region Browser TabControl-->
         <TabControl
             Grid.Row="3"
