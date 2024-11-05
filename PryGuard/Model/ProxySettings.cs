@@ -25,7 +25,13 @@ public class ProxySettings : INotifyPropertyChanged
         ProxyPassword = "";
         ProxyPort = 8080;
     }
-
+    public string ProxyLines
+    {
+        get
+        {
+            return $"{ProxyAddress}:{ProxyPort}";
+        }
+    }
     private string _proxyLine;
     public string ProxyLine
     {

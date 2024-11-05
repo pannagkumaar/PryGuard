@@ -18,6 +18,10 @@ using System.Xml.Linq;
 using PryGuard.Model;
 using System.Linq;
 
+using Newtonsoft.Json;
+using System.IO;
+
+
 namespace PryGuard.ViewModel;
 public class PryGuardProfileSettingsViewModel : BaseViewModel
 {
@@ -29,6 +33,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     public RelayCommand SaveProfileCommand { get; private set; }
     public ICommand NewFingerprintCommand { get; }
     public ObservableCollection<string> Renderers { get; }
+    public ObservableCollection<string> SavedProxies { get; set; }
 
     #endregion
 
@@ -83,7 +88,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     {
         get => _PryGuardProfilesVM;
         set => Set(ref _PryGuardProfilesVM, value);
-       
+
     }
 
 
@@ -95,13 +100,30 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     }
     public bool IsEdit { get; set; }
 
+    public bool IsEdit { get; set; }
+
     private Brush _tbProxyBrush = Brushes.White;
     public Brush TbProxyBrush
     {
         get => _tbProxyBrush;
         set => Set(ref _tbProxyBrush, value);
     }
+    private string _selectedSavedProxy;
+    public string SelectedSavedProxy
+    {
+        get => _selectedSavedProxy;
+        set
+        {
+            _selectedSavedProxy = value;
+            OnPropertyChanged(nameof(SelectedSavedProxy));
 
+            if (!string.IsNullOrEmpty(_selectedSavedProxy))
+            {
+                // Parse the selected proxy string and update PryGuardProf.Proxy
+                ParseAndSetProxy(_selectedSavedProxy);
+            }
+        }
+    }
     //private PryGuardProfile _PryGuardProf;
     //public PryGuardProfile PryGuardProf
     //{
@@ -112,7 +134,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
 
     #region Ctor
     public PryGuardProfileSettingsViewModel() { }
-    
+
     public PryGuardProfileSettingsViewModel(PryGuardProfile PryGuardProfile)
     {
         CloseProfileSettingsCommand = new RelayCommand(CloseProfileSettings);
@@ -123,6 +145,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         ImportProfileCommand = new RelayCommand(ImportProfile);
         PryGuardProf = PryGuardProfile;
         Renderers = new ObservableCollection<string>(WebGLFactory.Renderers);
+        LoadSavedProxies();
     }
     #endregion
 
@@ -134,8 +157,10 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             var newFakeProfile = FakeProfileFactory.Generate();
 
             PryGuardProf.FakeProfile = newFakeProfile;
-            
-        
+
+
+
+
 
             PryGuardProfilesVM.Setting.SaveSettings();
         }
@@ -146,45 +171,183 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         }
     }
     private void SaveProfile(object arg)
-    {   
 
-        if (SaveProfileButtonContent == "Create" || SaveProfileButtonContent =="Import")
+    {
+        // Find the profile by Id (if it exists) using FirstOrDefault in all cases
+        var existingProfileTab = PryGuardProfilesVM.ProfileTabs.FirstOrDefault(tab => tab.Id == PryGuardProf.Id);
+        
+        if (!string.IsNullOrEmpty(PryGuardProf.Proxy.ProxyAddress))
+        {
+            // Construct the proxy string conditionally based on authentication
+            string proxyString;
+            if (!string.IsNullOrEmpty(PryGuardProf.Proxy.ProxyLogin) && !string.IsNullOrEmpty(PryGuardProf.Proxy.ProxyPassword))
+            {
+                // Include authentication details
+                proxyString = $"{PryGuardProf.Proxy.ProxyAddress}:{PryGuardProf.Proxy.ProxyPort}:{PryGuardProf.Proxy.ProxyLogin}:{PryGuardProf.Proxy.ProxyPassword}";
+            }
+            else
+            {
+                // No authentication, exclude login and password
+                proxyString = $"{PryGuardProf.Proxy.ProxyAddress}:{PryGuardProf.Proxy.ProxyPort}";
+            }
+
+            // Add the proxy string to the saved proxies if it's not already present
+            if (!SavedProxies.Contains(proxyString))
+            {
+                SavedProxies.Add(proxyString);
+                SaveSavedProxies();
+            }
+        }
+        if (SaveProfileButtonContent == "Create" || SaveProfileButtonContent == "Import")
+        {
+            // Close the view and add a new profile tab
+            ViewManager.Close(this);
+
+            // If profile doesn't exist, add it as new
+            if (existingProfileTab == null)
+            {
+                PryGuardProfilesVM.ProfileTabs.Add(new ProfileTab(PryGuardProfilesVM)
+                {
+                    Name = PryGuardProf.Name,
+                    Id = PryGuardProf.Id,
+                    Status = PryGuardProf.Status,
+                    Tags = PryGuardProf.Tags,
+                    ProxyHostPort = PryGuardProf.Proxy.ProxyAddress == "" && PryGuardProf.Proxy.ProxyPort == 8080 ? "" : PryGuardProf.Proxy.ProxyAddress + ":" + PryGuardProf.Proxy.ProxyPort,
+                    ProxyLoginPass = PryGuardProf.Proxy.ProxyLogin == "" && PryGuardProf.Proxy.ProxyPassword == "" ? "" : PryGuardProf.Proxy.ProxyLogin + ":" + PryGuardProf.Proxy.ProxyPassword
+                });
+            }
+
+            PryGuardProfilesVM.Setting.SaveSettings();
+            PryGuardProfilesVM.ProfileTabs.Clear();
+            PryGuardProfilesVM.LoadTabs();
+        }
+        else if (SaveProfileButtonContent == "Save" && PryGuardProf.Status == "NEW")
+
         {
             ViewManager.Close(this);
-            PryGuardProfilesVM.ProfileTabs.Add(new ProfileTab(PryGuardProfilesVM)
+
+            if (existingProfileTab != null)
             {
-                Name = PryGuardProf.Name,
-                Id = PryGuardProf.Id,
-                Status = PryGuardProf.Status,
-                Tags = PryGuardProf.Tags,
-                ProxyHostPort = PryGuardProf.Proxy.ProxyAddress == "" && PryGuardProf.Proxy.ProxyPort == 8080 ? "" : PryGuardProf.Proxy.ProxyAddress + ":" + PryGuardProf.Proxy.ProxyPort,
-                ProxyLoginPass = PryGuardProf.Proxy.ProxyLogin == "" && PryGuardProf.Proxy.ProxyPassword == "" ? "" : PryGuardProf.Proxy.ProxyLogin + ":" + PryGuardProf.Proxy.ProxyPassword
-            });
+                existingProfileTab.Status = "NEW";
+                existingProfileTab.Name = PryGuardProf.Name;
+                existingProfileTab.Tags = PryGuardProf.Tags;
+                existingProfileTab.ProxyHostPort = PryGuardProf.Proxy.ProxyAddress == "" && PryGuardProf.Proxy.ProxyPort == 8080 ? "" : PryGuardProf.Proxy.ProxyAddress + ":" + PryGuardProf.Proxy.ProxyPort;
+                existingProfileTab.ProxyLoginPass = PryGuardProf.Proxy.ProxyLogin == "" && PryGuardProf.Proxy.ProxyPassword == "" ? "" : PryGuardProf.Proxy.ProxyLogin + ":" + PryGuardProf.Proxy.ProxyPassword;
+            }
+
             PryGuardProfilesVM.Setting.SaveSettings();
+            PryGuardProfilesVM.ProfileTabs.Clear();
+            PryGuardProfilesVM.LoadTabs();
+        }
+        else if (SaveProfileButtonContent == "Save" && PryGuardProf.Status == "BAN")
+        {
+            ViewManager.Close(this);
+
+            if (existingProfileTab != null)
+            {
+                existingProfileTab.Status = "BAN";
+                existingProfileTab.Name = PryGuardProf.Name;
+                existingProfileTab.Tags = PryGuardProf.Tags;
+                existingProfileTab.ProxyHostPort = PryGuardProf.Proxy.ProxyAddress == "" && PryGuardProf.Proxy.ProxyPort == 8080 ? "" : PryGuardProf.Proxy.ProxyAddress + ":" + PryGuardProf.Proxy.ProxyPort;
+                existingProfileTab.ProxyLoginPass = PryGuardProf.Proxy.ProxyLogin == "" && PryGuardProf.Proxy.ProxyPassword == "" ? "" : PryGuardProf.Proxy.ProxyLogin + ":" + PryGuardProf.Proxy.ProxyPassword;
+            }
+
+            PryGuardProfilesVM.Setting.SaveSettings();
+            PryGuardProfilesVM.ProfileTabs.Clear();
+            PryGuardProfilesVM.LoadTabs();
+        }
+        else if (SaveProfileButtonContent == "Save" && PryGuardProf.Status == "READY")
+        {
+            ViewManager.Close(this);
+
+            if (existingProfileTab != null)
+            {
+                existingProfileTab.Status = "READY";
+                existingProfileTab.Name = PryGuardProf.Name;
+                existingProfileTab.Tags = PryGuardProf.Tags;
+                existingProfileTab.ProxyHostPort = PryGuardProf.Proxy.ProxyAddress == "" && PryGuardProf.Proxy.ProxyPort == 8080 ? "" : PryGuardProf.Proxy.ProxyAddress + ":" + PryGuardProf.Proxy.ProxyPort;
+                existingProfileTab.ProxyLoginPass = PryGuardProf.Proxy.ProxyLogin == "" && PryGuardProf.Proxy.ProxyPassword == "" ? "" : PryGuardProf.Proxy.ProxyLogin + ":" + PryGuardProf.Proxy.ProxyPassword;
+            }
+
+            PryGuardProfilesVM.Setting.SaveSettings();
+            PryGuardProfilesVM.ProfileTabs.Clear();
+            PryGuardProfilesVM.LoadTabs();
         }
         else
         {
             PryGuardProf.Status = "UPDATED";
             ViewManager.Close(this);
+
+            if (existingProfileTab != null)
+            {
+                existingProfileTab.Status = "UPDATED";
+                existingProfileTab.Name = PryGuardProf.Name;
+                existingProfileTab.Tags = PryGuardProf.Tags;
+                existingProfileTab.ProxyHostPort = PryGuardProf.Proxy.ProxyAddress == "" && PryGuardProf.Proxy.ProxyPort == 8080 ? "" : PryGuardProf.Proxy.ProxyAddress + ":" + PryGuardProf.Proxy.ProxyPort;
+                existingProfileTab.ProxyLoginPass = PryGuardProf.Proxy.ProxyLogin == "" && PryGuardProf.Proxy.ProxyPassword == "" ? "" : PryGuardProf.Proxy.ProxyLogin + ":" + PryGuardProf.Proxy.ProxyPassword;
+            }
+
             PryGuardProfilesVM.Setting.SaveSettings();
             PryGuardProfilesVM.ProfileTabs.Clear();
             PryGuardProfilesVM.LoadTabs();
         }
+
+
         PryGuardProf.IsSaved = true;
     }
+    private void ParseAndSetProxy(string proxyString)
+    {
+        var parts = proxyString.Split(':');
+
+        if (parts.Length == 2 || parts.Length == 4)
+        {
+            // Create a new ProxySettings instance
+            var proxySettings = new ProxySettings
+            {
+                ProxyAddress = parts[0],
+                ProxyPort = int.TryParse(parts[1], out int port) ? port : 8080,
+                IsCustomProxy = true
+            };
+
+            if (parts.Length == 4)
+            {
+                // Proxy with authentication
+                proxySettings.ProxyLogin = parts[2];
+                proxySettings.ProxyPassword = parts[3];
+                proxySettings.IsProxyAuth = true;
+            }
+            else
+            {
+                // Proxy without authentication
+                proxySettings.ProxyLogin = null;
+                proxySettings.ProxyPassword = null;
+                proxySettings.IsProxyAuth = false;
+            }
+
+            // Set the proxy type (adjust as needed)
+            proxySettings.IsHTTP = true; // Assuming HTTP for simplicity
+            proxySettings.IsSOCKS4 = false;
+            proxySettings.IsSOCKS5 = false;
+
+            // Update the profile's proxy settings
+            PryGuardProf.Proxy = proxySettings;
+        }
+    }
+
+
     private void ImportProfile(object arg)
     {
         var savedProfiles = PryGuardProfilesVM.Setting.PryGuardProfiles.Where(p => p.IsSaved).ToList();
         var profileSelectionWindow = new ProfileSelectionWindow(savedProfiles);
         if (profileSelectionWindow.ShowDialog() == true)
         {
-            
+
             if (PryGuardProfilesVM.Setting.PryGuardProfiles.Any())
             {
                 var lastProfile = PryGuardProfilesVM.Setting.PryGuardProfiles.Last();
                 PryGuardProfilesVM.Setting.PryGuardProfiles.Remove(lastProfile);
 
-                
+
                 var tabToRemove = PryGuardProfilesVM.ProfileTabs.FirstOrDefault(tab => tab.Id == lastProfile.Id);
                 if (tabToRemove != null)
                 {
@@ -192,21 +355,23 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
                 }
             }
 
-            
+
+
             var importedProfile = PryGuardProfile.ImportFromProfile(profileSelectionWindow.SelectedProfile);
             PryGuardProfilesVM.Setting.PryGuardProfiles.Add(importedProfile);
 
-            
+
             PryGuardProf = importedProfile;
 
-            
+
+
             SaveProfileButtonContent = "Import";
         }
     }
 
     private async void CheckProxy()
     {
-        var a=PryGuardProf.Proxy.ProxyAddress;
+        var a = PryGuardProf.Proxy.ProxyAddress;
         if (PryGuardProf.Proxy.ProxyAddress == "") return;
         var result = await IpInfoClient.CheckClientProxy(PryGuardProf.Proxy);
         if (result == null)
@@ -223,14 +388,43 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             TbProxyBrush = Brushes.White;
         }
     }
-   
+
     private void CloseProfileSettings(object arg)
     {
+        if (!PryGuardProf.IsSaved && !IsEdit)
+        {
+            // Remove the unsaved profile from the list
+            PryGuardProfilesVM.Setting.PryGuardProfiles.Remove(PryGuardProf);
+        }
         ViewManager.Close(this);
     }
+
     private void CloseWindowState(object arg)
     {
         WindowState = WindowState.Minimized;
     }
+    #endregion
+    #region proxywork
+    public void LoadSavedProxies()
+    {
+        var path = Path.Combine(ClientConfig.ChromeDataPath, "SavedProxies.txt");
+        if (File.Exists(path))
+        {
+            var lines = File.ReadAllLines(path);
+            SavedProxies = new ObservableCollection<string>(lines);
+        }
+        else
+        {
+            SavedProxies = new ObservableCollection<string>();
+        }
+    }
+
+
+    public void SaveSavedProxies()
+    {
+        var path = Path.Combine(ClientConfig.ChromeDataPath, "SavedProxies.txt");
+        File.WriteAllLines(path, SavedProxies);
+    }
+
     #endregion
 }

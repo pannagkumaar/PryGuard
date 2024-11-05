@@ -5,6 +5,10 @@ using System.Runtime.CompilerServices;
 using PryGuard.Core.ChromeApi.Model.Configs;
 using PryGuard.Services.Helpers;
 
+using System.Threading;
+using System.Xml.Linq;
+
+
 namespace PryGuard.Model
 {
     public class PryGuardProfile : INotifyPropertyChanged
@@ -41,7 +45,19 @@ namespace PryGuard.Model
             }
         }
 
-        
+
+        private string _cookies;
+        public string Cookies
+        {
+            get => _cookies;
+            set
+            {
+                if (_cookies == value)
+                    return;
+                _cookies = value;
+                OnPropertyChanged(nameof(Cookies));
+            }
+        }
 
         private int _id;
         public int Id
@@ -161,47 +177,93 @@ namespace PryGuard.Model
             }
         }
 
-        private static int _nextId = 666; // Starting value, can be any unique initial number
+        private static int _nextId;
+
+        static PryGuardProfile()
+        {
+            _nextId = LoadLastUsedId();
+        }
+
+        private static int LoadLastUsedId()
+        {
+            int lastId = 0;
+            string path = Path.Combine(ClientConfig.ChromeDataPath, "LastUsedId.txt");
+
+            // Ensure the directory exists
+            string directory = Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            if (File.Exists(path))
+            {
+                string content = File.ReadAllText(path);
+                if (int.TryParse(content, out lastId))
+                {
+                    return lastId;
+                }
+            }
+            return lastId;
+        }
+
+        private static void SaveLastUsedId(int lastId)
+        {
+            string path = Path.Combine(ClientConfig.ChromeDataPath, "LastUsedId.txt");
+
+            // Ensure the directory exists
+            string directory = Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            File.WriteAllText(path, lastId.ToString());
+        }
 
         private static int GenerateUniqueId()
         {
-            // Ensure thread safety and unique ID generation
-            lock (typeof(PryGuardProfile))
-            {
-                return _nextId++;
-            }
+            int newId = Interlocked.Increment(ref _nextId);
+            SaveLastUsedId(newId);
+            return newId;
         }
+
 
         public static PryGuardProfile GenerateNewProfile(string name)
         {
+            int uniqueId = GenerateUniqueId(); // Generate the unique ID once
             return new PryGuardProfile()
             {
                 Name = name,
-                Id = GenerateUniqueId(),
+                Id = uniqueId, // Use the same unique ID here
                 Status = "NEW",
                 FakeProfile = FakeProfileFactory.Generate(),
                 IsEnabled = false,
                 IsAdBlock = true,
                 IsLoadImage = true,
                 IsLoadCacheInMemory = true,
-                CachePath = Path.Combine(ClientConfig.ChromeDataPath, name + "_Cache_" + GenerateUniqueId()),
+                CachePath = Path.Combine(ClientConfig.ChromeDataPath, $"{name}_Cache_{uniqueId}"), // And use it here
                 Proxy = new ProxySettings()
             };
         }
 
         public static PryGuardProfile ImportFromProfile(PryGuardProfile existingProfile)
         {
+            int uniqueId = GenerateUniqueId();
             return new PryGuardProfile()
             {
                 Name = existingProfile.Name + " (Copy)",
-                Id = GenerateUniqueId(),
+                Id = uniqueId,
+
                 Status = "NEW",
                 FakeProfile = existingProfile.FakeProfile, // Assuming Clone() is implemented
                 IsEnabled = existingProfile.IsEnabled,
                 IsAdBlock = existingProfile.IsAdBlock,
                 IsLoadImage = existingProfile.IsLoadImage,
                 IsLoadCacheInMemory = existingProfile.IsLoadCacheInMemory,
-                CachePath = Path.Combine(ClientConfig.ChromeDataPath, existingProfile.Name + "_Cache_" + GenerateUniqueId()),
+
+                CachePath = Path.Combine(ClientConfig.ChromeDataPath, $"{existingProfile.Name}_Cache_{uniqueId}"),
+
                 Proxy = existingProfile.Proxy // Assuming Clone() is implemented
             };
         }

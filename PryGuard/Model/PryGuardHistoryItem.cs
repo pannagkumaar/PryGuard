@@ -12,3 +12,4 @@ public class PryGuardHistoryItem
         Link = link;
     }
 }
+
