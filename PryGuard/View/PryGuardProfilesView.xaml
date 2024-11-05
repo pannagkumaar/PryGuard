@@ -228,17 +228,18 @@
                 HorizontalAlignment="Left"
                                     Orientation="Horizontal">
                                     <Button
-                                        Width="25"
-                                        Height="25"
-                                        Margin="30,0,0,0"                                    
-                                        Style="{StaticResource ThemeButtonProfilesWork}" 
-                                        Command="{Binding ViewModel.EditProfileCommand}"
-                                        CommandParameter="{Binding Id}">
-                                         <Image 
-                                            Margin="0,0,0,0"
-                                            Source="{StaticResource EditProfileImage}"
-                                            Height="21" Width="21"/>
+    Width="25"
+    Height="25"
+    Margin="30,0,0,0"                                    
+    Style="{StaticResource ThemeButtonProfilesWork}" 
+    Command="{Binding DataContext.EditProfileCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+    CommandParameter="{Binding Id}">
+                                        <Image 
+        Margin="0,0,0,0"
+        Source="{StaticResource EditProfileImage}"
+        Height="21" Width="21"/>
                                     </Button>
+
                                     <Button
                                         Width="25"
                                         Height="25"

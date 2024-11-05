@@ -20,12 +20,19 @@ using PryGuard.Core.ChromeApi.Proxy;
 using System.Collections.ObjectModel;
 using PryGuard.Core.ChromeApi.Handlers;
 using PryGuard.Services.UI.ListView.ListViewItem;
+using PryGuard.View;
 using System.Data.SQLite;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using PryGuard.View;
 using CefSharp.Wpf;
+using PryGuard.View;
+using CefSharp.DevTools.Autofill;
+
 
 namespace PryGuard.ViewModel;
 
@@ -37,6 +44,8 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private Label _tabBtnToDrag;
     private readonly string _profileHistoryPath;
     private ListView _listView;
+    private DownloadManager _downloadManager;
+    
 
     #region BrowserSettings & Other
     private List<PryGuardBrowser> _browsers;
@@ -61,23 +70,59 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public RelayCommand MaximizeWindowCommand { get; private set; }
     public RelayCommand NormalStateWindowCommand { get; private set; }
     public RelayCommand AddTabCommand { get; private set; }
+    public RelayCommand AddIncognitoTabCommand { get; private set; }
     public RelayCommand OpenTabCommand { get; private set; }
     public RelayCommand CloseTabCommand { get; private set; }
+    public RelayCommand<PryGuardHistoryItem> DeleteHistoryItemCommand { get; set; }
+    public RelayCommand<Bookmark> RemoveBookmarkCommand { get;  set; }
     public RelayCommand RefreshCommand { get; private set; }
     public RelayCommand ForwardCommand { get; private set; }
     public RelayCommand BackCommand { get; private set; }
     public RelayCommand OpenHistoryCommand { get; private set; }
+    public RelayCommand AddBookmarkTabCommand { get; private set; }
+    public RelayCommand AddDownloadTabCommand { get; private set; }
     public RelayCommand LoadHistoryLinkCommand { get; private set; }
     public RelayCommand DeleteHistoryCommand { get; private set; }
     public RelayCommand AddressOnKeyDownCommand { get; private set; }
     public RelayCommand OpenContextMenuSettingsCommand { get; private set; }
+
+
+
     public DelegateCommand CloseCommand =>
           _closeCommand ?? (_closeCommand = new DelegateCommand(obj => CloseWindow(obj)));
     public ICommand AddBookmarkCommand { get; }
-    public ICommand RemoveBookmarkCommand { get; }
     public ICommand OpenBookmarkCommand { get; }
+    public ICommand OpenDevToolsCommand { get; }
+    public ICommand ToggleIncognitoModeCommand { get; }
+    public ICommand ShowFindBarCommand { get; }
+    public ICommand CloseFindBarCommand { get; }
+    public ICommand FindNextCommand { get; }
+    public ICommand FindPreviousCommand { get; }
+    public Action FocusSearchTextBoxAction { get; set; }
 
     #endregion
+    private bool _isFindBarVisible;
+    public bool IsFindBarVisible
+    {
+        get => _isFindBarVisible;
+        set
+        {
+            _isFindBarVisible = value;
+            OnPropertyChanged(nameof(IsFindBarVisible));
+        }
+    }
+
+    private string _searchText;
+    public string SearchText
+    {
+        get => _searchText;
+        set
+        {
+            _searchText = value;
+            OnPropertyChanged(nameof(SearchText));
+            PerformSearch(); // Perform search as the user types
+        }
+    }
 
     private string _cookies;
     public string Cookies
@@ -91,6 +136,20 @@ public class PryGuardBrowserViewModel : BaseViewModel
             OnPropertyChanged(nameof(Cookies));
         }
     }
+    private bool _isIncognitoMode;
+    public bool IsIncognitoMode
+    {
+        get => _isIncognitoMode;
+        set
+        {
+            _isIncognitoMode = value;
+            OnPropertyChanged(nameof(IsIncognitoMode));
+            OnPropertyChanged(nameof(IncognitoModeText)); // Updates text dynamically
+        }
+    }
+    public string IncognitoModeText => IsIncognitoMode ? "Incognito off" : "Incognito on";
+    private Dictionary<int, string> _incognitoCache = new Dictionary<int, string>();
+
     #region Properties
     private CustomTabItem _currentTabItem;
     public CustomTabItem CurrentTabItem
@@ -103,13 +162,14 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public ObservableCollection<Bookmark> Bookmarks => _bookmarkManager?.Bookmarks;
 
 
-    private ObservableCollection<PryGuardHistoryItem> _pryGuardHistoryList;
+    private ObservableCollection<PryGuardHistoryItem> _pryGuardHistoryList = new ObservableCollection<PryGuardHistoryItem>();
 
     public ObservableCollection<PryGuardHistoryItem> PryGuardHistoryList
     {
         get => _pryGuardHistoryList;
         set => Set(ref _pryGuardHistoryList, value);
     }
+
 
 
 
@@ -160,6 +220,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
 
         _PryGuardProfileToStart = PryGuardProfileToStart;
+        
         _mainIDCounter = 0;
         Tabs = new();
         _browsers = new();
@@ -175,17 +236,26 @@ public class PryGuardBrowserViewModel : BaseViewModel
         DeleteHistoryCommand = new RelayCommand(DeleteHistory);
         NormalStateWindowCommand = new RelayCommand(NormalStateWindow);
         AddTabCommand = new RelayCommand(AddTab);
+        AddIncognitoTabCommand = new RelayCommand(AddIncognitoTab);
         OpenTabCommand = new RelayCommand(OpenTab);
         CloseTabCommand = new RelayCommand(CloseTab);
-        
+        AddBookmarkTabCommand = new RelayCommand(AddTabBookmark);
+        AddDownloadTabCommand = new RelayCommand(AddDownloadTab);
         RefreshCommand = new RelayCommand(Refresh);
         ForwardCommand = new RelayCommand(Forward);
         BackCommand = new RelayCommand(Back);
         AddressOnKeyDownCommand = new RelayCommand(AddressOnKeyDown);
         LoadHistoryLinkCommand = new RelayCommand(LoadHistoryLink);
+        DeleteHistoryItemCommand = new RelayCommand<PryGuardHistoryItem>(DeleteHistoryItem);
         OpenHistoryCommand = new RelayCommand(AddTabHistory);
         OpenContextMenuSettingsCommand = new RelayCommand(OpenContextMenuSettings);
-
+        ToggleIncognitoModeCommand = new RelayCommand(ToggleIncognitoMode);
+        OpenDevToolsCommand = new RelayCommand(OpenDevTools);
+        ShowFindBarCommand = new RelayCommand(ShowFindBar);
+        CloseFindBarCommand = new RelayCommand(CloseFindBar);
+        FindNextCommand = new RelayCommand(FindNext);
+        FindPreviousCommand = new RelayCommand(FindPrevious);
+        CurWindowState = WindowState.Maximized;
 
 
 
@@ -206,9 +276,9 @@ public class PryGuardBrowserViewModel : BaseViewModel
     #endregion
 
     #region PryGuardBrowser Work
-    private async Task<PryGuardBrowser> InitBrowser(bool isNewPage)
+    private async Task<PryGuardBrowser> InitBrowser(bool isNewPage, int id)
     {
-        PryGuardBrowser browser = await CreateBrowser(isNewPage, _mainIDCounter, _PryGuardProfileToStart);
+        PryGuardBrowser browser = await CreateBrowser(isNewPage, id, _PryGuardProfileToStart);
         _browsers.Add(browser);
         if (browser.IsBrowserInitialized)
         {
@@ -227,41 +297,65 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
         return browser;
     }
-
-    private async Task<PryGuardBrowser> CreateBrowser(bool isNewPage, object id, PryGuardProfile PryGuardProfile)
+    private async Task<PryGuardBrowser> InitIncognitoBrowser(int id)
     {
+        var browser = await CreateBrowser(isNewPage: true, id: id, profile: _PryGuardProfileToStart, incognitoCache: _incognitoCache);
+        browser.IsIncognito = true; // Set incognito mode
+        _browsers.Add(browser);
+        // Do not increment _mainIDCounter here
+        return browser;
+    }
+
+
+
+
+
+    private async Task<PryGuardBrowser> CreateBrowser(bool isNewPage, int id, PryGuardProfile profile, Dictionary<int, string> incognitoCache = null)
+    {
+        _PryGuardProfile = profile;
+
         if (!isNewPage)
         {
-            _PryGuardProfile = PryGuardProfile;
             _blockManager = new BlockManager();
             _nativeManager = new NativeSourceManager();
-            _blockManager.IsWork = _PryGuardProfile.IsAdBlock;
+            _blockManager.IsActive = _PryGuardProfile.IsAdBlock;
             _requestHandler = new RequestHandler(_blockManager);
             _requestContextSettings = new RequestContextSettings();
             _lifespanHandler = new LifespanHandler();
-
-            if (_PryGuardProfile.IsLoadCacheInMemory)
+            _lifespanHandler.PopupRequested += (url, isIncognito) =>
             {
-                _requestContextSettings.CachePath = _PryGuardProfile.CachePath;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    OpenUrlInNewTab(url, isIncognito);
+                });
+            };
+
+
+            // Set up cache path
+            if (_PryGuardProfile.IsLoadCacheInMemory && incognitoCache == null)
+            {
+                _requestContextSettings.CachePath = _PryGuardProfile.CachePath; // Use profile-specific cache
                 _requestContextSettings.PersistSessionCookies = true;
+            }
+            else if (incognitoCache != null)
+            {
+                // Use an in-memory or temporary cache for incognito mode
+                _requestContextSettings.CachePath = Path.Combine(Path.GetTempPath(), "PryGuardTempCache_" + _mainIDCounter);
+                _requestContextSettings.PersistSessionCookies = false;
             }
             else
             {
-                DateTime now = DateTime.Now;
-                Random random = new((int)now.TimeOfDay.TotalMilliseconds);
-                string tempPath = Path.GetTempPath();
-                string path2 = "PryGuard" + random.Next();
-                string normalStringUpper = _PryGuardProfile.Name;
-                now = DateTime.Now;
-                string str1 = new Random((int)now.TimeOfDay.TotalMilliseconds + random.Next()).Next().ToString();
-                string path3 = normalStringUpper + str1;
-                string str2 = Path.Combine(tempPath, path2, path3, "cache");
-                _requestContextSettings.CachePath = str2;
-                _PryGuardProfile.CachePath = Path.Combine(tempPath, path2);
-                _requestContextSettings.PersistSessionCookies = false;
-                _requestContextSettings.PersistUserPreferences = false;
+                // Set a unique path for non-incognito sessions if cache is not loaded into memory
+                _requestContextSettings.CachePath = Path.Combine(Path.GetTempPath(), "PryGuardProfile_" + _PryGuardProfile.Name + "_Cache");
+                _requestContextSettings.PersistSessionCookies = true;
             }
 
+            _requestContextSettings = new RequestContextSettings
+            {
+                CachePath = _PryGuardProfile.IsLoadCacheInMemory ? _PryGuardProfile.CachePath : Path.Combine(Path.GetTempPath(), "PryGuardProfile_" + _PryGuardProfile.Name + "_Cache"),
+                PersistSessionCookies = !IsIncognitoMode, // Use IsIncognitoMode from the ViewModel instead
+                PersistUserPreferences = !IsIncognitoMode  // Use IsIncognitoMode from the ViewModel instead
+            };
             _context = new RequestContext(_requestContextSettings);
             _context.DisableWebRtc();
 
@@ -274,7 +368,6 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
                 if (_PryGuardProfile.Proxy.IsProxyAuth)
                 {
-                    // Check the client proxy and set authentication credentials
                     _proxyInfo = await IpInfoClient.CheckClientProxy(_PryGuardProfile.Proxy);
                     _requestHandler.SetAuthCredentials(new ProxyAuthCredentials()
                     {
@@ -284,27 +377,62 @@ public class PryGuardBrowserViewModel : BaseViewModel
                 }
                 else
                 {
-                    // If the proxy does not require authentication, just check the client proxy
                     _proxyInfo = await IpInfoClient.CheckClientProxy(_PryGuardProfile.Proxy);
                 }
             }
 
             isNewPage = true;
-            return InitBasicSettingsBrowser(isNewPage, id, PryGuardProfile);
+            var browser = InitBasicSettingsBrowser(isNewPage, id, profile);
+            browser.IsIncognito = incognitoCache != null; // Set based on incognitoCache
+            return browser;
         }
-        else { return InitBasicSettingsBrowser(isNewPage, id, PryGuardProfile); }
+        else
+        {
+            var browser = InitBasicSettingsBrowser(isNewPage, id, profile);
+            browser.IsIncognito = incognitoCache != null; // Set based on incognitoCache
+            return browser;
+        }
     }
+
+
     private PryGuardBrowser InitBasicSettingsBrowser(bool isNewPage, object id, PryGuardProfile PryGuardProfile)
     {
         var PryGuardBrowser = new PryGuardBrowser(_context);
+        PryGuardBrowser.Tag = id;
         PryGuardBrowser.LifeSpanHandler = _lifespanHandler;
         PryGuardBrowser.IsBrowserInitializedChanged += PryGuardBrowser_IsBrowserInitializedChanged;
         PryGuardBrowser.BrowserSettings.ImageLoading = PryGuardProfile.IsLoadImage ? CefState.Enabled : CefState.Disabled;
         PryGuardBrowser.BrowserSettings.RemoteFonts = CefState.Enabled;
         PryGuardBrowser.BrowserSettings.JavascriptCloseWindows = CefState.Disabled;
+
+        var downloadHandler = new DownloadHandler();
+        PryGuardBrowser.DownloadHandler = downloadHandler;
+
+        // Ensure DownloadManager.Instance is accessible
+        downloadHandler.DownloadStarted += DownloadManager.Instance.AddDownload;
+        downloadHandler.DownloadUpdated += DownloadManager.Instance.UpdateDownload;
+        // Create an instance of your custom context menu handler
+        var menuHandler = new CustomContextMenuHandler();
+
+        // Subscribe to the OpenUrlInNewTabRequested event
+        menuHandler.OpenUrlInNewTabRequested += (url) =>
+        {
+            // Ensure this runs on the UI thread
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                OpenUrlInNewTab(url);
+            });
+        };
+
+        PryGuardBrowser.MenuHandler = menuHandler;
+
+
+
+
         if (isNewPage)
         {
-            var codeForFakeProfile = _nativeManager.GetCodeForFakeProfile("fakeinject", PryGuardProfile.FakeProfile);
+            var codeForFakeProfile = _nativeManager.GetCodeForFakeProfile("" +
+                "fakeinject", PryGuardProfile.FakeProfile);
             _renderMessageHandler = new RenderMessageHandler(codeForFakeProfile);
             PryGuardBrowser.RenderProcessMessageHandler = _renderMessageHandler;
             _loadHandler = new LoadHandler("777", codeForFakeProfile, () => { ProfileFail(); });
@@ -315,6 +443,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             PryGuardBrowser.RenderProcessMessageHandler = _renderMessageHandler;
             PryGuardBrowser.LoadHandler = _loadHandler;
         }
+
         PryGuardBrowser.RequestHandler = _requestHandler;
         PryGuardBrowser.JavascriptObjectRepository.Settings.JavascriptBindingApiEnabled = false;
         PryGuardBrowser.JavascriptObjectRepository.Settings.LegacyBindingEnabled = true;
@@ -326,14 +455,152 @@ public class PryGuardBrowserViewModel : BaseViewModel
             {
                 Binder = new DefaultBinder(new MyCamelCaseNameConverter())
             });
+
         ExecGeoScript(PryGuardBrowser);
-        
+
         PryGuardBrowser.Tag = id;
-        PryGuardBrowser.Address = "https://google.com/";
+
+        string htmlContent = @"
+    <!DOCTYPE html>
+    <html lang=""en"">
+    <head>
+        <meta charset=""UTF-8"">
+        <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+        <title>PryGuard Browser</title>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+            body, html {
+                margin: 0;
+                padding: 0;
+                font-family: 'Orbitron', sans-serif;
+                background-color: #050505;
+                color: #ffffff;
+                height: 100vh;
+                overflow: hidden;
+            }
+            .container {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                position: relative;
+                z-index: 1;
+            }
+            .background {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(45deg, #ff0000, #800000);
+                filter: blur(100px);
+                opacity: 0.2;
+                z-index: -1;
+            }
+            .logo {
+                font-size: 4rem;
+                font-weight: bold;
+                color: #ff0000;
+                margin-bottom: 2rem;
+                text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            }
+            .search-form {
+                display: flex;
+                margin-bottom: 2rem;
+            }
+            .search-input {
+                padding: 0.75rem 1.5rem;
+                font-size: 1rem;
+                border: 2px solid #ff0000;
+                border-radius: 25px 0 0 25px;
+                outline: none;
+                width: 400px;
+                background-color: rgba(255, 255, 255, 0.1);
+                color: #ffffff;
+                transition: all 0.3s ease;
+            }
+            .search-input:focus {
+                background-color: rgba(255, 255, 255, 0.2);
+                box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+            }
+            .search-button {
+                padding: 0.75rem 1.5rem;
+                font-size: 1rem;
+                background-color: #ff0000;
+                color: #ffffff;
+                border: 2px solid #ff0000;
+                border-radius: 0 25px 25px 0;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            .search-button:hover {
+                background-color: #cc0000;
+                box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+            }
+            .clock {
+                font-size: 2rem;
+                margin-bottom: 2rem;
+                text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            }
+            .quick-links {
+                display: flex;
+                gap: 1rem;
+                margin-top: 2rem;
+            }
+            .quick-link {
+                padding: 0.5rem 1rem;
+                background-color: rgba(255, 255, 255, 0.1);
+                border-radius: 15px;
+                text-decoration: none;
+                color: #ffffff;
+                transition: all 0.3s ease;
+            }
+            .quick-link:hover {
+                background-color: rgba(255, 0, 0, 0.5);
+                transform: translateY(-5px);
+            }
+        </style>
+    </head>
+    <body>
+        <div class=""background""></div>
+        <div class=""container"">
+            <h1 class=""logo"">PryGuard</h1>
+            <div class=""clock"" id=""clock""></div>
+            <form class=""search-form"" action=""https://www.google.com/search"" method=""get"" target=""_self"">
+                <input type=""text"" name=""q"" class=""search-input"" placeholder=""Search with PryGuard..."" required>
+                <button type=""submit"" class=""search-button"">Search</button>
+            </form>
+             <div class=""quick-links"">
+            <a href=""https://www.github.com"" class=""quick-link"" target=""_blank"">GitHub</a>
+            <a href=""https://www.stackoverflow.com"" class=""quick-link"" target=""_blank"">Stack Overflow</a>
+            <a href=""https://www.reddit.com"" class=""quick-link"" target=""_blank"">Reddit</a>
+            <a href=""https://www.youtube.com"" class=""quick-link"" target=""_blank"">YouTube</a>
+            <a href=""https://iphey.com"" class=""quick-link"" target=""_blank"">IP Hey</a>
+            <a href=""https://amiunique.org"" class=""quick-link"" target=""_blank"">Am I Unique</a>
+        </div>
+        </div>
+        <script>
+            function updateClock() {
+                const now = new Date();
+                const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                document.getElementById('clock').textContent = time;
+            }
+            setInterval(updateClock, 1000);
+            updateClock();
+        </script>
+    </body>
+    </html>";
+
+        // Load HTML content directly into the browser
+        PryGuardBrowser.LoadHtml(htmlContent);
+
         return PryGuardBrowser;
     }
+
     private async Task ParseAndInsertCookies(string cookiesInput, PryGuardProfile pryGuardProfile, ChromiumWebBrowser browser)
     {
+        if (CurrentTabItem is CustomTabItem currentTab && currentTab.IsIncognito) return;
         if (string.IsNullOrWhiteSpace(cookiesInput))
             return;
 
@@ -419,8 +686,61 @@ public class PryGuardBrowserViewModel : BaseViewModel
         }
     }
 
+    
 
 
+    //public async Task CaptureScreenshotAsync(ChromiumWebBrowser browser)
+    //{
+    //    if (browser.IsBrowserInitialized)
+    //    {
+    //        var bitmap = new Bitmap((int)browser.ActualWidth, (int)browser.ActualHeight);
+    //        var browserHost = browser.GetBrowser().GetHost();
+
+    //        // Render the browser into a bitmap
+    //        var viewRect = new CefSharp.Structs.Rect(0, 0, (int)browser.ActualWidth, (int)browser.ActualHeight);
+
+    //        // Take screenshot (you need to implement CaptureBrowserAsBitmap manually or capture from the view if possible)
+    //        var screenshotBytes = CaptureBrowserAsBitmap(browser);
+
+    //        // Save screenshot to file
+    //        var screenshotPath = Path.Combine(_PryGuardProfileToStart.CachePath, "last_visited_site_screenshot.png");
+    //        using (var fileStream = new FileStream(screenshotPath, FileMode.Create, FileAccess.Write))
+    //        {
+    //            await fileStream.WriteAsync(screenshotBytes, 0, screenshotBytes.Length);
+    //        }
+
+    //        // Alert message instead of console output
+    //        MessageBox.Show("Screenshot captured and saved successfully at " + screenshotPath, "Screenshot Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+    //    }
+    //    else
+    //    {
+    //        // Alert message instead of console output
+    //        MessageBox.Show("Browser is not initialized.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+    //    }
+    //}
+
+    //private byte[] CaptureBrowserAsBitmap(ChromiumWebBrowser browser)
+    //{
+    //    var viewWidth = (int)browser.ActualWidth;
+    //    var viewHeight = (int)browser.ActualHeight;
+
+    //    // Create a new bitmap of the browser size
+    //    var bitmap = new Bitmap(viewWidth, viewHeight);
+
+    //    // Render the browser into the bitmap
+    //    using (var graphics = Graphics.FromImage(bitmap))
+    //    {
+    //        // Use System.Drawing.Point instead of System.Windows.Point
+    //        graphics.CopyFromScreen(new System.Drawing.Point(0, 0), System.Drawing.Point.Empty, new System.Drawing.Size(viewWidth, viewHeight));
+    //    }
+
+    //    // Convert the Bitmap to a byte array
+    //    using (var ms = new MemoryStream())
+    //    {
+    //        bitmap.Save(ms, ImageFormat.Png);
+    //        return ms.ToArray();
+    //    }
+    //}
 
 
 
@@ -530,7 +850,11 @@ public class PryGuardBrowserViewModel : BaseViewModel
             var button = TabBtnsAndAddTabBtn.OfType<Label>().FirstOrDefault(lbl => (int)lbl.Tag == (int)browser.Tag);
             if (button != null)
             {
-                button.Content = e.NewValue.ToString();
+                if(tabItem.IsIncognito)
+                    button.Content = "Inco "+ e.NewValue.ToString();
+                else
+                    button.Content = e.NewValue.ToString();
+                
             }
 
             // Save the history
@@ -542,14 +866,25 @@ public class PryGuardBrowserViewModel : BaseViewModel
     {
         var browser = sender as PryGuardBrowser;
         var tabItem = Tabs.FirstOrDefault(tab => (int)tab.Tag == (int)browser.Tag);
+
         if (tabItem != null)
         {
-            tabItem.Address = e.NewValue.ToString();
+            // Check if the new value is a data: URL
+            string newAddress = e.NewValue.ToString();
+            if (newAddress.StartsWith("data:"))
+            {
+                // Set to a friendly display name or custom URL
+                newAddress = "about:blank"; // or "about:blank" or whatever you prefer
+            }
+
+            tabItem.Address = newAddress;
 
             // Update the Address property of the ViewModel
-            Address = e.NewValue.ToString();
+            Address = newAddress;
         }
     }
+
+
     private void AddBookmark()
     {
         var customTabItem = Tabs.OfType<CustomTabItem>().FirstOrDefault(tab => tab == CurrentTabItem);
@@ -576,12 +911,29 @@ public class PryGuardBrowserViewModel : BaseViewModel
     {
         _bookmarkManager.RemoveBookmark(bookmark);
     }
+
     private void Browser_LoadingStateChanged(object? sender, LoadingStateChangedEventArgs e)
     {
     }
     #endregion
 
     #region HistoryWork
+
+    public void ToggleIncognitoMode()
+{
+    if (IsIncognitoMode)
+    {
+        CloseCurrentTabIfIncognito();
+        IsIncognitoMode = false;
+    }
+    else
+    {
+        IsIncognitoMode = true;
+        AddIncognitoTab();
+    }
+    OnPropertyChanged(nameof(IncognitoModeText));
+}
+
 
     private void DeleteHistory()
     {
@@ -611,52 +963,90 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
     private void SaveHistoryJson(string address, string desc)
     {
-        if (!File.Exists(_profileHistoryPath))
+        if (CurrentTabItem is CustomTabItem currentTab && currentTab.IsIncognito)
+            return; // Do not save history for incognito
+
+        string profileHistoryPath = Path.Combine(_PryGuardProfile.CachePath, "History.json");
+
+        if (PryGuardHistoryList == null)
         {
-            File.Create(_profileHistoryPath).Close();
+            PryGuardHistoryList = new ObservableCollection<PryGuardHistoryItem>();
         }
 
         Task.Run(() =>
         {
-            var hist = new PryGuardHistoryItem(DateTime.Now.ToString("yyyy/MM/dd HH:mm"),
-                desc, address.Replace("https://", ""));
-
-            // Write to the JSON file in the background thread
-            var doc = JsonSerializer.Serialize(PryGuardHistoryList);
-            using StreamWriter writer = new(_profileHistoryPath);
-            writer.Write(doc);
-            writer.Close();
-
-            // Update the UI on the main thread
-            Application.Current.Dispatcher.Invoke(() =>
+            try
             {
-                // Insert history item into the ObservableCollection on the UI thread
-                PryGuardHistoryList.Insert(0, hist);
+                var hist = new PryGuardHistoryItem(DateTime.Now.ToString("yyyy/MM/dd HH:mm"), desc, address.Replace("https://", ""));
+                Application.Current.Dispatcher.Invoke(() => PryGuardHistoryList.Insert(0, hist));
 
-                var listBoxItem = new ListViewItem();
-
-                // Set properties for the list box item
-                ListViewItemProperties.SetTimeHistory(listBoxItem, hist.Time);
-                ListViewItemProperties.SetDescHistory(listBoxItem, hist.Description);
-                ListViewItemProperties.SetLinkPreview(listBoxItem, hist.Link[..hist.Link.IndexOf('/')]);
-                ListViewItemProperties.SetFullLink(listBoxItem, hist.Link);
-
-                // Insert into the ListView on the UI thread
-                _listView.Items.Insert(0, listBoxItem);
-            });
+                var doc = JsonSerializer.Serialize(PryGuardHistoryList);
+                File.WriteAllText(profileHistoryPath, doc); // Save history to profile-specific path
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving history: {ex.Message}");
+            }
         });
     }
 
+    private void SaveHistoryList()
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(PryGuardHistoryList, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(_profileHistoryPath, json);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error saving history: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    public void DeleteHistoryItem(PryGuardHistoryItem historyItem)
+    {
+        if (historyItem == null)
+        {
+            MessageBox.Show("No history item selected for deletion.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+        // Remove the item from the ObservableCollection
+        PryGuardHistoryList.Remove(historyItem);
+
+        SaveHistoryList();
+        
+    }
 
     private void LoadHistoryJson()
     {
-        if (!File.Exists(_profileHistoryPath)) { return; }
+        // Check if _profileHistoryPath is initialized
+        if (string.IsNullOrEmpty(_profileHistoryPath) || !File.Exists(_profileHistoryPath))
+        {
+            return; // Exit if path is not set or file doesn't exist
+        }
 
-        using StreamReader reader = new(_profileHistoryPath);
-        var json = reader.ReadToEnd();
-        reader.Close();
-        PryGuardHistoryList = JsonSerializer.Deserialize<ObservableCollection<PryGuardHistoryItem>>(JsonNode.Parse(json).ToString());
+        // Ensure PryGuardHistoryList is not null
+        if (PryGuardHistoryList == null)
+        {
+            PryGuardHistoryList = new ObservableCollection<PryGuardHistoryItem>();
+        }
+
+        try
+        {
+            using StreamReader reader = new StreamReader(_profileHistoryPath);
+            var json = reader.ReadToEnd();
+            reader.Close();
+
+            // Deserialize history and assign it to PryGuardHistoryList
+            PryGuardHistoryList = JsonSerializer.Deserialize<ObservableCollection<PryGuardHistoryItem>>(json) ?? new ObservableCollection<PryGuardHistoryItem>();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error loading history: {ex.Message}");
+        }
     }
+
+
 
     private void LoadHistoryLink(object link)
     {
@@ -674,6 +1064,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     #endregion
 
     #region Tab Work
+
     private async void AddTabHistory()
     {
         Application.Current.Dispatcher.Invoke(() =>
@@ -719,28 +1110,165 @@ public class PryGuardBrowserViewModel : BaseViewModel
             _mainIDCounter++;
         });
     }
+    private async void AddTabBookmark()
+    {
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            var newTab = new CustomTabItem
+            {
+                Tag = _mainIDCounter,
+                Content = new BookmarkView()
+                {
+                    DataContext = this
+                }
+            };
+            Tabs.Add(newTab);
+            CurrentTabItem = newTab;
+
+            Address = "PryGuard://bookmarks/";
+
+            
+
+            Label button = new Label
+            {
+                Content = "Bookmark",
+                AllowDrop = true,
+                Tag = _mainIDCounter
+            };
+
+            button.DragEnter += BtnTabDragEnter;
+            button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
+
+            if (_mainIDCounter == 0)
+            {
+                TabBtnsAndAddTabBtn.Insert(0, button);
+            }
+            else
+            {
+                TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
+            }
+
+            _mainIDCounter++;
+        });
+    }
+
+
+    private void AddDownloadTab()
+    {
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            var downloadsPage = new DownloadPage();
+
+            var newTab = new CustomTabItem
+            {
+                Tag = _mainIDCounter,
+                Content = downloadsPage
+            };
+            Tabs.Add(newTab);
+            CurrentTabItem = newTab;
+
+            Address = "PryGuard://downloads/";
+
+            Label button = new Label
+            {
+                Content = "Downloads",
+                AllowDrop = true,
+                Tag = _mainIDCounter
+            };
+
+            button.DragEnter += BtnTabDragEnter;
+            button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
+
+            if (_mainIDCounter == 0)
+            {
+                TabBtnsAndAddTabBtn.Insert(0, button);
+            }
+            else
+            {
+                TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
+            }
+
+            _mainIDCounter++;
+        });
+    }
+
+    private async void AddIncognitoTab()
+    {
+        // Initialize a browser instance for incognito mode
+        var browser = await InitIncognitoBrowser(_mainIDCounter); // Use InitIncognitoBrowser here
+
+        browser.TitleChanged += Browser_TitleChanged;
+        browser.LoadingStateChanged += Browser_LoadingStateChanged;
+        browser.AddressChanged += Browser_AddressChanged;
+        browser.PreviewKeyDown += Browser_PreviewKeyDown;
+
+        browser.Focus();
+
+        var newTabItem = new CustomTabItem
+        {
+            Tag = _mainIDCounter,
+            Content = browser,
+            Title = "Incognito",
+            Address = browser.Address,
+            CloseTabCommand = CloseTabCommand,
+            IsIncognito = true // Indicate this tab is incognito
+        };
+
+        // Bind Address updates (we do not save history for incognito)
+        browser.AddressChanged += (s, e) => newTabItem.Address = browser.Address;
+
+        Tabs.Add(newTabItem);
+        CurrentTabItem = Tabs.Last();
+
+        var button = new Label
+        {
+            Content = newTabItem.Title,
+            AllowDrop = true,
+            Tag = _mainIDCounter,
+            DataContext = newTabItem
+        };
+
+        button.SetBinding(Label.ContentProperty, new Binding("Title"));
+        button.DragEnter += BtnTabDragEnter;
+        button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
+
+        // Insert the tab button
+        TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
+
+        _mainIDCounter++;
+    }
+
 
 
 
     private async void AddTab()
     {
-        var browser = await InitBrowser(_mainIDCounter > 0);
+        // Reset incognito mode if a new tab is opened from incognito
+        if (IsIncognitoMode)
+        {
+            IsIncognitoMode = false;
+            OnPropertyChanged(nameof(IsIncognitoMode));
+            OnPropertyChanged(nameof(IncognitoModeText));
+        }
+
+        var browser = await InitBrowser(isNewPage: _mainIDCounter > 0,_mainIDCounter);
         browser.TitleChanged += Browser_TitleChanged;
         browser.LoadingStateChanged += Browser_LoadingStateChanged;
         browser.AddressChanged += Browser_AddressChanged;
+        browser.PreviewKeyDown += Browser_PreviewKeyDown;
 
-       
+        browser.Focus();
 
-        var newTabItem = new CustomTabItem()
+        var newTabItem = new CustomTabItem
         {
             Tag = _mainIDCounter,
             Content = browser,
             Title = browser.Title,
             Address = browser.Address,
-            CloseTabCommand = CloseTabCommand // Set the command
+            CloseTabCommand = CloseTabCommand,
+            IsIncognito = false // Set as a regular tab
         };
 
-        // Set bindings to keep Title and Address updated
         browser.TitleChanged += (s, e) => newTabItem.Title = browser.Title;
         browser.AddressChanged += (s, e) => newTabItem.Address = browser.Address;
 
@@ -755,24 +1283,114 @@ public class PryGuardBrowserViewModel : BaseViewModel
             DataContext = newTabItem
         };
 
-        button.SetBinding(Label.ContentProperty, new Binding("Title")); // Bind button content to Title
-
+        button.SetBinding(Label.ContentProperty, new Binding("Title"));
         button.DragEnter += BtnTabDragEnter;
         button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
 
-        if (_mainIDCounter == 0)
-        {
-            TabBtnsAndAddTabBtn.Insert(0, button);
-        }
-        else
-        {
-            TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
-        }
-
+        TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
         _mainIDCounter++;
     }
 
+    private void CloseCurrentTabIfIncognito()
+    {
+        if (CurrentTabItem is CustomTabItem incognitoTab && incognitoTab.IsIncognito)
+        {
+            Tabs.Remove(incognitoTab);
+            _incognitoCache.Clear();
 
+            var buttonToRemove = TabBtnsAndAddTabBtn
+                .OfType<FrameworkElement>()
+                .FirstOrDefault(btn => (int)btn.Tag == (int)incognitoTab.Tag);
+
+            if (buttonToRemove != null)
+            {
+                TabBtnsAndAddTabBtn.Remove(buttonToRemove);
+            }
+
+            // Clear temporary incognito data
+            var incognitoPath = Path.Combine(Path.GetTempPath(), "PryGuardTempCache_" + incognitoTab.Tag);
+            if (Directory.Exists(incognitoPath))
+            {
+                Directory.Delete(incognitoPath, true);
+            }
+        }
+    }
+
+
+
+
+
+
+    private async void OpenUrlInNewTab(string url, bool isIncognito = false)
+    {
+        PryGuardBrowser browser;
+        int currentId = _mainIDCounter; // Save current ID
+
+        if (isIncognito)
+        {
+            browser = await InitIncognitoBrowser(currentId);
+        }
+        else
+        {
+            browser = await InitBrowser(_mainIDCounter > 0, currentId);
+        }
+
+        // Increment _mainIDCounter after all uses
+        _mainIDCounter++;
+
+        // Set up event handlers
+        browser.TitleChanged += Browser_TitleChanged;
+        browser.LoadingStateChanged += Browser_LoadingStateChanged;
+        browser.AddressChanged += Browser_AddressChanged;
+        browser.PreviewKeyDown += Browser_PreviewKeyDown;
+
+        browser.Load(url);
+        browser.Focus();
+
+        var newTabItem = new CustomTabItem()
+        {
+            Tag = currentId,
+            Content = browser,
+            Title = browser.Title,
+            Address = browser.Address,
+            CloseTabCommand = CloseTabCommand,
+            IsIncognito = isIncognito // Set the incognito status
+        };
+
+        // Bindings
+        browser.TitleChanged += (s, e) => newTabItem.Title = browser.Title;
+        browser.AddressChanged += (s, e) => newTabItem.Address = browser.Address;
+
+        Tabs.Add(newTabItem);
+        CurrentTabItem = newTabItem;
+
+        var button = new Label
+        {
+            AllowDrop = true,
+            Tag = currentId,
+            DataContext = newTabItem
+        };
+
+        button.SetBinding(Label.ContentProperty, new Binding("Title"));
+        button.DragEnter += BtnTabDragEnter;
+        button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
+
+        TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
+    }
+
+
+
+
+    private void OpenDevTools(object obj)
+    {
+        // Assuming CurrentTabItem is your active browser tab
+        var browser = CurrentTabItem.Content as PryGuardBrowser; // Get the browser instance directly
+
+        if (browser != null && browser.IsBrowserInitialized) // Check if the browser is initialized
+        {
+            browser.ShowDevTools(); // Open the Developer Tools
+        }
+    }
 
     private void BtnMouseDownForDragAndOpenTab(object sender, MouseButtonEventArgs e)
     {
@@ -804,10 +1422,25 @@ public class PryGuardBrowserViewModel : BaseViewModel
         TabBtnsAndAddTabBtn.Insert(where_to_drop, _tabBtnToDrag);
     }
 
-    private void CloseTab(object parameter)
+    private void CloseTab(object parameter = null)
     {
-        if (parameter is not MouseButtonEventArgs mouseArgs || mouseArgs.Source is not TextBlock tb) return;
-        var id = (int)tb.Tag;
+        int id;
+
+        // Check if parameter is MouseButtonEventArgs and get id from there
+        if (parameter is MouseButtonEventArgs mouseArgs && mouseArgs.Source is TextBlock tb)
+        {
+            id = (int)tb.Tag;
+        }
+        else if (CurrentTabItem != null)
+        {
+            // If parameter is not MouseButtonEventArgs, get id from CurrentTabItem
+            id = (int)CurrentTabItem.Tag;
+        }
+        else
+        {
+            // No current tab to close
+            return;
+        }
 
         // Delete from Tabs
         var itemToRemove = Tabs.FirstOrDefault(item => (int)item.Tag == id);
@@ -821,6 +1454,10 @@ public class PryGuardBrowserViewModel : BaseViewModel
                 int currentIndex = Tabs.IndexOf(itemToRemove);
                 CurrentTabItem = currentIndex > 0 ? Tabs[currentIndex - 1] : Tabs.First();
             }
+            else
+            {
+                CurrentTabItem = null;
+            }
         }
 
         // Delete from TabBtns
@@ -832,7 +1469,15 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
         // Delete from Browsers
         _browsers = _browsers.Where(item => (int)item.Tag != id).ToList();
+
+        // Check if this was the Incognito tab
+        if (IsIncognitoMode)
+        {
+            IsIncognitoMode = false;  // Reset IsIncognitoMode
+            OnPropertyChanged(nameof(IsIncognitoMode));  // Notify UI of change
+        }
     }
+
 
 
     private void OpenTab(object arg)
@@ -860,8 +1505,202 @@ public class PryGuardBrowserViewModel : BaseViewModel
     }
 
     #endregion
+    #region find work
+    private void ShowFindBar()
+    {
+        IsFindBarVisible = true;
+        //FocusSearchTextBoxAction?.Invoke();
+        
+    }
 
+    private void CloseFindBar()
+    {
+        IsFindBarVisible = false;
+        // Stop finding
+        var browser = CurrentTabItem?.Content as PryGuardBrowser;
+        browser?.GetBrowserHost()?.StopFinding(true);
+        SearchText = string.Empty;
+    }
+
+    private void FindNext()
+    {
+        var browser = CurrentTabItem?.Content as PryGuardBrowser;
+        var browserHost = browser?.GetBrowserHost();
+
+        if (!string.IsNullOrEmpty(SearchText) && browserHost != null)
+        {
+            // Call Find with the "resume" parameter set to true to move to the next match
+            browserHost.Find(SearchText, forward: true, findNext: true, matchCase: false);
+        }
+    }
+
+    private void FindPrevious()
+    {
+        var browser = CurrentTabItem?.Content as PryGuardBrowser;
+        var browserHost = browser?.GetBrowserHost();
+
+        if (!string.IsNullOrEmpty(SearchText) && browserHost != null)
+        {
+            // Call Find with the "resume" parameter set to true to move to the previous match
+            browserHost.Find(SearchText, forward: false, findNext: true, matchCase: false);
+        }
+    }
+
+
+    private void PerformSearch(bool forward = true)
+    {
+        var browser = CurrentTabItem?.Content as PryGuardBrowser;
+        var browserHost = browser?.GetBrowserHost();
+
+        if (string.IsNullOrEmpty(SearchText))
+        {
+            // Stop finding when the search text is empty to clear previous results
+            browserHost?.StopFinding(true);
+            return;
+        }
+
+        if (browserHost != null)
+        {
+            browserHost.Find(SearchText, forward, false, false);
+        }
+    }
+
+
+    #endregion
     #region Window Work
+    private void Browser_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        var browser = sender as IWebBrowser;
+
+        if (browser == null)
+            return;
+
+        // Check for Ctrl+P (Print)
+        if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.P)
+        {
+            browser.GetBrowserHost().Print();
+            e.Handled = true;
+        }
+        // Check for F12 (Developer Tools)
+        else if (e.Key == Key.F12)
+        {
+            browser.ShowDevTools();
+            e.Handled = true;
+        }
+        // Check for Ctrl+Shift+I (Developer Tools)
+        else if (e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift) && e.Key == Key.I)
+        {
+            browser.ShowDevTools();
+            e.Handled = true;
+        }
+        // Check for Ctrl+R (Reload)
+        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.R)
+        {
+            browser.Reload();
+            e.Handled = true;
+        }
+        // Check for Ctrl+T (New Tab)
+        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.T)
+        {
+            AddTab();
+            e.Handled = true;
+        }
+       
+        // Check for Ctrl+W (Close Tab)
+        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.W)
+        {
+            CloseTab(null);
+            e.Handled = true;
+        }
+
+        // Ctrl + '+' (Zoom In)
+        if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && (e.Key == Key.OemPlus || e.Key == Key.Add))
+        {
+            browser.GetZoomLevelAsync().ContinueWith(task =>
+            {
+                var currentZoomLevel = task.Result;
+                var newZoomLevel = currentZoomLevel + 0.1;
+                browser.SetZoomLevel(newZoomLevel);
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+            e.Handled = true;
+        }
+        // Ctrl + '-' (Zoom Out)
+        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && (e.Key == Key.OemMinus || e.Key == Key.Subtract))
+        {
+            browser.GetZoomLevelAsync().ContinueWith(task =>
+            {
+                var currentZoomLevel = task.Result;
+                var newZoomLevel = currentZoomLevel - 0.1;
+                browser.SetZoomLevel(newZoomLevel);
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+            e.Handled = true;
+        }
+        // Ctrl + '0' (Reset Zoom)
+        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.D0)
+        {
+            browser.SetZoomLevel(0);
+            e.Handled = true;
+        }
+        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.S)
+        {
+            SavePage(browser);
+            e.Handled = true;
+        }
+        // Check for Ctrl+Z (Undo)
+        else if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.Z)
+        {
+            browser.GetFocusedFrame()?.Undo();
+            e.Handled = true;
+        }
+
+    }
+
+
+
+
+
+
+ 
+    private void SavePage(IWebBrowser browser)
+    {
+        // Get the main (focused) frame
+        var frame = browser.GetFocusedFrame();
+
+        if (frame == null)
+            return;
+
+        // Get the HTML source asynchronously
+        frame.GetSourceAsync().ContinueWith(taskHtml =>
+        {
+            var html = taskHtml.Result;
+
+            // Open a "Save As" dialog on the UI thread
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var saveFileDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    Filter = "HTML Files (*.html)|*.html|All Files (*.*)|*.*",
+                    FileName = "Untitled.html"
+                };
+
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    // Save the HTML content to the selected file
+                    try
+                    {
+                        File.WriteAllText(saveFileDialog.FileName, html);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle exceptions (e.g., display an error message)
+                        MessageBox.Show($"Error saving file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            });
+        });
+    }
+
+
     private void AddressOnKeyDown(object arg)
     {
         if ((arg as KeyEventArgs).Key == Key.Enter)
@@ -899,26 +1738,53 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private void Back(object arg)
     {
         if (CurrentTabItem == null) return;
-        (CurrentTabItem.Content as PryGuardBrowser).Back();
+
+        if (CurrentTabItem.Content is PryGuardBrowser browser)
+        {
+            browser.Back();
+        }
+        else
+        {
+            // Optionally, handle the case for history/bookmark or do nothing.
+            // MessageBox.Show("Back operation not supported on this tab.");
+        }
     }
+
     private void Forward(object arg)
     {
         if (CurrentTabItem == null) return;
-        (CurrentTabItem.Content as PryGuardBrowser).Forward();
+
+        if (CurrentTabItem.Content is PryGuardBrowser browser)
+        {
+            browser.Forward();
+        }
+        else
+        {
+            // Optionally, handle the case for history/bookmark or do nothing.
+            // MessageBox.Show("Forward operation not supported on this tab.");
+        }
     }
+
     private void Refresh(object arg)
     {
         if (CurrentTabItem == null) return;
 
-        if (CurrentTabItem.Content.ToString().Contains("ListView"))
+        if (CurrentTabItem.Content is PryGuardBrowser browser)
         {
+            browser.Reload();
+        }
+        else if (CurrentTabItem.Content is ListView listView)
+        {
+            // Assuming _listView is your ListView instance
             CurrentTabItem.Content = _listView;
         }
         else
         {
-            (CurrentTabItem.Content as PryGuardBrowser).Reload();
+            // Optionally, handle the case for history/bookmark or do nothing.
+            // MessageBox.Show("Refresh operation not supported on this tab.");
         }
     }
+
     private void NormalStateWindow(object arg)
     {
         //if ((arg as MouseEventArgs).LeftButton == MouseButtonState.Pressed)
@@ -932,23 +1798,28 @@ public class PryGuardBrowserViewModel : BaseViewModel
     }
     private void MaximizedWindow(object arg)
     {
-        CurWindowState = WindowState.Maximized;
-
-        //if (CurWindowState == WindowState.Maximized)
-        //{
-        //    CurWindowState = WindowState.Normal;
-        //}
-        //else
-        //{
-        //    CurWindowState = WindowState.Maximized;
-        //}
+        // Toggle between maximized and normal window state
+        if (CurWindowState == WindowState.Maximized)
+        {
+            CurWindowState = WindowState.Normal; // Set to normal if it's currently maximized
+        }
+        else
+        {
+            CurWindowState = WindowState.Maximized; // Maximize if it's not already maximized
+        }
     }
-    private void CloseWindow(object obj)
+
+    private async void CloseWindow(object obj)
     {
+        //if (CurrentTabItem != null)
+        //{
+        //    var currentBrowser = CurrentTabItem.Content as ChromiumWebBrowser;
+        //    if (currentBrowser != null)
+        //    {
+        //        await CaptureScreenshotAsync(currentBrowser);
+        //    }
+        //}
         ViewManager.Close(this);
-        
-        
-        
     }
     public bool CanClose()
     {

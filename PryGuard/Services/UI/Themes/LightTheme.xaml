@@ -1,0 +1,26 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Color x:Key="BackgroundColor">White</Color>
+    <Color x:Key="ForegroundColor">Black</Color>
+    <Color x:Key="BorderColor">Black</Color>
+
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}" />
+    <SolidColorBrush x:Key="ForegroundBrush" Color="{StaticResource ForegroundColor}" />
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}" />
+    <DrawingImage x:Key="DeleteIcon">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <!-- Background Rectangle (Black for contrast in light theme) -->
+                <GeometryDrawing Brush="#FF000000" Geometry="M150,200 L350,200 L350,400 L150,400 Z" />
+                <!-- Top Bar -->
+                <GeometryDrawing Brush="#FF000000" Geometry="M120,180 L380,180 L380,200 L120,200 Z" />
+                <!-- Middle Rectangle -->
+                <GeometryDrawing Brush="#FF000000" Geometry="M220,140 L280,140 L280,180 L220,180 Z" />
+                <!-- Vertical Bars (White in light theme) -->
+                <GeometryDrawing Brush="#FFFFFFFF" Geometry="M180,220 L200,220 L200,380 L180,380 Z" />
+                <GeometryDrawing Brush="#FFFFFFFF" Geometry="M240,220 L260,220 L260,380 L240,380 Z" />
+                <GeometryDrawing Brush="#FFFFFFFF" Geometry="M300,220 L320,220 L320,380 L300,380 Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+</ResourceDictionary>

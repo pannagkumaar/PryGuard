@@ -1,21 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 using PryGuard.ViewModel;
 
 namespace PryGuard.View
 {
-    public partial class HistoryView : UserControl
+    /// done by tania
+    public partial class BookmarkView : UserControl
     {
         private bool _isDarkTheme;
 
-        public HistoryView()
-        {
-            InitializeComponent();
-            SetLightTheme();
-            themeToggleButton.Content = _isDarkTheme ? "Light Theme" : "Dark Theme";
-        }
+        public BookmarkView()
+{
+    InitializeComponent();
+    SetLightTheme(); // This will set the initial theme to light
+    themeToggleButton.Content = "Dark Theme"; // Since the initial theme is light, the button should say "Dark Theme"
+}
+
 
         private void OnLinkClick(object sender, MouseButtonEventArgs e)
         {
@@ -23,8 +35,13 @@ namespace PryGuard.View
             if (link != null)
             {
                 var viewModel = DataContext as PryGuardBrowserViewModel;
-                viewModel?.LoadHistoryLinkCommand.Execute(link);
+                if (viewModel?.LoadHistoryLinkCommand.CanExecute(link) == true) 
+                {
+                    viewModel.LoadHistoryLinkCommand.Execute(link);
+                }
             }
+
+            e.Handled = true;
         }
 
         private void SetLightTheme()
@@ -54,5 +71,7 @@ namespace PryGuard.View
             SetLightTheme();
             themeToggleButton.Content = "Dark Theme";
         }
+
     }
+    // done by tania
 }
