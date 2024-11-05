@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 public class DownloadItemViewModel : INotifyPropertyChanged
 {
-    // Existing properties...
+    #region Properties
     public int Id { get; private set; }
 
     private string _suggestedFileName;
@@ -82,11 +82,15 @@ public class DownloadItemViewModel : INotifyPropertyChanged
             }
         }
     }
+    #endregion
 
+    #region Commands
     // Command to open the file
     public ICommand OpenFileCommand { get; }
     public ICommand CancelCommand { get; }
+    #endregion
 
+    #region Ctor
     public DownloadItemViewModel(DownloadItem downloadItem)
     {
         Id = downloadItem.Id;
@@ -94,6 +98,9 @@ public class DownloadItemViewModel : INotifyPropertyChanged
         CancelCommand = new RelayCommand(CancelDownload, CanCancelDownload);
         Update(downloadItem);
     }
+    #endregion
+
+    #region DownloadWork
     private void CancelDownload(object parameter)
     {
         DownloadManager.Instance.CancelDownload(Id);
@@ -153,3 +160,4 @@ public class DownloadItemViewModel : INotifyPropertyChanged
     protected void OnPropertyChanged(string name) =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }
+#endregion

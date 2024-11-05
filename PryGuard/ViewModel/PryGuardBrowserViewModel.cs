@@ -101,6 +101,8 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public Action FocusSearchTextBoxAction { get; set; }
 
     #endregion
+
+    #region Properties
     private bool _isFindBarVisible;
     public bool IsFindBarVisible
     {
@@ -150,7 +152,6 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public string IncognitoModeText => IsIncognitoMode ? "Incognito off" : "Incognito on";
     private Dictionary<int, string> _incognitoCache = new Dictionary<int, string>();
 
-    #region Properties
     private CustomTabItem _currentTabItem;
     public CustomTabItem CurrentTabItem
     {
@@ -1506,6 +1507,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     }
 
     #endregion
+
     #region find work
     private void ShowFindBar()
     {
@@ -1568,6 +1570,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
 
     #endregion
+
     #region Window Work
     private void Browser_PreviewKeyDown(object sender, KeyEventArgs e)
     {

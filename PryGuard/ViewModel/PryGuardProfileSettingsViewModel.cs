@@ -393,6 +393,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         WindowState = WindowState.Minimized;
     }
     #endregion
+
     #region proxywork
     public void LoadSavedProxies()
     {
