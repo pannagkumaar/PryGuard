@@ -1752,7 +1752,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     }
     private void OpenEmail()
     {
-        OpenUrlInNewTab("https://mailmanager-k7ye25nnp-himank101s-projects.vercel.app");
+        OpenUrlInNewTab("pryguard.org");
     }
     private void Forward(object arg)
     {
