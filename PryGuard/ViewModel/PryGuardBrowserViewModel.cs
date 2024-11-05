@@ -276,9 +276,9 @@ public class PryGuardBrowserViewModel : BaseViewModel
     #endregion
 
     #region PryGuardBrowser Work
-    private async Task<PryGuardBrowser> InitBrowser(bool isNewPage)
+    private async Task<PryGuardBrowser> InitBrowser(bool isNewPage, int id)
     {
-        PryGuardBrowser browser = await CreateBrowser(isNewPage, _mainIDCounter, _PryGuardProfileToStart);
+        PryGuardBrowser browser = await CreateBrowser(isNewPage, id, _PryGuardProfileToStart);
         _browsers.Add(browser);
         if (browser.IsBrowserInitialized)
         {
@@ -297,19 +297,20 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
         return browser;
     }
-    private async Task<PryGuardBrowser> InitIncognitoBrowser()
+    private async Task<PryGuardBrowser> InitIncognitoBrowser(int id)
     {
-        var browser = await CreateBrowser(isNewPage: true, id: _mainIDCounter, profile: _PryGuardProfileToStart, incognitoCache: _incognitoCache);
+        var browser = await CreateBrowser(isNewPage: true, id: id, profile: _PryGuardProfileToStart, incognitoCache: _incognitoCache);
         browser.IsIncognito = true; // Set incognito mode
         _browsers.Add(browser);
-        _mainIDCounter++;
+        // Do not increment _mainIDCounter here
         return browser;
     }
 
 
 
 
-    private async Task<PryGuardBrowser> CreateBrowser(bool isNewPage, object id, PryGuardProfile profile, Dictionary<int, string> incognitoCache = null)
+
+    private async Task<PryGuardBrowser> CreateBrowser(bool isNewPage, int id, PryGuardProfile profile, Dictionary<int, string> incognitoCache = null)
     {
         _PryGuardProfile = profile;
 
@@ -397,6 +398,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private PryGuardBrowser InitBasicSettingsBrowser(bool isNewPage, object id, PryGuardProfile PryGuardProfile)
     {
         var PryGuardBrowser = new PryGuardBrowser(_context);
+        PryGuardBrowser.Tag = id;
         PryGuardBrowser.LifeSpanHandler = _lifespanHandler;
         PryGuardBrowser.IsBrowserInitializedChanged += PryGuardBrowser_IsBrowserInitializedChanged;
         PryGuardBrowser.BrowserSettings.ImageLoading = PryGuardProfile.IsLoadImage ? CefState.Enabled : CefState.Disabled;
@@ -848,7 +850,11 @@ public class PryGuardBrowserViewModel : BaseViewModel
             var button = TabBtnsAndAddTabBtn.OfType<Label>().FirstOrDefault(lbl => (int)lbl.Tag == (int)browser.Tag);
             if (button != null)
             {
-                button.Content = e.NewValue.ToString();
+                if(tabItem.IsIncognito)
+                    button.Content = "Inco "+ e.NewValue.ToString();
+                else
+                    button.Content = e.NewValue.ToString();
+                
             }
 
             // Save the history
@@ -1189,8 +1195,9 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private async void AddIncognitoTab()
     {
         // Initialize a browser instance for incognito mode
-        var browser = await InitIncognitoBrowser(); // Use InitIncognitoBrowser here
+        var browser = await InitIncognitoBrowser(_mainIDCounter); // Use InitIncognitoBrowser here
 
+        browser.TitleChanged += Browser_TitleChanged;
         browser.LoadingStateChanged += Browser_LoadingStateChanged;
         browser.AddressChanged += Browser_AddressChanged;
         browser.PreviewKeyDown += Browser_PreviewKeyDown;
@@ -1244,7 +1251,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             OnPropertyChanged(nameof(IncognitoModeText));
         }
 
-        var browser = await InitBrowser(isNewPage: _mainIDCounter > 0);
+        var browser = await InitBrowser(isNewPage: _mainIDCounter > 0,_mainIDCounter);
         browser.TitleChanged += Browser_TitleChanged;
         browser.LoadingStateChanged += Browser_LoadingStateChanged;
         browser.AddressChanged += Browser_AddressChanged;
@@ -1317,17 +1324,21 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private async void OpenUrlInNewTab(string url, bool isIncognito = false)
     {
         PryGuardBrowser browser;
+        int currentId = _mainIDCounter; // Save current ID
 
         if (isIncognito)
         {
-            browser = await InitIncognitoBrowser();
+            browser = await InitIncognitoBrowser(currentId);
         }
         else
         {
-            browser = await InitBrowser(_mainIDCounter > 0);
+            browser = await InitBrowser(_mainIDCounter > 0, currentId);
         }
 
-        // Common setup code
+        // Increment _mainIDCounter after all uses
+        _mainIDCounter++;
+
+        // Set up event handlers
         browser.TitleChanged += Browser_TitleChanged;
         browser.LoadingStateChanged += Browser_LoadingStateChanged;
         browser.AddressChanged += Browser_AddressChanged;
@@ -1338,7 +1349,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
         var newTabItem = new CustomTabItem()
         {
-            Tag = _mainIDCounter,
+            Tag = currentId,
             Content = browser,
             Title = browser.Title,
             Address = browser.Address,
@@ -1351,13 +1362,12 @@ public class PryGuardBrowserViewModel : BaseViewModel
         browser.AddressChanged += (s, e) => newTabItem.Address = browser.Address;
 
         Tabs.Add(newTabItem);
-        CurrentTabItem = Tabs.Last();
+        CurrentTabItem = newTabItem;
 
         var button = new Label
         {
-            Content = newTabItem.Title,
             AllowDrop = true,
-            Tag = _mainIDCounter,
+            Tag = currentId,
             DataContext = newTabItem
         };
 
@@ -1366,8 +1376,8 @@ public class PryGuardBrowserViewModel : BaseViewModel
         button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
 
         TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
-        _mainIDCounter++;
     }
+
 
 
 
