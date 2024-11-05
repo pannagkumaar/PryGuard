@@ -86,7 +86,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public RelayCommand AddressOnKeyDownCommand { get; private set; }
     public RelayCommand OpenContextMenuSettingsCommand { get; private set; }
 
-
+    public RelayCommand OpenEmailCommand { get; private set; }
 
     public DelegateCommand CloseCommand =>
           _closeCommand ?? (_closeCommand = new DelegateCommand(obj => CloseWindow(obj)));
@@ -255,6 +255,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         CloseFindBarCommand = new RelayCommand(CloseFindBar);
         FindNextCommand = new RelayCommand(FindNext);
         FindPreviousCommand = new RelayCommand(FindPrevious);
+        OpenEmailCommand = new RelayCommand(OpenEmail);
         CurWindowState = WindowState.Maximized;
 
 
@@ -1749,7 +1750,10 @@ public class PryGuardBrowserViewModel : BaseViewModel
             // MessageBox.Show("Back operation not supported on this tab.");
         }
     }
-
+    private void OpenEmail()
+    {
+        OpenUrlInNewTab("https://mailmanager-k7ye25nnp-himank101s-projects.vercel.app");
+    }
     private void Forward(object arg)
     {
         if (CurrentTabItem == null) return;
