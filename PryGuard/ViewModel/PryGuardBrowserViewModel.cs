@@ -20,6 +20,7 @@ using PryGuard.Core.ChromeApi.Proxy;
 using System.Collections.ObjectModel;
 using PryGuard.Core.ChromeApi.Handlers;
 using PryGuard.Services.UI.ListView.ListViewItem;
+
 using PryGuard.View;
 using System.Data.SQLite;
 using System.Text.RegularExpressions;
@@ -32,6 +33,7 @@ using PryGuard.View;
 using CefSharp.Wpf;
 using PryGuard.View;
 using CefSharp.DevTools.Autofill;
+
 
 
 namespace PryGuard.ViewModel;
@@ -91,6 +93,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public DelegateCommand CloseCommand =>
           _closeCommand ?? (_closeCommand = new DelegateCommand(obj => CloseWindow(obj)));
     public ICommand AddBookmarkCommand { get; }
+
     public ICommand OpenBookmarkCommand { get; }
     public ICommand OpenDevToolsCommand { get; }
     public ICommand ToggleIncognitoModeCommand { get; }
@@ -99,6 +102,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public ICommand FindNextCommand { get; }
     public ICommand FindPreviousCommand { get; }
     public Action FocusSearchTextBoxAction { get; set; }
+
 
     #endregion
     private bool _isFindBarVisible;
@@ -159,10 +163,12 @@ public class PryGuardBrowserViewModel : BaseViewModel
     }
     private BookmarkManager _bookmarkManager;
 
+
     public ObservableCollection<Bookmark> Bookmarks => _bookmarkManager?.Bookmarks;
 
 
     private ObservableCollection<PryGuardHistoryItem> _pryGuardHistoryList = new ObservableCollection<PryGuardHistoryItem>();
+
 
     public ObservableCollection<PryGuardHistoryItem> PryGuardHistoryList
     {
@@ -239,8 +245,10 @@ public class PryGuardBrowserViewModel : BaseViewModel
         AddIncognitoTabCommand = new RelayCommand(AddIncognitoTab);
         OpenTabCommand = new RelayCommand(OpenTab);
         CloseTabCommand = new RelayCommand(CloseTab);
+
         AddBookmarkTabCommand = new RelayCommand(AddTabBookmark);
         AddDownloadTabCommand = new RelayCommand(AddDownloadTab);
+
         RefreshCommand = new RelayCommand(Refresh);
         ForwardCommand = new RelayCommand(Forward);
         BackCommand = new RelayCommand(Back);
@@ -382,6 +390,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             }
 
             isNewPage = true;
+
             var browser = InitBasicSettingsBrowser(isNewPage, id, profile);
             browser.IsIncognito = incognitoCache != null; // Set based on incognitoCache
             return browser;
@@ -391,6 +400,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             var browser = InitBasicSettingsBrowser(isNewPage, id, profile);
             browser.IsIncognito = incognitoCache != null; // Set based on incognitoCache
             return browser;
+
         }
     }
 
@@ -850,11 +860,13 @@ public class PryGuardBrowserViewModel : BaseViewModel
             var button = TabBtnsAndAddTabBtn.OfType<Label>().FirstOrDefault(lbl => (int)lbl.Tag == (int)browser.Tag);
             if (button != null)
             {
+
                 if(tabItem.IsIncognito)
                     button.Content = "Inco "+ e.NewValue.ToString();
                 else
                     button.Content = e.NewValue.ToString();
                 
+
             }
 
             // Save the history
@@ -866,6 +878,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     {
         var browser = sender as PryGuardBrowser;
         var tabItem = Tabs.FirstOrDefault(tab => (int)tab.Tag == (int)browser.Tag);
+
 
         if (tabItem != null)
         {
@@ -910,8 +923,34 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private void RemoveBookmark(Bookmark bookmark)
     {
         _bookmarkManager.RemoveBookmark(bookmark);
-    }
 
+    }
+    private void AddBookmark()
+    {
+        var customTabItem = Tabs.OfType<CustomTabItem>().FirstOrDefault(tab => tab == CurrentTabItem);
+        if (customTabItem != null)
+        {
+            var title = customTabItem.Title; // Get the current tab title
+            var url = customTabItem.Address; // Get the current tab URL
+            _bookmarkManager.AddBookmark(title, url);
+        }
+        else
+        {
+            // Handle the case where CurrentTabItem is not of type CustomTabItem
+            MessageBox.Show("Current tab is not of type CustomTabItem.");
+        }
+    }
+    private void OpenBookmark(Bookmark bookmark)
+    {
+
+        AddTab();
+        (CurrentTabItem.Content as PryGuardBrowser).LoadUrlAsync(bookmark.URL);
+
+    }
+    private void RemoveBookmark(Bookmark bookmark)
+    {
+        _bookmarkManager.RemoveBookmark(bookmark);
+    }
     private void Browser_LoadingStateChanged(object? sender, LoadingStateChangedEventArgs e)
     {
     }
@@ -937,16 +976,22 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
     private void DeleteHistory()
     {
+
         var result = MessageBox.Show("Are you sure you want to delete all browsing history?",
                                      "Confirm Deletion",
                                      MessageBoxButton.YesNo,
                                      MessageBoxImage.Warning);
 
+
         if (result == MessageBoxResult.Yes)
         {
+
             PryGuardHistoryList.Clear();
 
+
+            // Serialize the history list to JSON
             var doc = JsonSerializer.Serialize(PryGuardHistoryList);
+
 
             using (StreamWriter writer = new(_profileHistoryPath))
             {
@@ -956,6 +1001,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             Application.Current.Dispatcher.Invoke(delegate
             {
                 _listView.Items.Clear();
+
             });
         }
         // If the user clicks 'No', do nothing
@@ -990,6 +1036,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         });
     }
 
+
     private void SaveHistoryList()
     {
         try
@@ -1016,6 +1063,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         SaveHistoryList();
         
     }
+
 
     private void LoadHistoryJson()
     {
@@ -1179,6 +1227,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             button.DragEnter += BtnTabDragEnter;
             button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
 
+
             if (_mainIDCounter == 0)
             {
                 TabBtnsAndAddTabBtn.Insert(0, button);
@@ -1218,6 +1267,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         browser.AddressChanged += (s, e) => newTabItem.Address = browser.Address;
 
         Tabs.Add(newTabItem);
+
         CurrentTabItem = Tabs.Last();
 
         var button = new Label
@@ -1243,6 +1293,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
     private async void AddTab()
     {
+
         // Reset incognito mode if a new tab is opened from incognito
         if (IsIncognitoMode)
         {
@@ -1252,6 +1303,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         }
 
         var browser = await InitBrowser(isNewPage: _mainIDCounter > 0,_mainIDCounter);
+
         browser.TitleChanged += Browser_TitleChanged;
         browser.LoadingStateChanged += Browser_LoadingStateChanged;
         browser.AddressChanged += Browser_AddressChanged;
@@ -1259,15 +1311,19 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
         browser.Focus();
 
+
         var newTabItem = new CustomTabItem
+
         {
             Tag = _mainIDCounter,
             Content = browser,
             Title = browser.Title,
             Address = browser.Address,
+
             CloseTabCommand = CloseTabCommand,
             IsIncognito = false // Set as a regular tab
         };
+
 
         browser.TitleChanged += (s, e) => newTabItem.Title = browser.Title;
         browser.AddressChanged += (s, e) => newTabItem.Address = browser.Address;
@@ -1282,6 +1338,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             Tag = _mainIDCounter,
             DataContext = newTabItem
         };
+
 
         button.SetBinding(Label.ContentProperty, new Binding("Title"));
         button.DragEnter += BtnTabDragEnter;
@@ -1301,6 +1358,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             var buttonToRemove = TabBtnsAndAddTabBtn
                 .OfType<FrameworkElement>()
                 .FirstOrDefault(btn => (int)btn.Tag == (int)incognitoTab.Tag);
+
 
             if (buttonToRemove != null)
             {
@@ -1422,6 +1480,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         TabBtnsAndAddTabBtn.Insert(where_to_drop, _tabBtnToDrag);
     }
 
+
     private void CloseTab(object parameter = null)
     {
         int id;
@@ -1442,6 +1501,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             return;
         }
 
+
         // Delete from Tabs
         var itemToRemove = Tabs.FirstOrDefault(item => (int)item.Tag == id);
         if (itemToRemove != null)
@@ -1453,10 +1513,12 @@ public class PryGuardBrowserViewModel : BaseViewModel
             {
                 int currentIndex = Tabs.IndexOf(itemToRemove);
                 CurrentTabItem = currentIndex > 0 ? Tabs[currentIndex - 1] : Tabs.First();
+
             }
             else
             {
                 CurrentTabItem = null;
+
             }
         }
 
@@ -1477,6 +1539,8 @@ public class PryGuardBrowserViewModel : BaseViewModel
             OnPropertyChanged(nameof(IsIncognitoMode));  // Notify UI of change
         }
     }
+
+
 
 
 

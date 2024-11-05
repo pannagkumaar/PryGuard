@@ -43,6 +43,22 @@ public class PryGuardProfilesViewModel : BaseViewModel
         get => _windowState;
         set => Set(ref _windowState, value);
     }
+    private string _searchTerm;
+    public string SearchTerm
+    {
+        get => _searchTerm;
+        set
+        {
+            if (_searchTerm != value)
+            {
+                _searchTerm = value;
+                OnPropertyChanged(nameof(SearchTerm)); 
+                FilterProfiles();
+            }
+        }
+    }
+
+
 
     public bool IsWindowMaximized
     {
@@ -259,6 +275,7 @@ private bool IsProxyUsedElsewhere(string proxyString, int excludingProfileId)
             });
         }
     }
+
     public void MoveProfile(ProfileTab sourceProfile, ProfileTab targetProfile)
     {
         var sourceIndex = ProfileTabs.IndexOf(sourceProfile);
@@ -291,6 +308,7 @@ private bool IsProxyUsedElsewhere(string proxyString, int excludingProfileId)
         var path = Path.Combine(ClientConfig.ChromeDataPath, "SavedProxies.txt");
         File.WriteAllLines(path, SavedProxies);
     }
+
     public void LoadTabs()
     {
         foreach (var item in Setting.PryGuardProfiles)

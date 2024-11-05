@@ -107,8 +107,10 @@
                 return;
             }
             if (!navigator.mediaDevices) {
+
                 if (!navigator.mediaDevices) {
                     return;
+
                 }
 
                 var devices = [];

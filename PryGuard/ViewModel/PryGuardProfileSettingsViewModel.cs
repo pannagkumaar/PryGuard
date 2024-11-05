@@ -17,8 +17,10 @@ using PryGuard.Services.Helpers;
 using System.Xml.Linq;
 using PryGuard.Model;
 using System.Linq;
+
 using Newtonsoft.Json;
 using System.IO;
+
 
 namespace PryGuard.ViewModel;
 public class PryGuardProfileSettingsViewModel : BaseViewModel
@@ -96,6 +98,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         get => _saveProfileButtonContent;
         set => Set(ref _saveProfileButtonContent, value);
     }
+    public bool IsEdit { get; set; }
 
     public bool IsEdit { get; set; }
 
@@ -157,6 +160,8 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
 
 
 
+
+
             PryGuardProfilesVM.Setting.SaveSettings();
         }
         else
@@ -166,6 +171,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         }
     }
     private void SaveProfile(object arg)
+
     {
         // Find the profile by Id (if it exists) using FirstOrDefault in all cases
         var existingProfileTab = PryGuardProfilesVM.ProfileTabs.FirstOrDefault(tab => tab.Id == PryGuardProf.Id);
@@ -216,6 +222,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             PryGuardProfilesVM.LoadTabs();
         }
         else if (SaveProfileButtonContent == "Save" && PryGuardProf.Status == "NEW")
+
         {
             ViewManager.Close(this);
 
@@ -285,6 +292,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             PryGuardProfilesVM.LoadTabs();
         }
 
+
         PryGuardProf.IsSaved = true;
     }
     private void ParseAndSetProxy(string proxyString)
@@ -326,6 +334,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         }
     }
 
+
     private void ImportProfile(object arg)
     {
         var savedProfiles = PryGuardProfilesVM.Setting.PryGuardProfiles.Where(p => p.IsSaved).ToList();
@@ -347,11 +356,13 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             }
 
 
+
             var importedProfile = PryGuardProfile.ImportFromProfile(profileSelectionWindow.SelectedProfile);
             PryGuardProfilesVM.Setting.PryGuardProfiles.Add(importedProfile);
 
 
             PryGuardProf = importedProfile;
+
 
 
             SaveProfileButtonContent = "Import";

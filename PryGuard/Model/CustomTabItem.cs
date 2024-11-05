@@ -11,5 +11,7 @@ public class CustomTabItem : TabItem
     public string Address { get; set; }
     public RelayCommand CloseTabCommand { get; set; }
 
+
     public bool IsIncognito { get; set; } = false;
+
 }

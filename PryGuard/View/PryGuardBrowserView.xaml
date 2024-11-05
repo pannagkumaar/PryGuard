@@ -58,7 +58,9 @@
                     </Button.InputBindings>
                 </Button>
             </DataTemplate>
+
             <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
         </ResourceDictionary>
     </Window.Resources>
 

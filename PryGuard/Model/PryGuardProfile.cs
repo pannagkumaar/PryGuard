@@ -4,8 +4,10 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using PryGuard.Core.ChromeApi.Model.Configs;
 using PryGuard.Services.Helpers;
+
 using System.Threading;
 using System.Xml.Linq;
+
 
 namespace PryGuard.Model
 {
@@ -42,6 +44,7 @@ namespace PryGuard.Model
                 OnPropertyChanged(nameof(Name));
             }
         }
+
 
         private string _cookies;
         public string Cookies
@@ -251,13 +254,16 @@ namespace PryGuard.Model
             {
                 Name = existingProfile.Name + " (Copy)",
                 Id = uniqueId,
+
                 Status = "NEW",
                 FakeProfile = existingProfile.FakeProfile, // Assuming Clone() is implemented
                 IsEnabled = existingProfile.IsEnabled,
                 IsAdBlock = existingProfile.IsAdBlock,
                 IsLoadImage = existingProfile.IsLoadImage,
                 IsLoadCacheInMemory = existingProfile.IsLoadCacheInMemory,
+
                 CachePath = Path.Combine(ClientConfig.ChromeDataPath, $"{existingProfile.Name}_Cache_{uniqueId}"),
+
                 Proxy = existingProfile.Proxy // Assuming Clone() is implemented
             };
         }
