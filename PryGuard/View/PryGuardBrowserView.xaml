@@ -58,9 +58,7 @@
                     </Button.InputBindings>
                 </Button>
             </DataTemplate>
-
             <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-
         </ResourceDictionary>
     </Window.Resources>
 
@@ -367,7 +365,7 @@
                                 </StackPanel>
                             </MenuItem.Header>
                         </MenuItem>
-                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding AddTabCommand}">
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding OpenEmailCommand}">
                             <MenuItem.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <Image
