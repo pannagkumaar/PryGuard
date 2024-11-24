@@ -32,6 +32,7 @@ using PryGuard.View;
 using CefSharp.Wpf;
 using PryGuard.View;
 using CefSharp.DevTools.Autofill;
+using System.Diagnostics;
 
 
 namespace PryGuard.ViewModel;
@@ -1194,104 +1195,120 @@ public class PryGuardBrowserViewModel : BaseViewModel
         });
     }
 
+    // Generalized method for adding a new tab
+    private async Task AddNewTabAsync(bool isIncognito, string url = null)
+    {
+        try
+        {
+            // Handle mode reset if adding a regular tab while in incognito mode
+            if (!isIncognito && IsIncognitoMode)
+            {
+                IsIncognitoMode = false;
+                OnPropertyChanged(nameof(IsIncognitoMode));
+                OnPropertyChanged(nameof(IncognitoModeText));
+            }
+
+            // Capture the current ID and increment the counter
+            int currentId = _mainIDCounter++;
+
+            // Initialize the appropriate browser instance
+            PryGuardBrowser browser = isIncognito
+                ? await InitIncognitoBrowser(currentId)
+                : await InitBrowser(isNewPage: currentId > 0, currentId);
+
+            // Attach common event handlers
+            browser.TitleChanged += Browser_TitleChanged;
+            browser.LoadingStateChanged += Browser_LoadingStateChanged;
+            browser.AddressChanged += Browser_AddressChanged;
+            browser.PreviewKeyDown += Browser_PreviewKeyDown;
+
+            // Load the specified URL if provided
+            if (!string.IsNullOrEmpty(url))
+            {
+                browser.Load(url);
+            }
+            else
+            {
+                // Optionally, initialize with a default page if no URL is provided
+                // browser.Load("about:blank"); // Example default page
+            }
+
+            browser.Focus();
+
+            // Create the new tab item with conditional properties
+            var newTabItem = new CustomTabItem
+            {
+                Tag = currentId,
+                Content = browser,
+                Title = isIncognito ? "Incognito" : browser.Title,
+                Address = browser.Address,
+                CloseTabCommand = CloseTabCommand,
+                IsIncognito = isIncognito
+            };
+
+            // Bind Address updates (do not save history for incognito)
+            browser.AddressChanged += (s, e) => newTabItem.Address = browser.Address;
+
+            // If not incognito, bind Title updates
+            if (!isIncognito)
+            {
+                browser.TitleChanged += (s, e) => newTabItem.Title = browser.Title;
+            }
+
+            // Add the new tab to the collection and set it as the current tab
+            Tabs.Add(newTabItem);
+            CurrentTabItem = newTabItem;
+
+            // Create and configure the tab button
+            var button = new Label
+            {
+                Content = newTabItem.Title,
+                AllowDrop = true,
+                Tag = currentId,
+                DataContext = newTabItem
+            };
+
+            button.SetBinding(Label.ContentProperty, new Binding("Title"));
+            button.DragEnter += BtnTabDragEnter;
+            button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
+
+            // Insert the tab button before the "Add Tab" button
+            TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions (e.g., log the error, show a message to the user)
+            Debug.WriteLine($"Error adding new tab: {ex.Message}");
+            // Optionally, display a user-friendly message
+            // MessageBox.Show("Failed to open a new tab.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    // Refactored AddIncognitoTab method
     private async void AddIncognitoTab()
     {
-        // Initialize a browser instance for incognito mode
-        var browser = await InitIncognitoBrowser(_mainIDCounter); // Use InitIncognitoBrowser here
-
-        browser.TitleChanged += Browser_TitleChanged;
-        browser.LoadingStateChanged += Browser_LoadingStateChanged;
-        browser.AddressChanged += Browser_AddressChanged;
-        browser.PreviewKeyDown += Browser_PreviewKeyDown;
-
-        browser.Focus();
-
-        var newTabItem = new CustomTabItem
-        {
-            Tag = _mainIDCounter,
-            Content = browser,
-            Title = "Incognito",
-            Address = browser.Address,
-            CloseTabCommand = CloseTabCommand,
-            IsIncognito = true // Indicate this tab is incognito
-        };
-
-        // Bind Address updates (we do not save history for incognito)
-        browser.AddressChanged += (s, e) => newTabItem.Address = browser.Address;
-
-        Tabs.Add(newTabItem);
-        CurrentTabItem = Tabs.Last();
-
-        var button = new Label
-        {
-            Content = newTabItem.Title,
-            AllowDrop = true,
-            Tag = _mainIDCounter,
-            DataContext = newTabItem
-        };
-
-        button.SetBinding(Label.ContentProperty, new Binding("Title"));
-        button.DragEnter += BtnTabDragEnter;
-        button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
-
-        // Insert the tab button
-        TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
-
-        _mainIDCounter++;
+        await AddNewTabAsync(isIncognito: true);
     }
 
-
-
-
+    // Refactored AddTab method
     private async void AddTab()
     {
-        // Reset incognito mode if a new tab is opened from incognito
-        if (IsIncognitoMode)
+        await AddNewTabAsync(isIncognito: false);
+    }
+
+    // Refactored OpenUrlInNewTab method
+    private async void OpenUrlInNewTab(string url, bool isIncognito = false)
+    {
+        if (string.IsNullOrWhiteSpace(url))
         {
-            IsIncognitoMode = false;
-            OnPropertyChanged(nameof(IsIncognitoMode));
-            OnPropertyChanged(nameof(IncognitoModeText));
+            // Optionally, handle invalid URLs
+            // MessageBox.Show("The provided URL is invalid.", "Invalid URL", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
         }
 
-        var browser = await InitBrowser(isNewPage: _mainIDCounter > 0,_mainIDCounter);
-        browser.TitleChanged += Browser_TitleChanged;
-        browser.LoadingStateChanged += Browser_LoadingStateChanged;
-        browser.AddressChanged += Browser_AddressChanged;
-        browser.PreviewKeyDown += Browser_PreviewKeyDown;
-
-        browser.Focus();
-
-        var newTabItem = new CustomTabItem
-        {
-            Tag = _mainIDCounter,
-            Content = browser,
-            Title = browser.Title,
-            Address = browser.Address,
-            CloseTabCommand = CloseTabCommand,
-            IsIncognito = false // Set as a regular tab
-        };
-
-        browser.TitleChanged += (s, e) => newTabItem.Title = browser.Title;
-        browser.AddressChanged += (s, e) => newTabItem.Address = browser.Address;
-
-        Tabs.Add(newTabItem);
-        CurrentTabItem = Tabs.Last();
-
-        var button = new Label
-        {
-            Content = newTabItem.Title,
-            AllowDrop = true,
-            Tag = _mainIDCounter,
-            DataContext = newTabItem
-        };
-
-        button.SetBinding(Label.ContentProperty, new Binding("Title"));
-        button.DragEnter += BtnTabDragEnter;
-        button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
-
-        TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
-        _mainIDCounter++;
+        await AddNewTabAsync(isIncognito: isIncognito, url: url);
     }
+
 
     private void CloseCurrentTabIfIncognito()
     {
@@ -1323,62 +1340,6 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
 
 
-    private async void OpenUrlInNewTab(string url, bool isIncognito = false)
-    {
-        PryGuardBrowser browser;
-        int currentId = _mainIDCounter; // Save current ID
-
-        if (isIncognito)
-        {
-            browser = await InitIncognitoBrowser(currentId);
-        }
-        else
-        {
-            browser = await InitBrowser(_mainIDCounter > 0, currentId);
-        }
-
-        // Increment _mainIDCounter after all uses
-        _mainIDCounter++;
-
-        // Set up event handlers
-        browser.TitleChanged += Browser_TitleChanged;
-        browser.LoadingStateChanged += Browser_LoadingStateChanged;
-        browser.AddressChanged += Browser_AddressChanged;
-        browser.PreviewKeyDown += Browser_PreviewKeyDown;
-
-        browser.Load(url);
-        browser.Focus();
-
-        var newTabItem = new CustomTabItem()
-        {
-            Tag = currentId,
-            Content = browser,
-            Title = browser.Title,
-            Address = browser.Address,
-            CloseTabCommand = CloseTabCommand,
-            IsIncognito = isIncognito // Set the incognito status
-        };
-
-        // Bindings
-        browser.TitleChanged += (s, e) => newTabItem.Title = browser.Title;
-        browser.AddressChanged += (s, e) => newTabItem.Address = browser.Address;
-
-        Tabs.Add(newTabItem);
-        CurrentTabItem = newTabItem;
-
-        var button = new Label
-        {
-            AllowDrop = true,
-            Tag = currentId,
-            DataContext = newTabItem
-        };
-
-        button.SetBinding(Label.ContentProperty, new Binding("Title"));
-        button.DragEnter += BtnTabDragEnter;
-        button.MouseLeftButtonDown += BtnMouseDownForDragAndOpenTab;
-
-        TabBtnsAndAddTabBtn.Insert(TabBtnsAndAddTabBtn.Count - 1, button);
-    }
 
 
 
