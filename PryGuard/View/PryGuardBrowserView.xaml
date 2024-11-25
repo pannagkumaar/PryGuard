@@ -354,6 +354,17 @@
                                 </StackPanel>
                             </MenuItem.Header>
                         </MenuItem>
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding ToggleIncognitoModeCommand}">
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image
+                            Margin="0,0,8,0"
+                            Width="16" Height="16"
+                            Source="{StaticResource IncognitoIcon}"/>
+                                    <TextBlock Text="{Binding IncognitoModeText}"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
                         <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding AddTabCommand}">
                             <MenuItem.Header>
                                 <StackPanel Orientation="Horizontal">
@@ -398,17 +409,6 @@
                                 </StackPanel>
                             </MenuItem.Header>
                         </MenuItem>
-                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding ToggleIncognitoModeCommand}">
-                            <MenuItem.Header>
-                                <StackPanel Orientation="Horizontal">
-                                    <Image
-                            Margin="0,0,8,0"
-                            Width="16" Height="16"
-                            Source="{StaticResource IncognitoIcon}"/>
-                                    <TextBlock Text="{Binding IncognitoModeText}"/>
-                                </StackPanel>
-                            </MenuItem.Header>
-                        </MenuItem>
                         <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding OpenDevToolsCommand}">
                             <!-- New MenuItem -->
                             <MenuItem.Header>
@@ -431,6 +431,17 @@
                         Source="{StaticResource DownloadIcon}"/>
                                    
                                     <TextBlock Text="Downloads Page"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding ToggleAutoSuspendCommand}">
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image
+                            Margin="0,0,8,0"
+                            Width="16" Height="16"
+                            Source="{StaticResource SuspendIcon}"/>
+                                    <TextBlock Text="{Binding SmartTabSuspensionText}"/>
                                 </StackPanel>
                             </MenuItem.Header>
                         </MenuItem>

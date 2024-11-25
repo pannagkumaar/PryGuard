@@ -23,6 +23,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 
 namespace PryGuard.ViewModel;
@@ -54,6 +55,9 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private LoadHandler _loadHandler;
     private JsWorker _jsWorker;
     private PryGuardBrowser _previousBrowser;
+    private DispatcherTimer _suspensionTimer;
+    private readonly TimeSpan TabInactivityTimeout = TimeSpan.FromMinutes(1);
+
     #endregion
     #endregion
 
@@ -90,7 +94,9 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public ICommand CloseFindBarCommand { get; }
     public ICommand FindNextCommand { get; }
     public ICommand FindPreviousCommand { get; }
+    public ICommand ToggleAutoSuspendCommand { get; }
     public Action FocusSearchTextBoxAction { get; set; }
+
 
     #endregion
 
@@ -142,6 +148,33 @@ public class PryGuardBrowserViewModel : BaseViewModel
         }
     }
     public string IncognitoModeText => IsIncognitoMode ? "Incognito off" : "Incognito on";
+
+    private bool _isAutoSuspendEnabled = false;//default to disabled
+    public bool IsAutoSuspendEnabled
+    {
+        get => _isAutoSuspendEnabled;
+        set
+        {
+            if (_isAutoSuspendEnabled != value)
+            {
+                _isAutoSuspendEnabled = value;
+                OnPropertyChanged(nameof(IsAutoSuspendEnabled));
+                OnPropertyChanged(nameof(SmartTabSuspensionText));
+
+                // Optionally, update timer behavior immediately
+                if (_isAutoSuspendEnabled)
+                {
+                    _suspensionTimer.Start();
+                }
+                else
+                {
+                    _suspensionTimer.Stop();
+                }
+            }
+        }
+    }
+    public string SmartTabSuspensionText => IsAutoSuspendEnabled ? "Auto Suspend: On" : "Auto Suspend: Off";
+
     private Dictionary<int, string> _incognitoCache = new Dictionary<int, string>();
 
     private CustomTabItem _currentTabItem;
@@ -155,6 +188,8 @@ public class PryGuardBrowserViewModel : BaseViewModel
         }
     }
 
+
+   
 
     private BookmarkManager _bookmarkManager;
 
@@ -256,6 +291,8 @@ public class PryGuardBrowserViewModel : BaseViewModel
         FindPreviousCommand = new RelayCommand(FindPrevious);
         OpenEmailCommand = new RelayCommand(OpenEmail);
         CurWindowState = WindowState.Maximized;
+        ToggleAutoSuspendCommand = new RelayCommand(ToggleAutoSuspend);
+        InitializeSuspensionTimer();
 
 
 
@@ -306,7 +343,119 @@ public class PryGuardBrowserViewModel : BaseViewModel
         return browser;
     }
 
+    private void ToggleAutoSuspend()
+    {
+        IsAutoSuspendEnabled = !IsAutoSuspendEnabled;
+    }
+    private void InitializeSuspensionTimer()
+    {
+        _suspensionTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromMinutes(1) // Check every minute
+        };
+        _suspensionTimer.Tick += SuspensionTimer_Tick;
+        _suspensionTimer.Start();
+    }
 
+
+    private void SuspensionTimer_Tick(object sender, EventArgs e)
+    {
+        foreach (var tab in Tabs.ToList()) // Use ToList to avoid collection modification during iteration
+        {
+            if (tab.IsSuspended)
+                continue; // Skip already suspended tabs
+
+            // Skip the active tab
+            if (tab == CurrentTabItem)
+                continue;
+
+            // Check inactivity
+            if (DateTime.Now - tab.LastUsed > TabInactivityTimeout)
+            {
+                SuspendTab(tab);
+            }
+        }
+    }
+
+    private void SuspendTab(CustomTabItem tab)
+    {
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            if (tab.Content is PryGuardBrowser browser)
+            {
+                // Unsubscribe event handlers
+                browser.TitleChanged -= Browser_TitleChanged;
+                browser.LoadingStateChanged -= Browser_LoadingStateChanged;
+                browser.AddressChanged -= Browser_AddressChanged;
+                browser.PreviewKeyDown -= Browser_PreviewKeyDown;
+
+                // Store the current URL
+                tab.SuspendedUrl = browser.Address;
+
+                // Dispose of the browser to free resources
+                browser.Dispose();
+
+                // Replace content with a placeholder
+                tab.Content = new TextBlock
+                {
+                    Text = "Tab Suspended. Click to reload.",
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    /*Foreground = Brushes.Gray */// Optional: Gray out the text
+                };
+
+                tab.IsSuspended = true;
+
+                // Update the tab button's content to indicate suspension
+                var tabBtn = TabBtnsAndAddTabBtn.OfType<Label>().FirstOrDefault(item => (int)item.Tag == (int)tab.Tag);
+                if (tabBtn != null)
+                {
+                    string suspendedContent = tab.IsIncognito ? $"Suspended Inco {tab.Title}" : $"Suspended {tab.Title}";
+                    tabBtn.Content = suspendedContent;
+                   /* tabBtn.Foreground = Brushes.Gray;*/ // Optional: Gray out the tab button
+                    tabBtn.ToolTip = "Tab Suspended. Click to reload.";
+                }
+            }
+        });
+    }
+    private async void ResumeTab(CustomTabItem tab)
+    {
+        await Application.Current.Dispatcher.InvokeAsync(async () =>
+        {
+            // Recreate the browser instance
+            var browser = await InitBrowser(isNewPage: true, id: tab.Tag);
+
+            // Subscribe to event handlers
+            browser.TitleChanged += Browser_TitleChanged;
+            browser.LoadingStateChanged += Browser_LoadingStateChanged;
+            browser.AddressChanged += Browser_AddressChanged;
+            browser.PreviewKeyDown += Browser_PreviewKeyDown;
+
+            // Load the suspended URL
+            browser.LoadUrlAsync(tab.SuspendedUrl);
+
+            // Replace the placeholder with the browser
+            tab.Content = browser;
+
+            tab.IsSuspended = false;
+
+            // Update the tab button's content to indicate active state
+            var tabBtn = TabBtnsAndAddTabBtn.OfType<Label>().FirstOrDefault(item => (int)item.Tag == (int)tab.Tag);
+            if (tabBtn != null)
+            {
+                string activeContent = tab.IsIncognito ? $"Inco {tab.Title}" : tab.Title;
+                tabBtn.Content = activeContent;
+                /*tabBtn.Foreground = Brushes.Black;*/ // Optional: Reset tab button color
+                tabBtn.ToolTip = "Tab Active.";
+            }
+
+            // Add the browser to the list
+            _browsers.Add(browser);
+
+            // Update LastUsed timestamp
+            tab.LastUsed = DateTime.Now;
+        });
+    }
 
 
 
@@ -780,10 +929,32 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
                     await client.Emulation.SetTimezoneOverrideAsync(_proxyInfo.Timezone);
                 }
-            }
+                browser.Focusable = true;
+                browser.GotFocus += Browser_GotFocus;
+                browser.LostFocus += Browser_LostFocus;
+            
+        }
+        }
+    }
+    private void Browser_GotFocus(object sender, RoutedEventArgs e)
+    {
+        var browser = sender as PryGuardBrowser;
+        var tab = Tabs.FirstOrDefault(t => t.Content == browser);
+        if (tab != null)
+        {
+            tab.LastUsed = DateTime.Now;
         }
     }
 
+    private void Browser_LostFocus(object sender, RoutedEventArgs e)
+    {
+        var browser = sender as PryGuardBrowser;
+        var tab = Tabs.FirstOrDefault(t => t.Content == browser);
+        if (tab != null)
+        {
+            tab.LastUsed = DateTime.Now;
+        }
+    }
     private void Browser_TitleChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
         var browser = sender as PryGuardBrowser;
@@ -1189,6 +1360,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
                 IsIncognito = isIncognito
             };
 
+
             // Bind Address updates (do not save history for incognito)
             browser.AddressChanged += (s, e) => newTabItem.Address = browser.Address;
 
@@ -1201,7 +1373,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             // Add the new tab to the collection and set it as the current tab
             Tabs.Add(newTabItem);
             CurrentTabItem = newTabItem;
-
+            CurrentTabItem.LastUsed = DateTime.Now;
             // Create and configure the tab button
             var button = new Label
             {
@@ -1364,8 +1536,20 @@ public class PryGuardBrowserViewModel : BaseViewModel
                 browser.AddressChanged -= Browser_AddressChanged;
                 browser.PreviewKeyDown -= Browser_PreviewKeyDown;
 
+                // If this browser was the previous one, clear the reference
+                if (_previousBrowser == browser)
+                {
+                    _previousBrowser = null;
+                }
+
                 // Dispose of the browser
                 browser.Dispose();
+            }
+            else if (itemToRemove.IsSuspended)
+            {
+                // No browser instance to dispose
+                // Optionally, clear SuspendedUrl
+                itemToRemove.SuspendedUrl = null;
             }
 
             itemToRemove.Content = null;
@@ -1374,10 +1558,9 @@ public class PryGuardBrowserViewModel : BaseViewModel
             // Update CurrentTabItem
             if (Tabs.Count > 0)
             {
-                // Adjust currentIndex if necessary
                 if (currentIndex >= Tabs.Count)
                 {
-                    currentIndex = Tabs.Count - 1; // Move to the last tab if the current index is out of range
+                    currentIndex = Tabs.Count - 1;
                 }
                 if (currentIndex >= 0)
                 {
@@ -1385,7 +1568,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
                 }
                 else
                 {
-                    CurrentTabItem = Tabs.First(); // Default to the first tab
+                    CurrentTabItem = Tabs.First();
                 }
             }
             else
@@ -1416,6 +1599,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         GC.Collect();
         GC.WaitForPendingFinalizers();
     }
+
 
 
 
@@ -1454,29 +1638,31 @@ public class PryGuardBrowserViewModel : BaseViewModel
         }
     }
 
-    private void OpenTab(object arg)
+    private async void OpenTab(object arg)
     {
-        var tabToSelect = tabs.FirstOrDefault(item => (int)item.Tag == (int)arg);
+        var tabToSelect = Tabs.FirstOrDefault(item => (int)item.Tag == (int)arg);
         if (tabToSelect != null)
         {
             CurrentTabItem = tabToSelect;
 
-            if (CurrentTabItem.Content.ToString().Contains("ListView"))
+            if (tabToSelect.IsSuspended)
             {
-                Address = "PryGuard://history/";
-            }
-            else if (CurrentTabItem.Content is PryGuardBrowser browser)
-            {
-                // Safely cast and access the Address property
-                Address = browser.Address;
+                ResumeTab(tabToSelect);
             }
             else
             {
-                // Fallback in case it's not a PryGuardBrowser or a ListView (if needed)
-                Address = "PryGuard://default/";
+                if (CurrentTabItem.Content is PryGuardBrowser browser)
+                {
+                    Address = browser.Address;
+                }
+                else
+                {
+                    Address = "PryGuard://default/";
+                }
             }
         }
     }
+
 
     #endregion
 

@@ -44,6 +44,23 @@
             </DrawingGroup>
         </DrawingImage.Drawing>
     </DrawingImage>
+    <DrawingImage x:Key="SuspendIcon">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <!-- Scale transformation if needed -->
+                <DrawingGroup.Transform>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </DrawingGroup.Transform>
+
+                <!-- Outer circle -->
+                <GeometryDrawing Brush="#FFFFFFFF" Geometry="M8,15A7,7,0,1,1,8,1A7,7,0,0,1,8,15ZM8,16A8,8,0,1,0,8,0A8,8,0,0,0,8,16Z" />
+
+                <!-- Pause bars -->
+                <GeometryDrawing Brush="#FFFFFFFF" Geometry="M5,6.25A1.25,1.25,0,1,1,7.5,6.25V9.75A1.25,1.25,0,1,1,5,9.75ZM8.5,6.25A1.25,1.25,0,1,1,10.75,6.25V9.75A1.25,1.25,0,1,1,8.5,9.75Z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
 
     <DrawingImage x:Key="HistoryBrowserIcon">
         <DrawingImage.Drawing>

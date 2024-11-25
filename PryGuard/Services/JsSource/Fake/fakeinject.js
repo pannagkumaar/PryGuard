@@ -77,8 +77,8 @@
     (function injectCanvas() {
         document.addEventListener("DOMContentLoaded", function () {
             const canvas = document.createElement('canvas');
-            canvas.width = 800; // Width of the canvas
-            canvas.height = 600; // Height of the canvas
+            canvas.width = 0 // Width of the canvas
+            canvas.height = 0; // Height of the canvas
             document.body.appendChild(canvas);
 
             // Get the WebGL context from the canvas
