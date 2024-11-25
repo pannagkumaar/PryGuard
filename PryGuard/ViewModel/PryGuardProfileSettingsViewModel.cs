@@ -7,17 +7,15 @@ using PryGuard.Services.Commands;
 using PryGuard.Core.ChromeApi.Model.Configs;
 using System.Windows.Input;
 using PryGuard.Core.ChromeApi.Settings;
-using System.Windows.Controls;
-using System;
+
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using PryGuard.View;
-using CefSharp.DevTools.Profiler;
+
 using PryGuard.Services.Helpers;
-using System.Xml.Linq;
-using PryGuard.Model;
+
 using System.Linq;
-using Newtonsoft.Json;
+
 using System.IO;
 
 namespace PryGuard.ViewModel;

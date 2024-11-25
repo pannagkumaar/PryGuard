@@ -1,38 +1,28 @@
-﻿using System;
-using CefSharp;
-using System.IO;
-using System.Linq;
-using PryGuard.Model;
-using System.Windows;
-using PryGuard.Core.Web;
-using System.Text.Json;
-using System.Globalization;
-using System.Windows.Input;
-using PryGuard.Core.ChromeApi;
+﻿using CefSharp;
 using CefSharp.ModelBinding;
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
-using System.Windows.Controls;
+using CefSharp.Wpf;
+using PryGuard.Core.ChromeApi;
+using PryGuard.Core.ChromeApi.Handlers;
+using PryGuard.Core.ChromeApi.Proxy;
+using PryGuard.Core.Web;
+using PryGuard.Model;
 using PryGuard.Services.Commands;
 using PryGuard.Services.UI.Button;
+using PryGuard.View;
+using System;
 using System.Collections.Generic;
-using PryGuard.Core.ChromeApi.Proxy;
 using System.Collections.ObjectModel;
-using PryGuard.Core.ChromeApi.Handlers;
-using PryGuard.Services.UI.ListView.ListViewItem;
-using PryGuard.View;
-using System.Data.SQLite;
-using System.Text.RegularExpressions;
-using System.Windows.Data;
-using System.Windows.Media;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using PryGuard.View;
-using CefSharp.Wpf;
-using PryGuard.View;
-using CefSharp.DevTools.Autofill;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Input;
 
 
 namespace PryGuard.ViewModel;
@@ -63,6 +53,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private RenderMessageHandler _renderMessageHandler;
     private LoadHandler _loadHandler;
     private JsWorker _jsWorker;
+    private PryGuardBrowser _previousBrowser;
     #endregion
     #endregion
 
@@ -157,8 +148,14 @@ public class PryGuardBrowserViewModel : BaseViewModel
     public CustomTabItem CurrentTabItem
     {
         get => _currentTabItem;
-        set => Set(ref _currentTabItem, value);
+        set
+        {
+            Set(ref _currentTabItem, value);
+            OnCurrentTabItemChanged();
+        }
     }
+
+
     private BookmarkManager _bookmarkManager;
 
     public ObservableCollection<Bookmark> Bookmarks => _bookmarkManager?.Bookmarks;
@@ -690,60 +687,6 @@ public class PryGuardBrowserViewModel : BaseViewModel
     }
 
     
-
-
-    //public async Task CaptureScreenshotAsync(ChromiumWebBrowser browser)
-    //{
-    //    if (browser.IsBrowserInitialized)
-    //    {
-    //        var bitmap = new Bitmap((int)browser.ActualWidth, (int)browser.ActualHeight);
-    //        var browserHost = browser.GetBrowser().GetHost();
-
-    //        // Render the browser into a bitmap
-    //        var viewRect = new CefSharp.Structs.Rect(0, 0, (int)browser.ActualWidth, (int)browser.ActualHeight);
-
-    //        // Take screenshot (you need to implement CaptureBrowserAsBitmap manually or capture from the view if possible)
-    //        var screenshotBytes = CaptureBrowserAsBitmap(browser);
-
-    //        // Save screenshot to file
-    //        var screenshotPath = Path.Combine(_PryGuardProfileToStart.CachePath, "last_visited_site_screenshot.png");
-    //        using (var fileStream = new FileStream(screenshotPath, FileMode.Create, FileAccess.Write))
-    //        {
-    //            await fileStream.WriteAsync(screenshotBytes, 0, screenshotBytes.Length);
-    //        }
-
-    //        // Alert message instead of console output
-    //        MessageBox.Show("Screenshot captured and saved successfully at " + screenshotPath, "Screenshot Saved", MessageBoxButton.OK, MessageBoxImage.Information);
-    //    }
-    //    else
-    //    {
-    //        // Alert message instead of console output
-    //        MessageBox.Show("Browser is not initialized.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-    //    }
-    //}
-
-    //private byte[] CaptureBrowserAsBitmap(ChromiumWebBrowser browser)
-    //{
-    //    var viewWidth = (int)browser.ActualWidth;
-    //    var viewHeight = (int)browser.ActualHeight;
-
-    //    // Create a new bitmap of the browser size
-    //    var bitmap = new Bitmap(viewWidth, viewHeight);
-
-    //    // Render the browser into the bitmap
-    //    using (var graphics = Graphics.FromImage(bitmap))
-    //    {
-    //        // Use System.Drawing.Point instead of System.Windows.Point
-    //        graphics.CopyFromScreen(new System.Drawing.Point(0, 0), System.Drawing.Point.Empty, new System.Drawing.Size(viewWidth, viewHeight));
-    //    }
-
-    //    // Convert the Bitmap to a byte array
-    //    using (var ms = new MemoryStream())
-    //    {
-    //        bitmap.Save(ms, ImageFormat.Png);
-    //        return ms.ToArray();
-    //    }
-    //}
 
 
 
@@ -1384,38 +1327,66 @@ public class PryGuardBrowserViewModel : BaseViewModel
         TabBtnsAndAddTabBtn.Remove(_tabBtnToDrag);
         TabBtnsAndAddTabBtn.Insert(where_to_drop, _tabBtnToDrag);
     }
-
     private void CloseTab(object parameter = null)
     {
         int id;
 
-        // Check if parameter is MouseButtonEventArgs and get id from there
+        // Determine the id based on parameter or CurrentTabItem
         if (parameter is MouseButtonEventArgs mouseArgs && mouseArgs.Source is TextBlock tb)
         {
             id = (int)tb.Tag;
         }
+        else if (parameter is int parameterId)
+        {
+            id = parameterId;
+        }
         else if (CurrentTabItem != null)
         {
-            // If parameter is not MouseButtonEventArgs, get id from CurrentTabItem
             id = (int)CurrentTabItem.Tag;
         }
         else
         {
-            // No current tab to close
+            // No tab to close
             return;
         }
 
-        // Delete from Tabs
+        // Find the tab and get its index before removing it
         var itemToRemove = Tabs.FirstOrDefault(item => (int)item.Tag == id);
         if (itemToRemove != null)
         {
+            int currentIndex = Tabs.IndexOf(itemToRemove); // Get index before removing
+
+            if (itemToRemove.Content is PryGuardBrowser browser)
+            {
+                // Unsubscribe event handlers
+                browser.TitleChanged -= Browser_TitleChanged;
+                browser.LoadingStateChanged -= Browser_LoadingStateChanged;
+                browser.AddressChanged -= Browser_AddressChanged;
+                browser.PreviewKeyDown -= Browser_PreviewKeyDown;
+
+                // Dispose of the browser
+                browser.Dispose();
+            }
+
             itemToRemove.Content = null;
             Tabs.Remove(itemToRemove);
 
+            // Update CurrentTabItem
             if (Tabs.Count > 0)
             {
-                int currentIndex = Tabs.IndexOf(itemToRemove);
-                CurrentTabItem = currentIndex > 0 ? Tabs[currentIndex - 1] : Tabs.First();
+                // Adjust currentIndex if necessary
+                if (currentIndex >= Tabs.Count)
+                {
+                    currentIndex = Tabs.Count - 1; // Move to the last tab if the current index is out of range
+                }
+                if (currentIndex >= 0)
+                {
+                    CurrentTabItem = Tabs[currentIndex];
+                }
+                else
+                {
+                    CurrentTabItem = Tabs.First(); // Default to the first tab
+                }
             }
             else
             {
@@ -1423,25 +1394,65 @@ public class PryGuardBrowserViewModel : BaseViewModel
             }
         }
 
-        // Delete from TabBtns
+        // Remove the tab button
         var tabBtnToRemove = TabBtnsAndAddTabBtn.OfType<Label>().FirstOrDefault(item => (int)item.Tag == id);
         if (tabBtnToRemove != null)
         {
             TabBtnsAndAddTabBtn.Remove(tabBtnToRemove);
         }
 
-        // Delete from Browsers
-        _browsers = _browsers.Where(item => (int)item.Tag != id).ToList();
+        // Remove from _browsers
+        _browsers.RemoveAll(b => (int)b.Tag == id);
 
         // Check if this was the Incognito tab
-        if (IsIncognitoMode)
+        var closedTab = itemToRemove as CustomTabItem;
+        if (closedTab != null && closedTab.IsIncognito)
         {
             IsIncognitoMode = false;  // Reset IsIncognitoMode
             OnPropertyChanged(nameof(IsIncognitoMode));  // Notify UI of change
         }
+
+        // Optionally force garbage collection
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
     }
 
 
+
+
+    private void OnCurrentTabItemChanged()
+    {
+        if (_currentTabItem != null)
+        {
+            if (_currentTabItem.Content is PryGuardBrowser browser)
+            {
+                // Unsubscribe from previous browser events
+                if (_previousBrowser != null && _previousBrowser != browser)
+                {
+                    _previousBrowser.AddressChanged -= Browser_AddressChanged;
+                }
+
+                // Subscribe to the AddressChanged event of the new browser
+                browser.AddressChanged += Browser_AddressChanged;
+
+                // Update the Address property
+                Address = browser.Address;
+
+                // Store the current browser
+                _previousBrowser = browser;
+            }
+            else
+            {
+                // If the content is not a browser, set Address accordingly
+                Address = _currentTabItem.Address ?? string.Empty;
+            }
+        }
+        else
+        {
+            // No CurrentTabItem, clear the Address
+            Address = string.Empty;
+        }
+    }
 
     private void OpenTab(object arg)
     {

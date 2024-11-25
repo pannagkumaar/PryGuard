@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Runtime.CompilerServices;
-using System;
+
 using System.Diagnostics;
 namespace PryGuard.Core.ChromeApi.Model.Configs;
 public class WebGLSetting

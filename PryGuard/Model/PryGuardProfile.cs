@@ -1,11 +1,11 @@
-﻿using System;
+﻿
 using System.IO;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using PryGuard.Core.ChromeApi.Model.Configs;
 using PryGuard.Services.Helpers;
 using System.Threading;
-using System.Xml.Linq;
+
 
 namespace PryGuard.Model
 {

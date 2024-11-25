@@ -2,8 +2,7 @@
 using System.Text.Json.Serialization;
 using System.Runtime.CompilerServices;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+
 
 namespace PryGuard.Core.ChromeApi.Model.Configs
 {

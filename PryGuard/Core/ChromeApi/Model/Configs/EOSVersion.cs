@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System;
-
+﻿
 namespace PryGuard.Core.ChromeApi.Model.Configs;
 public enum EOSVersion
 {

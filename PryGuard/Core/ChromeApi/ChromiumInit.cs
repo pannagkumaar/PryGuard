@@ -1,8 +1,8 @@
 ﻿using System;
-using System.IO;
+
 using CefSharp;
 using CefSharp.Wpf;
-using PryGuard.Core.ChromeApi.Model.Configs;
+
 using PryGuard.Core.ChromeApi.Settings;
 using PryGuard.Model;
 
@@ -34,7 +34,8 @@ public static class ChromiumInit
         cefSettings.CefCommandLineArgs.Add("disable-gpu=1");
         cefSettings.CefCommandLineArgs.Add("disable-gpu-vsync=1");
         cefSettings.CefCommandLineArgs.Add("disable-gpu-compositing=1");
-
+        // test
+        cefSettings.CefCommandLineArgs.Add("renderer-process-limit", "1");
         cefSettings.CefCommandLineArgs.Add("enable-webgl-draft-extensions=1");
         cefSettings.CefCommandLineArgs.Add("enable-webgl=1");
         cefSettings.CefCommandLineArgs.Add("enable-media-stream=0");

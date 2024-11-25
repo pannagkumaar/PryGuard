@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using PryGuard.Services.Commands;
 using PryGuard.Services.Settings;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
+
 using PryGuard.Services.Helpers;
-using System.Diagnostics;
+
 
 namespace PryGuard.ViewModel;
 public class PryGuardProfilesViewModel : BaseViewModel

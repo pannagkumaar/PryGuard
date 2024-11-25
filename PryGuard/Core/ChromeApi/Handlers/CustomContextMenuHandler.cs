@@ -1,12 +1,12 @@
 ﻿using CefSharp;
-using CefSharp.Structs;
+
 using System;
 using System.Net.Http;
 using System.Windows;
 
 using System.IO;
 
-using System.Threading.Tasks;
+
 namespace PryGuard.Core.ChromeApi.Handlers;
 
 public class CustomContextMenuHandler : IContextMenuHandler
