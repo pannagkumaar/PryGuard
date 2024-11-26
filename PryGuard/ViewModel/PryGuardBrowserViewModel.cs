@@ -306,7 +306,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             throw;
         }
 
-        LoadHistoryJson();
+        LoadHistoryJsonAsync();
         TabBtnsAndAddTabBtn = new() { InitAddTabBtn.CreateBtn(AddTab) };
         AddTab();
     }
@@ -544,26 +544,167 @@ public class PryGuardBrowserViewModel : BaseViewModel
     }
 
 
+    private static readonly string CachedHtmlContent = @"
+<!DOCTYPE html>
+<html lang=""en"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>PryGuard Browser</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Orbitron', sans-serif;
+            background-color: #050505;
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff0000, #800000);
+            filter: blur(100px);
+            opacity: 0.2;
+            z-index: -1;
+        }
+        .logo {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #ff0000;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+        .search-form {
+            display: flex;
+            margin-bottom: 2rem;
+        }
+        .search-input {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border: 2px solid #ff0000;
+            border-radius: 25px 0 0 25px;
+            outline: none;
+            width: 400px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            background-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        }
+        .search-button {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            background-color: #ff0000;
+            color: #ffffff;
+            border: 2px solid #ff0000;
+            border-radius: 0 25px 25px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .search-button:hover {
+            background-color: #cc0000;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        }
+        .clock {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+        .quick-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .quick-link {
+            padding: 0.5rem 1rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            text-decoration: none;
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        .quick-link:hover {
+            background-color: rgba(255, 0, 0, 0.5);
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <div class=""background""></div>
+    <div class=""container"">
+        <h1 class=""logo"">PryGuard</h1>
+        <div class=""clock"" id=""clock""></div>
+        <form class=""search-form"" action=""https://www.google.com/search"" method=""get"" target=""_self"">
+            <input type=""text"" name=""q"" class=""search-input"" placeholder=""Search with PryGuard..."" required>
+            <button type=""submit"" class=""search-button"">Search</button>
+        </form>
+         <div class=""quick-links"">
+        <a href=""https://www.github.com"" class=""quick-link"" target=""_blank"">GitHub</a>
+        <a href=""https://www.stackoverflow.com"" class=""quick-link"" target=""_blank"">Stack Overflow</a>
+        <a href=""https://www.reddit.com"" class=""quick-link"" target=""_blank"">Reddit</a>
+        <a href=""https://www.youtube.com"" class=""quick-link"" target=""_blank"">YouTube</a>
+        <a href=""https://iphey.com"" class=""quick-link"" target=""_blank"">IP Hey</a>
+        <a href=""https://amiunique.org"" class=""quick-link"" target=""_blank"">Am I Unique</a>
+    </div>
+    </div>
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            document.getElementById('clock').textContent = time;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>";
+
+    private static readonly HashSet<int> LocaleOverrideApplied = new HashSet<int>();
+    private static readonly object LocaleLock = new object();
+
     private PryGuardBrowser InitBasicSettingsBrowser(bool isNewPage, object id, PryGuardProfile PryGuardProfile)
     {
         var PryGuardBrowser = new PryGuardBrowser(_context);
         PryGuardBrowser.Tag = id;
         PryGuardBrowser.LifeSpanHandler = _lifespanHandler;
+
+        // Subscribe to IsBrowserInitializedChanged event
         PryGuardBrowser.IsBrowserInitializedChanged += PryGuardBrowser_IsBrowserInitializedChanged;
+
+        // Configure Browser Settings
         PryGuardBrowser.BrowserSettings.ImageLoading = PryGuardProfile.IsLoadImage ? CefState.Enabled : CefState.Disabled;
         PryGuardBrowser.BrowserSettings.RemoteFonts = CefState.Enabled;
         PryGuardBrowser.BrowserSettings.JavascriptCloseWindows = CefState.Disabled;
 
+        // Setup Download Handler
         var downloadHandler = new DownloadHandler();
         PryGuardBrowser.DownloadHandler = downloadHandler;
 
-        // Ensure DownloadManager.Instance is accessible
+        // Subscribe to Download Events
         downloadHandler.DownloadStarted += DownloadManager.Instance.AddDownload;
         downloadHandler.DownloadUpdated += DownloadManager.Instance.UpdateDownload;
-        // Create an instance of your custom context menu handler
+
+        // Setup Custom Context Menu Handler
         var menuHandler = new CustomContextMenuHandler();
 
-        // Subscribe to the OpenUrlInNewTabRequested event
+        // Subscribe to OpenUrlInNewTabRequested event with locale override tracking
         menuHandler.OpenUrlInNewTabRequested += (url) =>
         {
             // Ensure this runs on the UI thread
@@ -575,13 +716,10 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
         PryGuardBrowser.MenuHandler = menuHandler;
 
-
-
-
+        // Setup Render and Load Handlers
         if (isNewPage)
         {
-            var codeForFakeProfile = _nativeManager.GetCodeForFakeProfile("" +
-                "fakeinject", PryGuardProfile.FakeProfile);
+            var codeForFakeProfile = _nativeManager.GetCodeForFakeProfile("fakeinject", PryGuardProfile.FakeProfile);
             _renderMessageHandler = new RenderMessageHandler(codeForFakeProfile);
             PryGuardBrowser.RenderProcessMessageHandler = _renderMessageHandler;
             _loadHandler = new LoadHandler("777", codeForFakeProfile, () => { ProfileFail(); });
@@ -593,7 +731,10 @@ public class PryGuardBrowserViewModel : BaseViewModel
             PryGuardBrowser.LoadHandler = _loadHandler;
         }
 
+        // Assign Request Handler
         PryGuardBrowser.RequestHandler = _requestHandler;
+
+        // Configure Javascript Object Repository
         PryGuardBrowser.JavascriptObjectRepository.Settings.JavascriptBindingApiEnabled = false;
         PryGuardBrowser.JavascriptObjectRepository.Settings.LegacyBindingEnabled = true;
         PryGuardBrowser.JavascriptObjectRepository.NameConverter = new MyCamelCaseNameConverter();
@@ -605,147 +746,18 @@ public class PryGuardBrowserViewModel : BaseViewModel
                 Binder = new DefaultBinder(new MyCamelCaseNameConverter())
             });
 
+        // Execute Geolocation Script
         ExecGeoScript(PryGuardBrowser);
 
-        PryGuardBrowser.Tag = id;
-
-        string htmlContent = @"
-    <!DOCTYPE html>
-    <html lang=""en"">
-    <head>
-        <meta charset=""UTF-8"">
-        <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
-        <title>PryGuard Browser</title>
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-            body, html {
-                margin: 0;
-                padding: 0;
-                font-family: 'Orbitron', sans-serif;
-                background-color: #050505;
-                color: #ffffff;
-                height: 100vh;
-                overflow: hidden;
-            }
-            .container {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                position: relative;
-                z-index: 1;
-            }
-            .background {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(45deg, #ff0000, #800000);
-                filter: blur(100px);
-                opacity: 0.2;
-                z-index: -1;
-            }
-            .logo {
-                font-size: 4rem;
-                font-weight: bold;
-                color: #ff0000;
-                margin-bottom: 2rem;
-                text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-            }
-            .search-form {
-                display: flex;
-                margin-bottom: 2rem;
-            }
-            .search-input {
-                padding: 0.75rem 1.5rem;
-                font-size: 1rem;
-                border: 2px solid #ff0000;
-                border-radius: 25px 0 0 25px;
-                outline: none;
-                width: 400px;
-                background-color: rgba(255, 255, 255, 0.1);
-                color: #ffffff;
-                transition: all 0.3s ease;
-            }
-            .search-input:focus {
-                background-color: rgba(255, 255, 255, 0.2);
-                box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
-            }
-            .search-button {
-                padding: 0.75rem 1.5rem;
-                font-size: 1rem;
-                background-color: #ff0000;
-                color: #ffffff;
-                border: 2px solid #ff0000;
-                border-radius: 0 25px 25px 0;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-            .search-button:hover {
-                background-color: #cc0000;
-                box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
-            }
-            .clock {
-                font-size: 2rem;
-                margin-bottom: 2rem;
-                text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-            }
-            .quick-links {
-                display: flex;
-                gap: 1rem;
-                margin-top: 2rem;
-            }
-            .quick-link {
-                padding: 0.5rem 1rem;
-                background-color: rgba(255, 255, 255, 0.1);
-                border-radius: 15px;
-                text-decoration: none;
-                color: #ffffff;
-                transition: all 0.3s ease;
-            }
-            .quick-link:hover {
-                background-color: rgba(255, 0, 0, 0.5);
-                transform: translateY(-5px);
-            }
-        </style>
-    </head>
-    <body>
-        <div class=""background""></div>
-        <div class=""container"">
-            <h1 class=""logo"">PryGuard</h1>
-            <div class=""clock"" id=""clock""></div>
-            <form class=""search-form"" action=""https://www.google.com/search"" method=""get"" target=""_self"">
-                <input type=""text"" name=""q"" class=""search-input"" placeholder=""Search with PryGuard..."" required>
-                <button type=""submit"" class=""search-button"">Search</button>
-            </form>
-             <div class=""quick-links"">
-            <a href=""https://www.github.com"" class=""quick-link"" target=""_blank"">GitHub</a>
-            <a href=""https://www.stackoverflow.com"" class=""quick-link"" target=""_blank"">Stack Overflow</a>
-            <a href=""https://www.reddit.com"" class=""quick-link"" target=""_blank"">Reddit</a>
-            <a href=""https://www.youtube.com"" class=""quick-link"" target=""_blank"">YouTube</a>
-            <a href=""https://iphey.com"" class=""quick-link"" target=""_blank"">IP Hey</a>
-            <a href=""https://amiunique.org"" class=""quick-link"" target=""_blank"">Am I Unique</a>
-        </div>
-        </div>
-        <script>
-            function updateClock() {
-                const now = new Date();
-                const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                document.getElementById('clock').textContent = time;
-            }
-            setInterval(updateClock, 1000);
-            updateClock();
-        </script>
-    </body>
-    </html>";
-
-        // Load HTML content directly into the browser
-        PryGuardBrowser.LoadHtml(htmlContent);
+        // Apply HTML Content
+        // Load cached HTML content to optimize memory usage
+        PryGuardBrowser.LoadHtml(CachedHtmlContent);
 
         return PryGuardBrowser;
     }
+
+    
+
 
     private async Task ParseAndInsertCookies(string cookiesInput, PryGuardProfile pryGuardProfile, ChromiumWebBrowser browser)
     {
@@ -900,9 +912,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         PryGuardBrowser.ExecuteScriptAsyncWhenPageLoaded(script, oneTime: false);
     }
     private void ProfileFail() { }
-    private async void PryGuardBrowser_IsBrowserInitializedChanged(
-        object sender,
-        DependencyPropertyChangedEventArgs e)
+    private async void PryGuardBrowser_IsBrowserInitializedChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
         if (!(bool)e.NewValue)
         {
@@ -910,30 +920,67 @@ public class PryGuardBrowserViewModel : BaseViewModel
         }
 
         var browser = (PryGuardBrowser)sender;
+        int browserId = (int)browser.Tag;
 
-        using (var client = browser.GetDevToolsClient())
+        // Check if locale override has already been applied
+        lock (LocaleLock)
         {
-            var canEmu = await client.Emulation.CanEmulateAsync();
-            if (canEmu.Result)
+            if (LocaleOverrideApplied.Contains(browserId))
             {
+                // Locale override already applied, skip to prevent exceptions
+                return;
+            }
+        }
 
-                //await client.Emulation.SetDeviceMetricsOverrideAsync(_PryGuardProfile.FakeProfile.ScreenSize.Width, _PryGuardProfile.FakeProfile.ScreenSize.Height, 1, false);
-                await client.Emulation.SetUserAgentOverrideAsync(_PryGuardProfile.FakeProfile.UserAgent);
-                await client.Emulation.SetLocaleOverrideAsync(_PryGuardProfile.FakeProfile.ChromeLanguageInfo.Locale);
-                if (_PryGuardProfile.Proxy.IsProxyAuth)
+        try
+        {
+            using (var client = browser.GetDevToolsClient())
+            {
+                var canEmu = await client.Emulation.CanEmulateAsync();
+                if (canEmu.Result)
                 {
-                    if (_proxyInfo == null)
+                    // Apply User Agent Override
+                    await client.Emulation.SetUserAgentOverrideAsync(_PryGuardProfile.FakeProfile.UserAgent);
+
+                    // Apply Locale Override
+                    await client.Emulation.SetLocaleOverrideAsync(_PryGuardProfile.FakeProfile.ChromeLanguageInfo.Locale);
+
+                    // Apply Timezone Override if Proxy Authentication is enabled
+                    if (_PryGuardProfile.Proxy.IsProxyAuth)
                     {
-                        MessageBox.Show("PROXY DONT WORK!");
+                        if (_proxyInfo == null)
+                        {
+                            MessageBox.Show("PROXY DONT WORK!");
+                            return;
+                        }
+
+                        await client.Emulation.SetTimezoneOverrideAsync(_proxyInfo.Timezone);
                     }
 
-                    await client.Emulation.SetTimezoneOverrideAsync(_proxyInfo.Timezone);
+                    // Make the browser focusable and subscribe to focus events
+                    browser.Focusable = true;
+                    browser.GotFocus -= Browser_GotFocus;
+                    browser.GotFocus += Browser_GotFocus;
+                    browser.LostFocus -= Browser_LostFocus;
+                    browser.LostFocus += Browser_LostFocus;
+
+                    // Mark locale override as applied
+                    lock (LocaleLock)
+                    {
+                        LocaleOverrideApplied.Add(browserId);
+                    }
+
+                    Debug.WriteLine($"Locale override applied for browser ID: {browserId}");
                 }
-                browser.Focusable = true;
-                browser.GotFocus += Browser_GotFocus;
-                browser.LostFocus += Browser_LostFocus;
-            
+            }
         }
+        catch (CefSharp.DevTools.DevToolsClientException ex)
+        {
+            Debug.WriteLine($"DevTools Client Error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Unexpected Error: {ex.Message}");
         }
     }
     private void Browser_GotFocus(object sender, RoutedEventArgs e)
@@ -961,23 +1008,25 @@ public class PryGuardBrowserViewModel : BaseViewModel
         var tabItem = Tabs.FirstOrDefault(tab => (int)tab.Tag == (int)browser.Tag);
         if (tabItem != null)
         {
-            tabItem.Title = e.NewValue.ToString();
+            string newTitle = e.NewValue.ToString();
+            tabItem.Title = newTitle;
 
-            // Update the Label's Content to reflect the new title
+            // Update the tab button's content to reflect the new title
             var button = TabBtnsAndAddTabBtn.OfType<Label>().FirstOrDefault(lbl => (int)lbl.Tag == (int)browser.Tag);
             if (button != null)
             {
-                if(tabItem.IsIncognito)
-                    button.Content = "Inco "+ e.NewValue.ToString();
-                else
-                    button.Content = e.NewValue.ToString();
-                
+                button.Content = tabItem.IsIncognito ? $"Inco {newTitle}" : newTitle;
             }
 
-            // Save the history
-            SaveHistoryJson(browser.Address, e.NewValue.ToString());
+            // **Capture the address on the UI thread**
+            string address = browser.Address;
+
+            // **Run the SaveHistoryJsonAsync without accessing UI elements**
+            Task.Run(() => SaveHistoryJsonAsync(address, newTitle));
         }
     }
+
+
 
     private void Browser_AddressChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
@@ -1078,7 +1127,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
         // If the user clicks 'No', do nothing
     }
 
-    private void SaveHistoryJson(string address, string desc)
+    private async Task SaveHistoryJsonAsync(string address, string desc)
     {
         if (CurrentTabItem is CustomTabItem currentTab && currentTab.IsIncognito)
             return; // Do not save history for incognito
@@ -1090,22 +1139,21 @@ public class PryGuardBrowserViewModel : BaseViewModel
             PryGuardHistoryList = new ObservableCollection<PryGuardHistoryItem>();
         }
 
-        Task.Run(() =>
+        try
         {
-            try
-            {
-                var hist = new PryGuardHistoryItem(DateTime.Now.ToString("yyyy/MM/dd HH:mm"), desc, address.Replace("https://", ""));
-                Application.Current.Dispatcher.Invoke(() => PryGuardHistoryList.Insert(0, hist));
+            var hist = new PryGuardHistoryItem(DateTime.Now.ToString("yyyy/MM/dd HH:mm"), desc, address.Replace("https://", ""));
+            Application.Current.Dispatcher.Invoke(() => PryGuardHistoryList.Insert(0, hist));
 
-                var doc = JsonSerializer.Serialize(PryGuardHistoryList);
-                File.WriteAllText(profileHistoryPath, doc); // Save history to profile-specific path
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error saving history: {ex.Message}");
-            }
-        });
+            var doc = JsonSerializer.Serialize(PryGuardHistoryList);
+            await File.WriteAllTextAsync(profileHistoryPath, doc); // Asynchronous write
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving history: {ex.Message}");
+        }
     }
+
+
 
     private void SaveHistoryList()
     {
@@ -1134,15 +1182,13 @@ public class PryGuardBrowserViewModel : BaseViewModel
         
     }
 
-    private void LoadHistoryJson()
+    private async Task LoadHistoryJsonAsync()
     {
-        // Check if _profileHistoryPath is initialized
         if (string.IsNullOrEmpty(_profileHistoryPath) || !File.Exists(_profileHistoryPath))
         {
             return; // Exit if path is not set or file doesn't exist
         }
 
-        // Ensure PryGuardHistoryList is not null
         if (PryGuardHistoryList == null)
         {
             PryGuardHistoryList = new ObservableCollection<PryGuardHistoryItem>();
@@ -1150,18 +1196,25 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
         try
         {
-            using StreamReader reader = new StreamReader(_profileHistoryPath);
-            var json = reader.ReadToEnd();
-            reader.Close();
-
-            // Deserialize history and assign it to PryGuardHistoryList
-            PryGuardHistoryList = JsonSerializer.Deserialize<ObservableCollection<PryGuardHistoryItem>>(json) ?? new ObservableCollection<PryGuardHistoryItem>();
+            string json = await File.ReadAllTextAsync(_profileHistoryPath);
+            var historyList = JsonSerializer.Deserialize<ObservableCollection<PryGuardHistoryItem>>(json);
+            if (historyList != null)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    foreach (var item in historyList)
+                    {
+                        PryGuardHistoryList.Add(item);
+                    }
+                });
+            }
         }
         catch (Exception ex)
         {
             MessageBox.Show($"Error loading history: {ex.Message}");
         }
     }
+
 
 
 
@@ -1199,9 +1252,9 @@ public class PryGuardBrowserViewModel : BaseViewModel
             Tabs.Add(newTab);
             CurrentTabItem = newTab;
             Address = "PryGuard://history/";
-            
+
             // Load history when the tab is created
-            LoadHistoryJson(); // Ensure history is loaded
+            LoadHistoryJsonAsync(); // Ensure history is loaded
 
             // Create and add the button for the tab
             Label button = new Label
