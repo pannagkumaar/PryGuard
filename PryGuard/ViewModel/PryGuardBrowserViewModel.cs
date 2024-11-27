@@ -911,7 +911,13 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
         PryGuardBrowser.ExecuteScriptAsyncWhenPageLoaded(script, oneTime: false);
     }
-    private void ProfileFail() { }
+    private void ProfileFail()
+    {
+        // Cleanup or reset actions, like nullifying proxy-specific configurations
+        _proxyInfo = null;
+        
+    }
+
     private async void PryGuardBrowser_IsBrowserInitializedChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
         if (!(bool)e.NewValue)
@@ -948,13 +954,40 @@ public class PryGuardBrowserViewModel : BaseViewModel
                     // Apply Timezone Override if Proxy Authentication is enabled
                     if (_PryGuardProfile.Proxy.IsProxyAuth)
                     {
-                        if (_proxyInfo == null)
+                        try
                         {
-                            MessageBox.Show("PROXY DONT WORK!");
+                            _proxyInfo = await IpInfoClient.CheckClientProxy(_PryGuardProfile.Proxy);
+
+                            if (_proxyInfo == null)
+                            {
+                                MessageBox.Show("Invalid proxy settings. Please verify and try again.");
+                                ProfileFail(); // Add any necessary cleanup or reset actions here
+                                return;
+                            }
+
+                            _requestHandler.SetAuthCredentials(new ProxyAuthCredentials()
+                            {
+                                Login = _PryGuardProfile.Proxy.ProxyLogin,
+                                Password = _PryGuardProfile.Proxy.ProxyPassword
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Proxy authentication failed: {ex.Message}");
+                            ProfileFail(); // Handle the failure gracefully
                             return;
                         }
+                    }
+                    else
+                    {
+                        _proxyInfo = await IpInfoClient.CheckClientProxy(_PryGuardProfile.Proxy);
 
-                        await client.Emulation.SetTimezoneOverrideAsync(_proxyInfo.Timezone);
+                        if (_proxyInfo == null)
+                        {
+                            MessageBox.Show("Proxy check failed. Please verify the proxy configuration.");
+                            ProfileFail();
+                            return;
+                        }
                     }
 
                     // Make the browser focusable and subscribe to focus events
@@ -1239,7 +1272,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
-            PryGuardHistoryList.Add(new PryGuardHistoryItem("2024/09/21 10:30", "Test Description", "www.google.com"));
+            
             // Create and add the tab
             var newTab = new CustomTabItem
             {
@@ -1253,8 +1286,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             CurrentTabItem = newTab;
             Address = "PryGuard://history/";
 
-            // Load history when the tab is created
-            LoadHistoryJsonAsync(); // Ensure history is loaded
+            
 
             // Create and add the button for the tab
             Label button = new Label
