@@ -512,8 +512,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
             if (_PryGuardProfile.Proxy.IsCustomProxy)
             {
-                var chromeProxy = _PryGuardProfile.Proxy.ToChromeProxy();
-                _context.SetProxy(chromeProxy);
+                
 
                 if (_PryGuardProfile.Proxy.IsProxyAuth)
                 {
@@ -954,40 +953,22 @@ public class PryGuardBrowserViewModel : BaseViewModel
                     // Apply Timezone Override if Proxy Authentication is enabled
                     if (_PryGuardProfile.Proxy.IsProxyAuth)
                     {
-                        try
-                        {
-                            _proxyInfo = await IpInfoClient.CheckClientProxy(_PryGuardProfile.Proxy);
-
-                            if (_proxyInfo == null)
-                            {
-                                MessageBox.Show("Invalid proxy settings. Please verify and try again.");
-                                ProfileFail(); // Add any necessary cleanup or reset actions here
-                                return;
-                            }
-
-                            _requestHandler.SetAuthCredentials(new ProxyAuthCredentials()
-                            {
-                                Login = _PryGuardProfile.Proxy.ProxyLogin,
-                                Password = _PryGuardProfile.Proxy.ProxyPassword
-                            });
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"Proxy authentication failed: {ex.Message}");
-                            ProfileFail(); // Handle the failure gracefully
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        _proxyInfo = await IpInfoClient.CheckClientProxy(_PryGuardProfile.Proxy);
-
                         if (_proxyInfo == null)
                         {
-                            MessageBox.Show("Proxy check failed. Please verify the proxy configuration.");
-                            ProfileFail();
+                            MessageBox.Show("PROXY DONT WORK!");
                             return;
                         }
+
+                        await client.Emulation.SetTimezoneOverrideAsync(_proxyInfo.Timezone);
+                    }
+                    if(_PryGuardProfile.Proxy.IsCustomProxy)
+                    {
+                        if (_proxyInfo != null)
+                        {
+                            var chromeProxy = _PryGuardProfile.Proxy.ToChromeProxy();
+                            _context.SetProxy(chromeProxy);
+                        }
+                        
                     }
 
                     // Make the browser focusable and subscribe to focus events
