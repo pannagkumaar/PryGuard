@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Services\JsSource\Fake\fakeinject.js" />
+    <None Remove="Resources\JavaScript\Fake\fakeinject.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Services\JsSource\Fake\fakeinject.js">
+    <Resource Include="Resources\JavaScript\Fake\fakeinject.js">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
