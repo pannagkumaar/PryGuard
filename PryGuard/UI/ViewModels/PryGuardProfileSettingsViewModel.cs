@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using PryGuard.View;
+using PryGuard.UI.Views;
 
 using System.Linq;
 

@@ -10,7 +10,7 @@ using PryGuard.DataModels;
 using PryGuard.Resources.Commands;
 using PryGuard.UI.Controls.Buttons;
 using PryGuard.UI.Views;
-using PryGuard.View;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

@@ -6,7 +6,7 @@ using PryGuard.UI.Views;
 using PryGuard.DataModels;
 using PryGuard.UI.ViewModels;
 
-namespace PryGuard.View
+namespace PryGuard.UI.Views
 {
     public partial class PryGuardProfilesView : Window, IBaseView
     {

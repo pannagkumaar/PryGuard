@@ -4,7 +4,7 @@ using System.Windows.Input;
 using PryGuard.DataModels;
 using PryGuard.UI.Views;
 using PryGuard.UI.ViewModels;
-namespace PryGuard.View;
+namespace PryGuard.UI.Views;
 public partial class PryGuardBrowserView : IBaseView
 {
     public BaseViewModel ViewModel { get; set; }

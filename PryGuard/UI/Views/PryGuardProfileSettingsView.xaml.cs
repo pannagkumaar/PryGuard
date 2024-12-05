@@ -6,7 +6,7 @@ using PryGuard.UI.Views;
 using PryGuard.Core.Browser.Model.Configs;
 using PryGuard.UI.ViewModels;
 
-namespace PryGuard.View
+namespace PryGuard.UI.Views
 {
     public partial class PryGuardProfileSettingsView : IBaseView
     {

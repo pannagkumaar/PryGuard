@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using PryGuard.Core.Browser.Handlers;
 
-namespace PryGuard.View
+namespace PryGuard.UI.Views
 {
     public partial class DownloadPage : UserControl
     {
