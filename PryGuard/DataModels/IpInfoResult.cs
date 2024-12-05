@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace PryGuard.Model;
+namespace PryGuard.DataModels;
 
 public class IpInfoResult
 {

@@ -4,13 +4,15 @@ using System.Linq;
 using System.Globalization;
 
 using System.ComponentModel;
-using PryGuard.Services.Helpers;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-using PryGuard.Core.ChromeApi.Settings;
 using CefSharp;
+using PryGuard.Core.Browser.Settings;
+using PryGuard.Resources.Helpers;
+using PryGuard.Core.Browser.Model.Configs;
+using PryGuard.DataModels;
 
-namespace PryGuard.Core.ChromeApi.Model.Configs;
+namespace PryGuard.Core.Browser.Model.Configs;
 public class FakeProfileFactory
 {
     private static readonly Dictionary<EOSVersion, string> OsVersions = new Dictionary<EOSVersion, string>()
@@ -349,7 +351,7 @@ public class FakeProfileFactory
         result.FloatFrequencyDataDelta = GenerateRandomDouble();
         result.FloatFrequencyDataIndexDelta = GenerateRandomDouble();
         result.ChromeLanguageInfo = EChromeLanguageHelper.GetFullInfo(EChromeLanguageExtensions.GetValue(GenerateRandomInt(1, 2)));
-        result.ScreenSize = ScreenSizes[GenerateRandomInt(0, ScreenSizes.Count-1)];
+        result.ScreenSize = ScreenSizes[GenerateRandomInt(0, ScreenSizes.Count - 1)];
         result.Fonts = GenerateAvailableFonts(result.OsVersion);
         result.WebGL = WebGLFactory.Generate();
 
@@ -359,11 +361,11 @@ public class FakeProfileFactory
         result.GeoSettings = new GeoSettings();
         result.TimezoneSetting = new TimezoneSetting();
 
-        
+
         return result;
     }
 
-    public static FakeProfile Generate(PryGuard.Model.Fingerprint botFingerprint)
+    public static FakeProfile Generate(Fingerprint botFingerprint)
     {
         var fakeProfile = Generate();
         fakeProfile.Fonts = botFingerprint.Fonts;

@@ -1,8 +1,8 @@
-﻿using PryGuard.ViewModel;
+﻿using PryGuard.UI.ViewModels;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace PryGuard.Model;
+namespace PryGuard.DataModels;
 
 public class ProfileTab : INotifyPropertyChanged
 {

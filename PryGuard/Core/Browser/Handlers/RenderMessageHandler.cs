@@ -1,6 +1,6 @@
 ﻿using CefSharp;
 
-namespace PryGuard.Core.ChromeApi.Handlers;
+namespace PryGuard.Core.Browser.Handlers;
 
 /// <summary>
 /// Chrome rendering events

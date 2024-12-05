@@ -1,4 +1,4 @@
-﻿namespace PryGuard.Core.ChromeApi.Proxy;
+﻿namespace PryGuard.Core.Browser.Proxy;
 public enum EProxyType
 {
     Direct,

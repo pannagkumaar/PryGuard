@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 
-namespace PryGuard.Core.ChromeApi;
+namespace PryGuard.Core.Browser;
 
 /// <summary>
 /// Finds a string in the response and replaces it with another string
@@ -38,7 +38,7 @@ public class FindReplaceResponseFilter : IResponseFilter, IDisposable
         dataOutWritten = 0L;
         if (overflow.Count > 0)
             WriteOverflow(dataOut, ref dataOutWritten);
-        for (int index = 0; (long)index < dataInRead; ++index)
+        for (int index = 0; index < dataInRead; ++index)
         {
             byte data = (byte)dataIn.ReadByte();
             if (Convert.ToChar(data) == findString[findMatchOffset])

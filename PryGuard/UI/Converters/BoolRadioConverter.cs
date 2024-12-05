@@ -2,7 +2,7 @@
 using System.Windows.Data;
 using System.Globalization;
 
-namespace PryGuard.Services.UI.Converters;
+namespace PryGuard.UI.Converters;
 
 public class BoolRadioConverter : IValueConverter
 {
@@ -12,7 +12,7 @@ public class BoolRadioConverter : IValueConverter
     {
         bool boolValue = (bool)value;
 
-        return this.Inverse ? !boolValue : boolValue;
+        return Inverse ? !boolValue : boolValue;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -25,6 +25,6 @@ public class BoolRadioConverter : IValueConverter
             return null;
         }
 
-        return !this.Inverse;
+        return !Inverse;
     }
 }

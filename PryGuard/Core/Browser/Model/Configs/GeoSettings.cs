@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace PryGuard.Core.ChromeApi.Model.Configs;
+namespace PryGuard.Core.Browser.Model.Configs;
 public class GeoSettings : INotifyPropertyChanged
 {
 

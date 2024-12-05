@@ -1,4 +1,4 @@
-﻿namespace PryGuard.Core.ChromeApi.Model.Configs;
+﻿namespace PryGuard.Core.Browser.Model.Configs;
 public class ScreenSize
 {
     public ScreenSize(int width, int height)

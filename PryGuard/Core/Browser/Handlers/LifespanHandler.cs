@@ -1,7 +1,7 @@
 ﻿using CefSharp;
 using System;
 
-namespace PryGuard.Core.ChromeApi.Handlers
+namespace PryGuard.Core.Browser.Handlers
 {
     /// <summary>
     /// Handler for managing browser lifespan events (like popup handling).

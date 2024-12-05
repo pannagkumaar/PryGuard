@@ -1,8 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using PryGuard.ViewModel;
 using System.Windows.Input;
-using PryGuard.Model;
+using PryGuard.DataModels;
+using PryGuard.UI.Views;
+using PryGuard.UI.ViewModels;
 namespace PryGuard.View;
 public partial class PryGuardBrowserView : IBaseView
 {

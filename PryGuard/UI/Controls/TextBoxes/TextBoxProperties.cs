@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace PryGuard.Services.UI.TextBox;
+namespace PryGuard.UI.Controls.TextBoxes;
 public class TextBoxProperties : DependencyObject
 {
     #region MaxLengthProperty

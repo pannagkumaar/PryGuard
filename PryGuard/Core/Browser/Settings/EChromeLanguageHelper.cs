@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PryGuard.Core.ChromeApi.Settings;
+namespace PryGuard.Core.Browser.Settings;
 /// <summary>
 /// This is where the possible languages for the browser are stored 
 /// </summary>

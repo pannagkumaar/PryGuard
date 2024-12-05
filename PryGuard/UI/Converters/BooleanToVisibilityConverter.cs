@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows;
 
-namespace PryGuard.Services.UI.Converters
+namespace PryGuard.UI.Converters
 {
     public class BooleanToVisibilityConverter : IValueConverter
     {

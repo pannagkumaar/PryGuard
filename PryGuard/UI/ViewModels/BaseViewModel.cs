@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace PryGuard.ViewModel;
+namespace PryGuard.UI.ViewModels;
 public abstract class BaseViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler PropertyChanged;
@@ -29,8 +29,9 @@ public abstract class BaseViewModel : INotifyPropertyChanged
             return;
         propertyChanged(this, new PropertyChangedEventArgs(propertyName));
     }
-    public virtual void Close() {
-    
+    public virtual void Close()
+    {
+
     }
     protected void NextStep(BaseViewModel viewModel)
     {

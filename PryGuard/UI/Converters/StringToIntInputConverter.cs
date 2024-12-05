@@ -2,7 +2,7 @@
 using System.Windows.Data;
 using System.Globalization;
 
-namespace PryGuard.Services.UI.Converters;
+namespace PryGuard.UI.Converters;
 class StringToIntInputConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

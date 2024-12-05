@@ -2,12 +2,12 @@
 using System.IO;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using PryGuard.Core.ChromeApi.Model.Configs;
-using PryGuard.Services.Helpers;
 using System.Threading;
+using PryGuard.Resources.Helpers;
+using PryGuard.Core.Browser.Model.Configs;
 
 
-namespace PryGuard.Model
+namespace PryGuard.DataModels
 {
     public class PryGuardProfile : INotifyPropertyChanged
     {

@@ -1,9 +1,9 @@
 ﻿using CefSharp;
 using System.Threading;
 using System.Threading.Tasks;
-using PryGuard.Core.ChromeApi.Proxy;
+using PryGuard.Core.Browser.Proxy;
 
-namespace PryGuard.Core.ChromeApi;
+namespace PryGuard.Core.Browser;
 
 public static class RequestContextExtentions
 {

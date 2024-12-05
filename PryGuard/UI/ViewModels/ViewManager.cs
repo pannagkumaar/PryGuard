@@ -1,10 +1,10 @@
 ﻿using System;
-using PryGuard.View;
 using System.Windows;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using PryGuard.UI.Views;
 
-namespace PryGuard.ViewModel;
+namespace PryGuard.UI.ViewModels;
 public static class ViewManager
 {
     private static readonly Dictionary<BaseViewModel, Window> _windows = new Dictionary<BaseViewModel, Window>();
@@ -42,7 +42,7 @@ public static class ViewManager
         if (!(Activator.CreateInstance(type, args) is Window instance))
             throw new ArgumentNullException("ViewManager , view==null");
         instance.DataContext = viewModel;
-        instance.Closed += (EventHandler)((s, e) => viewModel.Close());
+        instance.Closed += (s, e) => viewModel.Close();
         if (!(instance is IBaseView baseView))
             throw new ArgumentException("ViewManager , ViewModel is not IBaseView");
         baseView.ViewModel = viewModel;

@@ -1,7 +1,7 @@
 ﻿using CefSharp;
 
 
-namespace PryGuard.Core.ChromeApi.Handlers;
+namespace PryGuard.Core.Browser.Handlers;
 public class MenuHandler : IContextMenuHandler
 {
     public void OnBeforeContextMenu(
@@ -10,7 +10,7 @@ public class MenuHandler : IContextMenuHandler
       IFrame frame,
       IContextMenuParams parameters,
       IMenuModel model)
-    { 
+    {
     }
 
     public bool OnContextMenuCommand(

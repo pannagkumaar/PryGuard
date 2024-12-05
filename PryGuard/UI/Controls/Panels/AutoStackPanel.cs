@@ -3,8 +3,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace PryGuard.Services.UI.Panel;
-public class AutoStackPanel : System.Windows.Controls.Panel
+namespace PryGuard.UI.Controls.Panels;
+public class AutoStackPanel : Panel
 {
     protected override Size MeasureOverride(Size constraint)
     {
@@ -164,7 +164,7 @@ public class AutoStackPanel : System.Windows.Controls.Panel
 
             if (isHorizontal)
             {
-                fillTypeSize = (fillTypeSize > MaxChildWidth && MaxChildWidth != 0) ? MaxChildWidth : fillTypeSize;
+                fillTypeSize = fillTypeSize > MaxChildWidth && MaxChildWidth != 0 ? MaxChildWidth : fillTypeSize;
                 rcChild.Width = fillType == StackPanelFill.Auto || isCollapsed ? childDesiredSize.Width : fillTypeSize;
                 rcChild.Height = arrangeSize.Height;
                 accumulatedLeft += rcChild.Width + marginToAdd;

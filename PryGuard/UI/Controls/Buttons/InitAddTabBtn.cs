@@ -4,11 +4,11 @@ using System.Windows.Media;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Controls;
-using PryGuard.Services.Commands;
-using PryGuard.Services.UI.Panel;
+using PryGuard.Resources.Commands;
 using Microsoft.Xaml.Behaviors;
+using PryGuard.UI.Controls.Panels;
 
-namespace PryGuard.Services.UI.Button;
+namespace PryGuard.UI.Controls.Buttons;
 public class InitAddTabBtn
 {
     private static Style GetBorderAddTabStyle()
@@ -16,7 +16,7 @@ public class InitAddTabBtn
         var borderStyle = new Style(typeof(Border));
         borderStyle.Setters.Add(new Setter(Border.BorderThicknessProperty, new Thickness(1)));
         borderStyle.Setters.Add(new Setter(Border.CornerRadiusProperty, new CornerRadius(20)));
-        borderStyle.Setters.Add(new Setter(Border.CursorProperty, Cursors.Hand));
+        borderStyle.Setters.Add(new Setter(FrameworkElement.CursorProperty, Cursors.Hand));
         borderStyle.Setters.Add(new Setter(Border.BackgroundProperty, Brushes.Transparent));
 
         var mouseEnterTrigger = new Trigger

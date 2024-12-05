@@ -1,6 +1,6 @@
 ﻿// DownloadsPage.xaml.cs
 using System.Windows.Controls;
-using PryGuard.Core.ChromeApi.Handlers;
+using PryGuard.Core.Browser.Handlers;
 
 namespace PryGuard.View
 {

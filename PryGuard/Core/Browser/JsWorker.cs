@@ -3,14 +3,14 @@ using CefSharp;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace PryGuard.Core.ChromeApi;
+namespace PryGuard.Core.Browser;
 public class JsWorker
 {
     public Action<string> WriteLogDelegate;
     Action<string> _changeBkViewName;
     Action<bool> _reloadBrowserDelegate;
     Action<string> _loadBrowserDelegate;
-   
+
     IJavascriptCallback _fastLoadCallback;
     IJavascriptCallback _consoleLog;
     Func<List<byte>> _saveScreenDelegate;
@@ -54,7 +54,7 @@ public class JsWorker
         IJavascriptCallback consoleLog)
     {
         _consoleLog = consoleLog;
-       
+
     }
 
     public void SetFastCallback(IJavascriptCallback callback)
@@ -102,7 +102,7 @@ public class JsWorker
     }
 
 
-  
+
     public void WriteLine(string msg) => WriteLogDelegate?.Invoke(msg);
 
     [JavascriptIgnore]

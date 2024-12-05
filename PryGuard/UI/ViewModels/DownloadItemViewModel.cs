@@ -1,5 +1,5 @@
 ﻿using CefSharp;
-using PryGuard.Services.Commands;
+using PryGuard.Resources.Commands;
 using System;
 using System.ComponentModel;
 using System.Windows.Input;

@@ -1,16 +1,16 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using PryGuard.Model;
 using System.Windows;
 using System.Threading.Tasks;
-using PryGuard.Services.Commands;
-using PryGuard.Services.Settings;
 using System.Collections.ObjectModel;
-using PryGuard.Services.Helpers;
 using System.Diagnostics;
+using PryGuard.Resources.Commands;
+using PryGuard.Resources.Settings;
+using PryGuard.DataModels;
+using PryGuard.Resources.Helpers;
 
-namespace PryGuard.ViewModel
+namespace PryGuard.UI.ViewModels
 {
     public class PryGuardProfilesViewModel : BaseViewModel, IDisposable
     {
@@ -153,7 +153,7 @@ namespace PryGuard.ViewModel
             {
                 IsEdit = false // Set IsEdit to false for new profiles
             };
-            this.NextStep(PryGuardProfileSettingsVM);
+            NextStep(PryGuardProfileSettingsVM);
             PryGuardProfileSettingsVM.PryGuardProfilesVM = this;
         }
 
@@ -277,7 +277,7 @@ namespace PryGuard.ViewModel
                     SaveProfileButtonContent = "Save",
                     IsEdit = true // Set the IsEdit flag to true
                 };
-                this.NextStep(PryGuardProfileSettingsVM);
+                NextStep(PryGuardProfileSettingsVM);
                 PryGuardProfileSettingsVM.PryGuardProfilesVM = this;
             }
             else
@@ -442,7 +442,7 @@ namespace PryGuard.ViewModel
                     SavedProxies?.Clear();
 
                     // Dispose child ViewModels if they implement IDisposable
-                    
+
 
                     // Unsubscribe from events if any (example)
                     // someService.SomeEvent -= OnSomeEvent;

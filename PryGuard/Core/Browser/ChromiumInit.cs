@@ -2,11 +2,10 @@
 
 using CefSharp;
 using CefSharp.Wpf;
+using PryGuard.Core.Browser.Settings;
+using PryGuard.DataModels;
 
-using PryGuard.Core.ChromeApi.Settings;
-using PryGuard.Model;
-
-namespace PryGuard.Core.ChromeApi;
+namespace PryGuard.Core.Browser;
 public static class ChromiumInit
 {
     public static void Init(PryGuardProfile PryGuardProfileToStart)
@@ -16,7 +15,7 @@ public static class ChromiumInit
         CefSharpSettings.ShutdownOnExit = true;
         // CefSharpSettings.ConcurrentTaskExecution = true;
         var cefSettings = new CefSettings();
-       // cefSettings.LocalesDirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "locales");
+        // cefSettings.LocalesDirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "locales");
         cefSettings.Locale = PryGuardProfileToStart.FakeProfile.CurrentChromeLanguage.ToLocal();
         cefSettings.UserAgent = PryGuardProfileToStart.FakeProfile.UserAgent;
         // if (!cefSettings.CefCommandLineArgs.ContainsKey("disable-gpu"))

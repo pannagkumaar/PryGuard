@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Data;
 
-namespace PryGuard.Services.UI.Converters;
+namespace PryGuard.UI.Converters;
 public class BoolToValueConverter : IValueConverter
 {
     public string FalseValue { get; set; }

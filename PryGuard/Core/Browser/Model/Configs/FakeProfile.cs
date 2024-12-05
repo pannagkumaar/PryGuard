@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics;
 using System.ComponentModel;
 using System.Collections.Generic;
-using PryGuard.Core.ChromeApi.Settings;
 using System.Runtime.CompilerServices;
+using PryGuard.Core.Browser.Settings;
 
-namespace PryGuard.Core.ChromeApi.Model.Configs;
+namespace PryGuard.Core.Browser.Model.Configs;
 /// <summary>
 ///A fake profile for the browser, this data is then substituted via js in the browser itself
 /// </summary>
@@ -234,7 +234,7 @@ public class FakeProfile : INotifyPropertyChanged
             OnPropertyChanged(nameof(MediaDevicesSettings));
         }
     }
-    
+
     private WebRTCSettings _webRTCSettings;
     public WebRTCSettings WebRtcSettings
     {

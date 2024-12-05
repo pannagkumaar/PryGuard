@@ -1,9 +1,9 @@
 ﻿using CefSharp;
 using CefSharp.Wpf;
-using PryGuard.Core.ChromeApi.Handlers;
+using PryGuard.Core.Browser.Handlers;
 using System;
 
-namespace PryGuard.Core.ChromeApi
+namespace PryGuard.Core.Browser
 {
     public class PryGuardBrowser : ChromiumWebBrowser
     {

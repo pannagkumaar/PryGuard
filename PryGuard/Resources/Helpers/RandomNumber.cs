@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 
-namespace PryGuard.Services.Helpers;
+namespace PryGuard.Resources.Helpers;
 
 public static class RandomNumber
 {
@@ -43,6 +43,6 @@ public static class RandomNumber
                 throw new ArgumentException("Error retrieving from dictionary");
             }
         }
-        return default(TValue);
+        return default;
     }
 }

@@ -1,7 +1,7 @@
 ﻿using CefSharp;
 using CefSharp.Web;
 
-namespace PryGuard.Core.ChromeApi;
+namespace PryGuard.Core.Browser;
 
 public static class WebBrowserExtensions
 {

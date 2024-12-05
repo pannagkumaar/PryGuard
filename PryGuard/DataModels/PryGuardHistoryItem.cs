@@ -1,4 +1,4 @@
-﻿namespace PryGuard.Model;
+﻿namespace PryGuard.DataModels;
 public class PryGuardHistoryItem
 {
     public string Time { get; set; }

@@ -1,6 +1,6 @@
-﻿using PryGuard.ViewModel;
+﻿using PryGuard.UI.ViewModels;
 
-namespace PryGuard.View;
+namespace PryGuard.UI.Views;
 public interface IBaseView
 {
     BaseViewModel ViewModel { get; set; }

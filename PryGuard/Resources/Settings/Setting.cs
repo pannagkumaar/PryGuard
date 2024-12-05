@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
-using PryGuard.Model;
 using System.Text.Json;
-using PryGuard.ViewModel;
 using System.Text.Json.Nodes;
 using System.Collections.Generic;
+using PryGuard.DataModels;
+using PryGuard.UI.ViewModels;
 
-namespace PryGuard.Services.Settings;
+namespace PryGuard.Resources.Settings;
 public class Setting : BaseViewModel
 {
     private string _settingsJsonPath = Directory.GetCurrentDirectory() + @"\settings.json";
@@ -27,7 +27,7 @@ public class Setting : BaseViewModel
     public void ParseJson(JsonNode json)
     {
         if (json[nameof(PryGuardProfiles)] != null)
-            PryGuardProfiles = JsonSerializer.Deserialize<List<PryGuardProfile>>(json[nameof(PryGuardProfiles)]);
+            PryGuardProfiles = json[nameof(PryGuardProfiles)].Deserialize<List<PryGuardProfile>>();
         else
             PryGuardProfiles = new List<PryGuardProfile>();
     }

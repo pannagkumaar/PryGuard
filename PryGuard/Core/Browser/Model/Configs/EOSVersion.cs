@@ -1,5 +1,4 @@
-﻿
-namespace PryGuard.Core.ChromeApi.Model.Configs;
+﻿namespace PryGuard.Core.Browser.Model.Configs;
 public enum EOSVersion
 {
     Win7,

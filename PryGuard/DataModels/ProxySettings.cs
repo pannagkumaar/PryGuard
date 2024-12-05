@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
-using PryGuard.Core.ChromeApi.Proxy;
 using System.Runtime.CompilerServices;
+using PryGuard.Core.Browser.Proxy;
 
-namespace PryGuard.Model;
+namespace PryGuard.DataModels;
 
 public class ProxySettings : INotifyPropertyChanged
 {
@@ -47,7 +47,7 @@ public class ProxySettings : INotifyPropertyChanged
                 // Standard proxy without credentials
                 IsCustomProxy = true;
                 ProxyAddress = splitted[0];
-                ProxyPort = System.Convert.ToInt32(splitted[1]);
+                ProxyPort = Convert.ToInt32(splitted[1]);
                 ProxyLogin = null;
                 ProxyPassword = null;
                 IsProxyAuth = false;
@@ -57,7 +57,7 @@ public class ProxySettings : INotifyPropertyChanged
                 // Custom proxy with credentials
                 IsCustomProxy = true;
                 ProxyAddress = splitted[0];
-                ProxyPort = System.Convert.ToInt32(splitted[1]);
+                ProxyPort = Convert.ToInt32(splitted[1]);
                 ProxyLogin = splitted[2];
                 ProxyPassword = splitted[3];
                 IsProxyAuth = true;
@@ -175,7 +175,7 @@ public class ProxySettings : INotifyPropertyChanged
             if (_isProxyAuth == value)
                 return;
             _isProxyAuth = ProxyLogin != "";
-           // _isProxyAuth = ProxyType != EProxyType.SOCKS5 && (ProxyType != EProxyType.SOCKS4 && (ProxyType != EProxyType.Direct && value));
+            // _isProxyAuth = ProxyType != EProxyType.SOCKS5 && (ProxyType != EProxyType.SOCKS4 && (ProxyType != EProxyType.Direct && value));
             OnPropertyChanged(nameof(IsProxyAuth));
 
         }

@@ -1,7 +1,8 @@
 ﻿using System;
 using CefSharp;
+using PryGuard.Core.Browser;
 
-namespace PryGuard.Core.ChromeApi.Handlers;
+namespace PryGuard.Core.Browser.Handlers;
 
 /// <summary>
 /// Swap resources in requests (e.g. user-agent or entire request/response body)

@@ -1,4 +1,4 @@
-﻿namespace PryGuard.Core.ChromeApi.Model.Configs;
+﻿namespace PryGuard.Core.Browser.Model.Configs;
 public class MediaDevice
 {
     public string DeviceId { get; set; }
@@ -8,10 +8,10 @@ public class MediaDevice
 
     public MediaDevice(string deviceId, string kind, string label, string groupId)
     {
-        this.DeviceId = deviceId;
-        this.Kind = kind;
-        this.Label = label;
-        this.GroupId = groupId;
+        DeviceId = deviceId;
+        Kind = kind;
+        Label = label;
+        GroupId = groupId;
     }
 
     public static MediaDevice AudioInputDevice(string id, string groupId)

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 
-namespace PryGuard.Core.ChromeApi.Model.Configs;
+namespace PryGuard.Core.Browser.Model.Configs;
 public class MediaDevicesFactory
 {
     private static Random random = new();

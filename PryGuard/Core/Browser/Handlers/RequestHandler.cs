@@ -1,9 +1,9 @@
 ﻿using System;
 using CefSharp;
-using PryGuard.Core.ChromeApi.Proxy;
 using System.Security.Cryptography.X509Certificates;
+using PryGuard.Core.Browser.Proxy;
 
-namespace PryGuard.Core.ChromeApi.Handlers;
+namespace PryGuard.Core.Browser.Handlers;
 
 /// <summary>
 /// Work with requests
@@ -23,7 +23,7 @@ public class RequestHandler : IRequestHandler
 
     public void SetAuthCredentials(ProxyAuthCredentials proxyAuthCredentials)
     {
-        this._authCredentials = proxyAuthCredentials;
+        _authCredentials = proxyAuthCredentials;
     }
 
     bool IRequestHandler.OnBeforeBrowse(
@@ -158,7 +158,7 @@ public class RequestHandler : IRequestHandler
     }
 
     public void OnRenderViewReady(
-        IWebBrowser chromiumWebBrowser, 
+        IWebBrowser chromiumWebBrowser,
         IBrowser browser)
     {
     }

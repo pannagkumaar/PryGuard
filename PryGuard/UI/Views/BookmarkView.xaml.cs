@@ -12,9 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using PryGuard.ViewModel;
+using PryGuard.UI.ViewModels;
 
-namespace PryGuard.View
+namespace PryGuard.UI.Views
 {
     /// done by tania
     public partial class BookmarkView : UserControl
@@ -22,11 +22,11 @@ namespace PryGuard.View
         private bool _isDarkTheme;
 
         public BookmarkView()
-{
-    InitializeComponent();
-    SetLightTheme(); // This will set the initial theme to light
-    themeToggleButton.Content = "Dark Theme"; // Since the initial theme is light, the button should say "Dark Theme"
-}
+        {
+            InitializeComponent();
+            SetLightTheme(); // This will set the initial theme to light
+            themeToggleButton.Content = "Dark Theme"; // Since the initial theme is light, the button should say "Dark Theme"
+        }
 
 
         private void OnLinkClick(object sender, MouseButtonEventArgs e)
@@ -35,7 +35,7 @@ namespace PryGuard.View
             if (link != null)
             {
                 var viewModel = DataContext as PryGuardBrowserViewModel;
-                if (viewModel?.LoadHistoryLinkCommand.CanExecute(link) == true) 
+                if (viewModel?.LoadHistoryLinkCommand.CanExecute(link) == true)
                 {
                     viewModel.LoadHistoryLinkCommand.Execute(link);
                 }

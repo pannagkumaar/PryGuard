@@ -5,7 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace PryGuard.Services.UI.Panel;
+namespace PryGuard.UI.Controls.Panels;
 /// <summary>
 /// Defines a flexible grid area that consists of columns and rows.
 /// Depending on the orientation, either the rows or the columns are auto-generated,
@@ -314,9 +314,9 @@ public class AutoGrid : Grid
         foreach (UIElement child in grid.Children)
         {
             if (grid.ChildHorizontalAlignment.HasValue)
-                child.SetValue(FrameworkElement.HorizontalAlignmentProperty, grid.ChildHorizontalAlignment);
+                child.SetValue(HorizontalAlignmentProperty, grid.ChildHorizontalAlignment);
             else
-                child.SetValue(FrameworkElement.HorizontalAlignmentProperty, DependencyProperty.UnsetValue);
+                child.SetValue(HorizontalAlignmentProperty, DependencyProperty.UnsetValue);
         }
     }
 
@@ -329,9 +329,9 @@ public class AutoGrid : Grid
         foreach (UIElement child in grid.Children)
         {
             if (grid.ChildMargin.HasValue)
-                child.SetValue(FrameworkElement.MarginProperty, grid.ChildMargin);
+                child.SetValue(MarginProperty, grid.ChildMargin);
             else
-                child.SetValue(FrameworkElement.MarginProperty, DependencyProperty.UnsetValue);
+                child.SetValue(MarginProperty, DependencyProperty.UnsetValue);
         }
     }
 
@@ -344,9 +344,9 @@ public class AutoGrid : Grid
         foreach (UIElement child in grid.Children)
         {
             if (grid.ChildVerticalAlignment.HasValue)
-                child.SetValue(FrameworkElement.VerticalAlignmentProperty, grid.ChildVerticalAlignment);
+                child.SetValue(VerticalAlignmentProperty, grid.ChildVerticalAlignment);
             else
-                child.SetValue(FrameworkElement.VerticalAlignmentProperty, DependencyProperty.UnsetValue);
+                child.SetValue(VerticalAlignmentProperty, DependencyProperty.UnsetValue);
         }
     }
 
@@ -365,15 +365,15 @@ public class AutoGrid : Grid
     {
         if (ChildMargin != null)
         {
-            child.SetIfDefault(FrameworkElement.MarginProperty, ChildMargin.Value);
+            child.SetIfDefault(MarginProperty, ChildMargin.Value);
         }
         if (ChildHorizontalAlignment != null)
         {
-            child.SetIfDefault(FrameworkElement.HorizontalAlignmentProperty, ChildHorizontalAlignment.Value);
+            child.SetIfDefault(HorizontalAlignmentProperty, ChildHorizontalAlignment.Value);
         }
         if (ChildVerticalAlignment != null)
         {
-            child.SetIfDefault(FrameworkElement.VerticalAlignmentProperty, ChildVerticalAlignment.Value);
+            child.SetIfDefault(VerticalAlignmentProperty, ChildVerticalAlignment.Value);
         }
     }
 
@@ -382,22 +382,22 @@ public class AutoGrid : Grid
     /// </summary>
     int Clamp(int value, int max)
     {
-        return (value > max) ? max : value;
+        return value > max ? max : value;
     }
 
     public void PerformLayout()
     {
         bool isVertical = Orientation == Orientation.Vertical;
 
-        if (_shouldReindex || (IsAutoIndexing &&
-            ((isVertical && _rowOrColumnCount != ColumnDefinitions.Count) ||
-            (!isVertical && _rowOrColumnCount != RowDefinitions.Count))))
+        if (_shouldReindex || IsAutoIndexing &&
+            (isVertical && _rowOrColumnCount != ColumnDefinitions.Count ||
+            !isVertical && _rowOrColumnCount != RowDefinitions.Count))
         {
             _shouldReindex = false;
 
             if (IsAutoIndexing)
             {
-                _rowOrColumnCount = (ColumnDefinitions.Count != 0) ? ColumnDefinitions.Count : RowDefinitions.Count;
+                _rowOrColumnCount = ColumnDefinitions.Count != 0 ? ColumnDefinitions.Count : RowDefinitions.Count;
                 if (_rowOrColumnCount == 0) _rowOrColumnCount = 1;
 
                 int cellCount = 0;
@@ -407,13 +407,13 @@ public class AutoGrid : Grid
                     {
                         continue;
                     }
-                    cellCount += (ColumnDefinitions.Count != 0) ? Grid.GetColumnSpan(child) : Grid.GetRowSpan(child);
+                    cellCount += ColumnDefinitions.Count != 0 ? GetColumnSpan(child) : GetRowSpan(child);
                 }
 
                 //  Update the number of rows/columns
                 if (ColumnDefinitions.Count != 0)
                 {
-                    var newRowCount = (int)Math.Ceiling((double)cellCount / (double)_rowOrColumnCount);
+                    var newRowCount = (int)Math.Ceiling(cellCount / (double)_rowOrColumnCount);
                     while (RowDefinitions.Count < newRowCount)
                     {
                         var rowDefinition = new RowDefinition();
@@ -427,7 +427,7 @@ public class AutoGrid : Grid
                 }
                 else // rows defined
                 {
-                    var newColumnCount = (int)Math.Ceiling((double)cellCount / (double)_rowOrColumnCount);
+                    var newColumnCount = (int)Math.Ceiling(cellCount / (double)_rowOrColumnCount);
                     while (ColumnDefinitions.Count < newColumnCount)
                     {
                         var columnDefinition = new ColumnDefinition();
@@ -457,75 +457,75 @@ public class AutoGrid : Grid
                     if (!isVertical) // horizontal (default)
                     {
                         var rowIndex = cellPosition / ColumnDefinitions.Count;
-                        Grid.SetRow(child, rowIndex);
+                        SetRow(child, rowIndex);
 
                         var columnIndex = cellPosition % ColumnDefinitions.Count;
-                        Grid.SetColumn(child, columnIndex);
+                        SetColumn(child, columnIndex);
 
-                        var rowSpan = Grid.GetRowSpan(child);
+                        var rowSpan = GetRowSpan(child);
                         if (rowSpan > 1)
                         {
                             Enumerable.Range(1, rowSpan).ToList()
                                 .ForEach(x => cellsToSkip.Enqueue(cellPosition + ColumnDefinitions.Count * x));
                         }
 
-                        var overrideRowHeight = AutoGrid.GetRowHeightOverride(child);
+                        var overrideRowHeight = GetRowHeightOverride(child);
                         if (overrideRowHeight != null)
                         {
                             RowDefinitions[rowIndex].Height = overrideRowHeight.Value;
                         }
 
-                        var overrideColumnWidth = AutoGrid.GetColumnWidthOverride(child);
+                        var overrideColumnWidth = GetColumnWidthOverride(child);
                         if (overrideColumnWidth != null)
                         {
                             ColumnDefinitions[columnIndex].Width = overrideColumnWidth.Value;
                         }
 
-                        cellPosition += Grid.GetColumnSpan(child);
+                        cellPosition += GetColumnSpan(child);
                     }
                     else
                     {
                         var rowIndex = cellPosition % RowDefinitions.Count;
-                        Grid.SetRow(child, rowIndex);
+                        SetRow(child, rowIndex);
 
                         var columnIndex = cellPosition / RowDefinitions.Count;
-                        Grid.SetColumn(child, columnIndex);
+                        SetColumn(child, columnIndex);
 
-                        var columnSpan = Grid.GetColumnSpan(child);
+                        var columnSpan = GetColumnSpan(child);
                         if (columnSpan > 1)
                         {
                             Enumerable.Range(1, columnSpan).ToList()
                                 .ForEach(x => cellsToSkip.Enqueue(cellPosition + RowDefinitions.Count * x));
                         }
 
-                        var overrideRowHeight = AutoGrid.GetRowHeightOverride(child);
+                        var overrideRowHeight = GetRowHeightOverride(child);
                         if (overrideRowHeight != null)
                         {
                             RowDefinitions[rowIndex].Height = overrideRowHeight.Value;
                         }
 
-                        var overrideColumnWidth = AutoGrid.GetColumnWidthOverride(child);
+                        var overrideColumnWidth = GetColumnWidthOverride(child);
                         if (overrideColumnWidth != null)
                         {
                             ColumnDefinitions[columnIndex].Width = overrideColumnWidth.Value;
                         }
 
-                        cellPosition += Grid.GetRowSpan(child);
+                        cellPosition += GetRowSpan(child);
                     }
                 }
 
                 // Set margin and alignment
                 if (ChildMargin != null)
                 {
-                    DependencyHelpers.SetIfDefault(child, FrameworkElement.MarginProperty, ChildMargin.Value);
+                    child.SetIfDefault(MarginProperty, ChildMargin.Value);
                 }
                 if (ChildHorizontalAlignment != null)
                 {
-                    DependencyHelpers.SetIfDefault(child, FrameworkElement.HorizontalAlignmentProperty, ChildHorizontalAlignment.Value);
+                    child.SetIfDefault(HorizontalAlignmentProperty, ChildHorizontalAlignment.Value);
                 }
                 if (ChildVerticalAlignment != null)
                 {
-                    DependencyHelpers.SetIfDefault(child, FrameworkElement.VerticalAlignmentProperty, ChildVerticalAlignment.Value);
+                    child.SetIfDefault(VerticalAlignmentProperty, ChildVerticalAlignment.Value);
                 }
             }
         }
@@ -533,19 +533,19 @@ public class AutoGrid : Grid
 
     public static readonly DependencyProperty ChildHorizontalAlignmentProperty =
         DependencyProperty.Register("ChildHorizontalAlignment", typeof(HorizontalAlignment?), typeof(AutoGrid),
-            new FrameworkPropertyMetadata((HorizontalAlignment?)null,
+            new FrameworkPropertyMetadata(null,
                 FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange,
                 new PropertyChangedCallback(OnChildHorizontalAlignmentChanged)));
 
     public static readonly DependencyProperty ChildMarginProperty =
         DependencyProperty.Register("ChildMargin", typeof(Thickness?), typeof(AutoGrid),
-            new FrameworkPropertyMetadata((Thickness?)null,
+            new FrameworkPropertyMetadata(null,
                 FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange,
                 new PropertyChangedCallback(OnChildMarginChanged)));
 
     public static readonly DependencyProperty ChildVerticalAlignmentProperty =
         DependencyProperty.Register("ChildVerticalAlignment", typeof(VerticalAlignment?), typeof(AutoGrid),
-            new FrameworkPropertyMetadata((VerticalAlignment?)null,
+            new FrameworkPropertyMetadata(null,
                 FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange,
                 new PropertyChangedCallback(OnChildVerticalAlignmentChanged)));
 
@@ -599,7 +599,7 @@ public class AutoGrid : Grid
     /// </returns>
     protected override Size MeasureOverride(Size constraint)
     {
-        this.PerformLayout();
+        PerformLayout();
         return base.MeasureOverride(constraint);
     }
 

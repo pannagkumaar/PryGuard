@@ -12,7 +12,7 @@
 	<UserControl.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="/Services/UI/Themes/DarkTheme.xaml" />
+				<ResourceDictionary Source="/UI/Themes/DarkTheme.xaml" />
 				<ResourceDictionary Source="/Services/UI/Styles/DrawImageStyles.xaml" />
 				<ResourceDictionary Source="/Services/UI/Styles/UIElementStyles.xaml" />
 			</ResourceDictionary.MergedDictionaries>

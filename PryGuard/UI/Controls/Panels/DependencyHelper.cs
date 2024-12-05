@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Windows;
 
-namespace PryGuard.Services.UI.Panel;
+namespace PryGuard.UI.Controls.Panels;
 /// <summary>
 /// Encapsulates methods for dealing with dependency objects and properties.
 /// </summary>

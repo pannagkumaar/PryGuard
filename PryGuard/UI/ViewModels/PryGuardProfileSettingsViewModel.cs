@@ -1,24 +1,25 @@
-﻿using PryGuard.Model;
+﻿using PryGuard.DataModels;
 using System.Windows;
-using PryGuard.Core.Web;
 using System.Windows.Media;
 using System.Threading.Tasks;
-using PryGuard.Services.Commands;
-using PryGuard.Core.ChromeApi.Model.Configs;
 using System.Windows.Input;
-using PryGuard.Core.ChromeApi.Settings;
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using PryGuard.View;
 
-using PryGuard.Services.Helpers;
-
 using System.Linq;
 
 using System.IO;
+using PryGuard.Resources.Commands;
+using PryGuard.Core.Browser.Settings;
+using PryGuard.Core.Network;
+using PryGuard.Resources.Helpers;
 
-namespace PryGuard.ViewModel;
+using PryGuard.Core.Browser.Model.Configs;
+using PryGuard.UI.Views;
+
+namespace PryGuard.UI.ViewModels;
 public class PryGuardProfileSettingsViewModel : BaseViewModel
 {
     #region Commands
@@ -167,7 +168,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     {
         // Find the profile by Id (if it exists) using FirstOrDefault in all cases
         var existingProfileTab = PryGuardProfilesVM.ProfileTabs.FirstOrDefault(tab => tab.Id == PryGuardProf.Id);
-        
+
         if (!string.IsNullOrEmpty(PryGuardProf.Proxy.ProxyAddress))
         {
             // Construct the proxy string conditionally based on authentication

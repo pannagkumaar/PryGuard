@@ -2,7 +2,7 @@
 using System.Windows.Data;
 using System.Globalization;
 
-namespace PryGuard.Services.UI.Converters;
+namespace PryGuard.UI.Converters;
 
 public class StringToIntParamConverter : IValueConverter
 {
@@ -17,7 +17,7 @@ public class StringToIntParamConverter : IValueConverter
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is bool isChecked )
+        if (value is bool isChecked)
         {
             if (isChecked)
             {

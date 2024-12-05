@@ -1,7 +1,8 @@
-﻿using PryGuard.Services.Helpers;
+﻿using PryGuard.DataModels;
+using PryGuard.Resources.Helpers;
 using System.Collections.Generic;
 
-namespace PryGuard.Core.ChromeApi.Model.Configs;
+namespace PryGuard.Core.Browser.Model.Configs;
 public class WebGLFactory
 {
     public static List<string> Vendors = new List<string>()
@@ -46,7 +47,7 @@ public class WebGLFactory
         return glSetting;
     }
 
-    public static WebGLSetting Generate(PryGuard.Model.Fingerprint fingerprint)
+    public static WebGLSetting Generate(Fingerprint fingerprint)
     {
         WebGLSetting.WebGlNoise noise = new WebGLSetting.WebGlNoise();
         noise.Index = (int)(FakeProfileFactory.GenerateRandomDouble() % 10);

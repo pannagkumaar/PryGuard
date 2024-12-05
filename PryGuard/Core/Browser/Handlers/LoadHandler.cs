@@ -1,7 +1,8 @@
 ﻿using System;
 using CefSharp;
+using PryGuard.Core.Browser;
 
-namespace PryGuard.Core.ChromeApi.Handlers;
+namespace PryGuard.Core.Browser.Handlers;
 
 /// <summary>
 /// Catches frame loading events

@@ -2,9 +2,9 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using PryGuard.ViewModel;
+using PryGuard.UI.ViewModels;
 
-namespace PryGuard.View
+namespace PryGuard.UI.Views
 {
     public partial class HistoryView : UserControl
     {

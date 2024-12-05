@@ -1,4 +1,4 @@
-﻿using PryGuard.Model;
+﻿using PryGuard.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PryGuard.View
+namespace PryGuard.UI.Views
 {
     public partial class ProfileSelectionWindow : Window
     {
@@ -35,7 +35,7 @@ namespace PryGuard.View
         }
         private void OnCloseButtonClick(object sender, MouseButtonEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
     }

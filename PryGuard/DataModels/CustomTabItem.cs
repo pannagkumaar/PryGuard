@@ -1,6 +1,6 @@
-﻿using PryGuard.Services.Commands;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System;
+using PryGuard.Resources.Commands;
 
 public class CustomTabItem : TabItem
 {

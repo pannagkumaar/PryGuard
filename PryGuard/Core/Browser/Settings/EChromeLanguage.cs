@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PryGuard.Core.ChromeApi.Settings
+namespace PryGuard.Core.Browser.Settings
 {
     public enum EChromeLanguage
     {
@@ -13,7 +13,7 @@ namespace PryGuard.Core.ChromeApi.Settings
         It,
         Kz,
     }
-    
+
     public static class EChromeLanguageExtensions
     {
         private static Random random = new Random();
@@ -37,6 +37,6 @@ namespace PryGuard.Core.ChromeApi.Settings
             return (EChromeLanguage)values.GetValue(index);
         }
 
-        
+
     }
 }

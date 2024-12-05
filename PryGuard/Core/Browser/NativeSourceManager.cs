@@ -4,9 +4,9 @@ using System.Windows;
 using System.Text.Json;
 using System.Windows.Resources;
 using System.Collections.Generic;
-using PryGuard.Core.ChromeApi.Model.Configs;
+using PryGuard.Core.Browser.Model.Configs;
 
-namespace PryGuard.Core.ChromeApi;
+namespace PryGuard.Core.Browser;
 
 public class NativeSourceManager
 {

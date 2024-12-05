@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-namespace PryGuard.Services.UI.ListView.ListViewItem;
+namespace PryGuard.UI.Controls.ListView.ListViewItem;
 
 public class ListViewItemProperties : DependencyObject
 {

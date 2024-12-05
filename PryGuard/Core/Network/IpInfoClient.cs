@@ -3,9 +3,9 @@ using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using PryGuard.Model;
+using PryGuard.DataModels;
 
-namespace PryGuard.Core.Web
+namespace PryGuard.Core.Network
 {
     /// <summary>
     /// Makes a request to a site that returns IP information (geolocation, time zone, etc.)

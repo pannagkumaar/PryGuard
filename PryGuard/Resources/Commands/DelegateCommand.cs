@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace PryGuard.Services.Commands;
+namespace PryGuard.Resources.Commands;
 public interface IDelegateCommand : ICommand
 {
     void RaiseCanExecuteChanged();
@@ -22,7 +22,7 @@ public class DelegateCommand : IDelegateCommand
     public DelegateCommand(Action<object> execute)
     {
         this.execute = execute;
-        this.canExecute = this.AlwaysCanExecute;
+        canExecute = AlwaysCanExecute;
     }
 
     public void Execute(object param)

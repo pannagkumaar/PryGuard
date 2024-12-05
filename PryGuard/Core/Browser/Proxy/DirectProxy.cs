@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PryGuard.Core.ChromeApi.Proxy;
+namespace PryGuard.Core.Browser.Proxy;
 public class DirectProxy : ChromeProxy
 {
     public override Dictionary<string, object> GetContextPreference()

@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace PryGuard.Services.UI.Converters
+namespace PryGuard.UI.Converters
 {
     public class EnumToComboBoxItemConverter : IValueConverter
     {

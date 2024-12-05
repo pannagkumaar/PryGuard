@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace PryGuard.Model;
+namespace PryGuard.DataModels;
 
 /// <summary>
 /// Fingerprint

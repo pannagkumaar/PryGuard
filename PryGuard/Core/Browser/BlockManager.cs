@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 using System.Threading;
 using CefSharp;
-using PryGuard.Services.Helpers.Annotations;
+using PryGuard.Resources.Helpers.Annotations;
 
-namespace PryGuard.Core.ChromeApi
+namespace PryGuard.Core.Browser
 {
     /// <summary>
     /// Used to block requests to specific domains.

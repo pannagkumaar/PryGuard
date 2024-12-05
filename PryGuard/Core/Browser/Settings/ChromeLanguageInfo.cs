@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace PryGuard.Core.ChromeApi.Settings;
+namespace PryGuard.Core.Browser.Settings;
 public class ChromeLanguageInfo
 {
     [JsonPropertyName("Language")]

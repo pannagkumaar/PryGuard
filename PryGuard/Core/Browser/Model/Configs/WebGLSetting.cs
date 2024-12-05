@@ -4,7 +4,8 @@ using System.Text.Json.Serialization;
 using System.Runtime.CompilerServices;
 
 using System.Diagnostics;
-namespace PryGuard.Core.ChromeApi.Model.Configs;
+
+namespace PryGuard.Core.Browser.Model.Configs;
 public class WebGLSetting
 {
     public static int UNMASKED_VENDOR = 37445;
@@ -46,7 +47,7 @@ public class WebGLSetting
         get => Status == WebGlStatus.NOISE;
         set
         {
-            Status = (value ? WebGlStatus.NOISE : WebGlStatus.OFF);
+            Status = value ? WebGlStatus.NOISE : WebGlStatus.OFF;
             OnPropertyChanged(nameof(HideWebGL));
         }
     }

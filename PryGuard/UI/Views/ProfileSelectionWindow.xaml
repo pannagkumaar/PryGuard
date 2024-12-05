@@ -1,4 +1,4 @@
-﻿<Window x:Class="PryGuard.View.ProfileSelectionWindow"
+﻿<Window x:Class="PryGuard.UI.Views.ProfileSelectionWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="http://schemas.microsoft.com/expression/interaction"

@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 
-namespace PryGuard.Services.Commands;
+namespace PryGuard.Resources.Commands;
 public class RelayCommand : ICommand
 {
     #region Fields

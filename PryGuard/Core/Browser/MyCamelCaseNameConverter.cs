@@ -2,7 +2,7 @@
 using System.Reflection;
 using CefSharp.JavascriptBinding;
 
-namespace PryGuard.Core.ChromeApi;
+namespace PryGuard.Core.Browser;
 public sealed class MyCamelCaseNameConverter : IJavascriptNameConverter
 {
     /// <summary>

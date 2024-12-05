@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 
 
-namespace PryGuard.Core.ChromeApi.Model.Configs
+namespace PryGuard.Core.Browser.Model.Configs
 {
     public class WebRTCSettings : INotifyPropertyChanged
     {

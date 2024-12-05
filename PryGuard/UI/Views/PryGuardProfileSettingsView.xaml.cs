@@ -1,9 +1,10 @@
-﻿using PryGuard.Core.ChromeApi.Settings;
-using PryGuard.ViewModel;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System;
 using System.Diagnostics;
-using PryGuard.Core.ChromeApi.Model.Configs;
+using PryGuard.Core.Browser.Settings;
+using PryGuard.UI.Views;
+using PryGuard.Core.Browser.Model.Configs;
+using PryGuard.UI.ViewModels;
 
 namespace PryGuard.View
 {

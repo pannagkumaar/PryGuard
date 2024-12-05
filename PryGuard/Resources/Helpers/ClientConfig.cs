@@ -3,7 +3,7 @@ using System.IO;
 using System.Security.Principal;
 using System.Security.AccessControl;
 
-namespace PryGuard.Services.Helpers;
+namespace PryGuard.Resources.Helpers;
 
 public static class ClientConfig
 {

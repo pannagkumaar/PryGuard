@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PryGuard.Core.ChromeApi.Proxy;
+namespace PryGuard.Core.Browser.Proxy;
 public class ChromeProxy
 {
     private readonly EProxyType _proxyType;

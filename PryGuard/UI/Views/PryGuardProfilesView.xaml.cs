@@ -1,9 +1,10 @@
-﻿using PryGuard.Model;
-using PryGuard.ViewModel;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Input;
 using System;
+using PryGuard.UI.Views;
+using PryGuard.DataModels;
+using PryGuard.UI.ViewModels;
 
 namespace PryGuard.View
 {
