@@ -42,8 +42,8 @@ public class WebGLFactory
         noise.Difference = FakeProfileFactory.GenerateRandomDouble() * 0.00001;
         WebGLSetting glSetting = new(noise);
         glSetting.Status = WebGLSetting.WebGlStatus.NOISE;
-        glSetting.Params.Add(WebGLSetting.UNMASKED_VENDOR, new WebGLParam(WebGLSetting.UNMASKED_VENDOR, Vendors.GetRandValue()));
-        glSetting.Params.Add(WebGLSetting.UNMASKED_RENDERER, new WebGLParam(WebGLSetting.UNMASKED_RENDERER, Renderers.GetRandValue()));
+        glSetting.Params.Add(WebGLSetting.UNMASKED_VENDOR, new WebGLParam(WebGLSetting.UNMASKED_VENDOR, Vendors.GetRandomValue()));
+        glSetting.Params.Add(WebGLSetting.UNMASKED_RENDERER, new WebGLParam(WebGLSetting.UNMASKED_RENDERER, Renderers.GetRandomValue()));
         return glSetting;
     }
 

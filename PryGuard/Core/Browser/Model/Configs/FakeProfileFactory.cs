@@ -329,19 +329,19 @@ public class FakeProfileFactory
 
     public static FakeProfile Generate()
     {
-        bool isX64 = RandomNumber.Between(0, 2) == 0;
+        bool isX64 = RandomHelper.GenerateRandomNumber(0, 2) == 0;
         FakeProfile result = new FakeProfile()
         {
-            BrowserTypeType = GetAllEnumValues<BrowserType>(typeof(BrowserType)).GetRandValue(),
-            OsVersion = GetAllEnumValues<OSVersion>(typeof(OSVersion)).GetRandValue(),
+            BrowserTypeType = GetAllEnumValues<BrowserType>(typeof(BrowserType)).GetRandomValue(),
+            OsVersion = GetAllEnumValues<OSVersion>(typeof(OSVersion)).GetRandomValue(),
             IsX64 = isX64
         };
         result.IsSendDoNotTrack = true;
         result.HideCanvas = true;
         result.UserAgent = GenerateUserAgent(result);
-        result.CpuConcurrency = CpuConcurrency.GetRandValue();
+        result.CpuConcurrency = CpuConcurrency.GetRandomValue();
         result.MemoryAvailable = result.CpuConcurrency != 12
-            ? MemoryAvailable.Where(x => x >= result.CpuConcurrency).ToList().GetRandValue()
+            ? MemoryAvailable.Where(x => x >= result.CpuConcurrency).ToList().GetRandomValue()
             : 8;
         result.CanvasFingerPrintHash =
             GetMd5Hash(result.UserAgent + DateTime.Now.ToString(CultureInfo.InvariantCulture));
@@ -381,7 +381,7 @@ public class FakeProfileFactory
         int int32 = Convert.ToInt32(count * 0.6);
         for (int index = 0; index < list.Count; ++index)
         {
-            if (RandomNumber.Between(0, count) < int32)
+            if (RandomHelper.GenerateRandomNumber(0, count) < int32)
                 source.Add(list[index]);
         }
 
@@ -390,17 +390,17 @@ public class FakeProfileFactory
 
     public static double GenerateRandomDouble()
     {
-        return RandomNumber.Between(1000, 9999) * 0.0001;
+        return RandomHelper.GenerateRandomNumber(1000, 9999) * 0.0001;
     }
 
     public static double GenerateRandomDouble(int from, int to)
     {
-        return RandomNumber.Between(from, to);
+        return RandomHelper.GenerateRandomNumber(from, to);
     }
 
     public static int GenerateRandomInt(int from, int to)
     {
-        return RandomNumber.Between(from, to);
+        return RandomHelper.GenerateRandomNumber(from, to);
     }
 
     public static string GenerateUserAgent(FakeProfile fakeProfile)
@@ -412,7 +412,7 @@ public class FakeProfileFactory
             baseUserAgent = "Mozilla/5.0 (" +
                 GetOSInfo(fakeProfile.OsVersion, fakeProfile.IsX64) +
                 ") AppleWebKit/537.36 (KHTML, like Gecko) Chrome/" +
-                ChromeBuildVersion.GetRandValue() +
+                ChromeBuildVersion.GetRandomValue() +
                 " Safari/537.36";
         }
         else
@@ -420,7 +420,7 @@ public class FakeProfileFactory
             baseUserAgent = "Mozilla/5.0 (" +
                GetOSInfo(fakeProfile.OsVersion, fakeProfile.IsX64) +
                ") AppleWebKit/537.36 (KHTML, like Gecko) Chrome/" +
-               ChromeBuildVersionWin_7_8_81.GetRandValue() +
+               ChromeBuildVersionWin_7_8_81.GetRandomValue() +
                " Safari/537.36";
         }
 
@@ -461,7 +461,7 @@ public class FakeProfileFactory
     private static double GenerateBaseLatencyValue()
     {
         return double.Parse(
-            string.Format("0,1{0}{1}{2}", RandomNumber.Between(0, 3), RandomNumber.Between(0, 99999),
-                RandomNumber.Between(0, 9999999)), CultureInfo.GetCultureInfo("ru-Ru"));
+            string.Format("0,1{0}{1}{2}", RandomHelper.GenerateRandomNumber(0, 3), RandomHelper.GenerateRandomNumber(0, 99999),
+                RandomHelper.GenerateRandomNumber(0, 9999999)), CultureInfo.GetCultureInfo("ru-Ru"));
     }
 }
