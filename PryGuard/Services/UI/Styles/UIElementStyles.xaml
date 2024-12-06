@@ -1,0 +1,1245 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vm="clr-namespace:PryGuard.ViewModel"
+                    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+                    xmlns:panel="clr-namespace:PryGuard.Services.UI.Panel"
+                    xmlns:listViewItemAttached="clr-namespace:PryGuard.Services.UI.ListView.ListViewItem"
+                    xmlns:textBoxAttached="clr-namespace:PryGuard.Services.UI.TextBox">
+
+    <Color x:Key="ThemeColorDarkGrayRed" A="255" R="85" G="33" B="33"/>
+    <SolidColorBrush
+    Color="{DynamicResource ThemeColorDarkGrayRed}"
+    x:Key="ThemeBrushDarkGrayBlue"/>
+
+    <Color x:Key="ThemeColorLightRed" A="255" R="195" G="94" B="94"/>
+    <SolidColorBrush
+    Color="{DynamicResource ThemeColorLightRed}"
+    x:Key="ThemeBrushLightBlue"/>
+
+    <Color x:Key="ThemeColorRed" A="255" R="254" G="128" B="129"/>
+    <SolidColorBrush
+    Color="{DynamicResource ThemeColorRed}"
+    x:Key="ThemeBrushRed"/>
+
+    <Color x:Key="ThemeColorBlue" A="255" R="93" G="52" B="52"/>
+    <SolidColorBrush
+    Color="{DynamicResource ThemeColorBlue}"
+    x:Key="ThemeBrushBlue"/>
+
+    <Color x:Key="ThemeColorGreen" A="255" R="112" G="202" B="112"/>
+    <SolidColorBrush
+    Color="{DynamicResource ThemeColorGreen}"
+    x:Key="ThemeBrushGreen"/>
+
+    <Color x:Key="ThemeColorYellow" A="255" R="255" G="255" B="0"/>
+    <SolidColorBrush
+    Color="{DynamicResource ThemeColorYellow}"
+    x:Key="ThemeBrushYellow"/>
+
+    <Color x:Key="ThemeColorGlowRed" A="255" R="183" G="112" B="112"/>
+    <SolidColorBrush
+    Color="{DynamicResource ThemeColorGlowRed}"
+    x:Key="ThemeBrushGlowBlue"/>
+
+    <Color x:Key="BitGray" A="255" R="240" G="240" B="240"/>
+    <SolidColorBrush
+    Color="{StaticResource BitGray}"
+    x:Key="ThemeBrushGray"/>
+
+    <LinearGradientBrush x:Key="ThemeGradientPinkToOrange" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#b31504" />
+        <GradientStop Offset="1" Color="#781e02" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ThemeGradientPastlePinkToOrange" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="#FFD1DC" />
+        <GradientStop Offset="1" Color="#FF964F" />
+    </LinearGradientBrush>
+
+    <!--#endregion-->
+    
+    <!--#region Line-->
+    <Style x:Key="ProfileSettingsSummaryLine" TargetType="Line">
+        <Setter Property="VerticalAlignment" Value="Bottom"/>
+        <Setter Property="Stroke" Value="#393939"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+        <Setter Property="X1" Value="10"/>
+        <Setter Property="X2" Value="300"/>
+    </Style>
+    <!--#endregion-->
+    
+    <!--#region TabItem-->
+    <Style TargetType="TabItem">
+        <Setter Property="Visibility" Value="Collapsed"/>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region Border-->
+    <Style x:Key="BorderForBrowserButtons" TargetType="Border">
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="20"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="Border.MouseEnter">
+                <EventTrigger.Actions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation 
+                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                To="#808080" Duration="0:0:0.1"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger.Actions>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="Border.MouseLeave">
+                <EventTrigger.Actions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation 
+                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                To="#00FFFFFF" Duration="0:0:0.1"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger.Actions>
+            </EventTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="BorderForWinButtons" TargetType="Border" BasedOn="{StaticResource BorderForBrowserButtons}">
+        <Setter Property="CornerRadius" Value="0"/>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region RadioButton-->
+    <!--<Style x:Key="ThemeRadioBSettingsMainTheme" TargetType="RadioButton">
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Width" Value="80"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border
+                        x:Name="btnForChangeBack"
+                        Background="#1E1E1E"
+                        BorderBrush="#333333"
+                        BorderThickness="1">
+                        <Grid>
+                            <TextBlock 
+                                FontSize="10"
+                                Padding="20,0,20,0"
+                                Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                                AncestorType={x:Type RadioButton}},Path=Content}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Foreground="#f04441"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation 
+                                            Storyboard.TargetName="btnForChangeBack"
+                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                            To="#2e1c1c" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation 
+                                            Storyboard.TargetName="btnForChangeBack"
+                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                            To="#1E1E1E" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation 
+                                            Storyboard.TargetName="btnForChangeBack"
+                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                            To="#441e1e" Duration="0:0:0.1"/>
+                                        <ColorAnimation 
+                                            AutoReverse="True"
+                                            Storyboard.TargetName="btnForChangeBack"
+                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                            To="#5c2828" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard FillBehavior="Stop">
+                                        <ColorAnimation 
+                                            Storyboard.TargetName="btnForChangeBack"
+                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                            To="#1E1E1E" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>-->
+    <Style x:Key="ThemeRadioBSettingsMainTheme" TargetType="RadioButton">
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Width" Value="79.2"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        
+        <!-- Adds space between buttons -->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border
+                x:Name="btnForChangeBack"
+                Background="#1E1E1E"
+                BorderBrush="#3C3C3C"
+                BorderThickness="1.5"
+                CornerRadius="3">
+                        <Grid>
+                            <TextBlock 
+                        FontSize="10"
+                        Padding="0"
+                        Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                        AncestorType={x:Type RadioButton}},Path=Content}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Foreground="#f04441"
+                        FontWeight="Bold"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <!-- Hover Effect -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation 
+                                    Storyboard.TargetName="btnForChangeBack"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    To="#2e1c1c" Duration="0:0:0.2"/>
+                                        <ColorAnimation 
+                                    Storyboard.TargetName="btnForChangeBack"
+                                    Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                    To="#f04441" Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation 
+                                    Storyboard.TargetName="btnForChangeBack"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    To="#1E1E1E" Duration="0:0:0.2"/>
+                                        <ColorAnimation 
+                                    Storyboard.TargetName="btnForChangeBack"
+                                    Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                    To="#333333" Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <!-- Checked Effect -->
+                        <Trigger Property="IsChecked" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation 
+                                    Storyboard.TargetName="btnForChangeBack"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    To="#441e1e" Duration="0:0:0.2"/>
+                                        <ColorAnimation 
+                                    AutoReverse="True"
+                                    Storyboard.TargetName="btnForChangeBack"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    To="#5c2828" Duration="0:0:0.2"/>
+                                        <ColorAnimation 
+                                    Storyboard.TargetName="btnForChangeBack"
+                                    Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                    To="#f04441" Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard FillBehavior="Stop">
+                                        <ColorAnimation 
+                                    Storyboard.TargetName="btnForChangeBack"
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    To="#1E1E1E" Duration="0:0:0.2"/>
+                                        <ColorAnimation 
+                                    Storyboard.TargetName="btnForChangeBack"
+                                    Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                    To="#333333" Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region Button-->
+    <Style x:Key="ThemeButtonProfilesWork" TargetType="Button">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Width" Value="256"/>
+        <Setter Property="Height" Value="56"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border  Background="{TemplateBinding Background}" BorderThickness="1" CornerRadius="5">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="Button.MouseEnter">
+                <EventTrigger.Actions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation
+                            Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                            Duration="0:0:0.1" To="White"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger.Actions>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="Button.MouseLeave">
+                <EventTrigger.Actions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation 
+                            Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                            Duration="0:0:0.1" To="Transparent"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger.Actions>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="Button.Click">
+                <EventTrigger.Actions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation 
+                            Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                            Duration="0:0:0.1" AutoReverse="True"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger.Actions>
+            </EventTrigger>
+        </Style.Triggers>
+    </Style>
+    
+    <Style x:Key="ButtonEnableDisableProfileStyle" TargetType="Button">
+        <Setter Property="Background" Value="#1E1E1E"/>
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Width" Value="55"/>
+        <Setter Property="Foreground" Value="Green"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        x:Name="btnForChangeBack"
+                        Background="{TemplateBinding Background}"
+                        BorderThickness="1 1 1 1" CornerRadius="3"
+                        BorderBrush="Green">
+                        <Grid>
+                            <TextBlock 
+                                Text="{TemplateBinding Content}"
+                                HorizontalAlignment="Center" VerticalAlignment="Center"
+                                TextWrapping="Wrap" TextAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation 
+                                            Storyboard.TargetName="btnForChangeBack"
+                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                            To="#343c34" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation 
+                                            Storyboard.TargetName="btnForChangeBack"
+                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                            To="#1E1E1E" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsMouseCaptured" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation 
+                                            Storyboard.TargetName="btnForChangeBack"
+                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                            To="DarkGreen" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation 
+                                            Storyboard.TargetName="btnForChangeBack"
+                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                            To="#1E1E1E" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="LatchesBrowserStyle" TargetType="Button">
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Height" Value="24"/>
+        <Setter Property="MinWidth" Value="1"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Margin" Value="7,0,0,0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border 
+                        Background="{TemplateBinding Background}"
+                        BorderThickness="1 0 0 0" CornerRadius="5">
+                        <Grid>
+                            <TextBlock 
+                                Text="{TemplateBinding Content}"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                TextAlignment="Left"
+                                Foreground="White"
+                                Padding="5,0,5,0"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="Button.MouseEnter">
+                <EventTrigger.Actions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation 
+                                Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                                To="#808080" Duration="0:0:0.1"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger.Actions>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="Button.MouseLeave">
+                <EventTrigger.Actions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation 
+                                Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                                To="#00FFFFFF" Duration="0:0:0.1"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger.Actions>
+            </EventTrigger>
+        </Style.Triggers>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region Label-->
+    <Style TargetType="Label">
+        <Setter Property="Background" Value="#35363A"/>
+        <Setter Property="MaxWidth" Value="238"/>
+        <Setter Property="MinWidth" Value="15"/>
+        <Setter Property="Height" Value="35"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Margin" Value="5,15,0,-4"/>
+        <Setter Property="panel:AutoStackPanel.Fill" Value="Fill"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Label">
+                    <Border 
+                        Background="{TemplateBinding Background}"
+                        BorderThickness="1 0 0 0" CornerRadius="5">
+                        <Grid>
+                            <TextBlock 
+                                Text="{TemplateBinding Content}"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                TextAlignment="Left"
+                                Margin="20,0,40,0"/>
+
+                            <StackPanel
+                                Height="20"
+                                Width="14"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Margin="0,0,5,0">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                                        <i:InvokeCommandAction 
+                                            Command="{Binding CloseTabCommand}" 
+                                            PassEventArgsToCommand="True" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <Border Style="{StaticResource BorderForBrowserButtons}">
+                                    <TextBlock 
+                                        Width="6" Height="13" 
+                                        Margin="0,-3,0,3" 
+                                        Text="x"
+                                        Tag="{Binding RelativeSource={RelativeSource AncestorType={x:Type Label}}, Path=Tag}"/>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region ContextMenu-->
+    <Style x:Key="ThemeMenuItem" TargetType="{x:Type MenuItem}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type MenuItem}">
+                    <Border Background="{TemplateBinding Background}">
+                        <Grid>
+                            <ContentPresenter Content="{TemplateBinding Header}" Margin="5"/>
+                            <Border HorizontalAlignment="Left" Width="2"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="MenuItem.IsHighlighted" Value="True">
+                            <Setter Property="Panel.Background" Value="#3F4042"/>
+                            <Setter Property="TextElement.Foreground" Value="White"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ThemeContextMenu" TargetType="{x:Type ContextMenu}">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="TextElement.Foreground" Value="White"/>
+        <Setter Property="TextElement.FontSize" Value="13"/>
+        <Setter Property="Grid.IsSharedSizeScope" Value="true"/>
+        <Setter Property="HasDropShadow" Value="True"/>
+        <Setter Property="Width" Value="402"/>
+        <Setter Property="Height" Value="272"/>
+        <Setter Property="Placement" Value="MousePoint"/>
+        <Setter Property="HorizontalOffset" Value="-410"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ContextMenu}">
+                    <Grid>
+                        <Border 
+                            x:Name="Border" 
+                            Background="#35363A"
+                            BorderBrush="#3F3F3F"
+                            BorderThickness="1">
+                            <StackPanel
+                                IsItemsHost="True"
+                                KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="HasDropShadow" Value="true">
+                            <Setter TargetName="Border" Property="Padding" Value="0"/>
+                            <Setter TargetName="Border" Property="CornerRadius" Value="5"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                   
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region ToolTip-->
+    <Style TargetType="ToolTip">
+        <Setter Property="Background" Value="{x:Null}"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Foreground" Value="#f04441"/>
+        <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="ToolTipService.InitialShowDelay" Value="1"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToolTip">
+                    <Border
+                        Background="{StaticResource ThemeBrushDarkGrayBlue}" 
+                        CornerRadius="3" 
+                        BorderThickness="1"
+                        BorderBrush="#B32321">
+                        <Grid Margin="4">
+                            <ContentPresenter VerticalAlignment="Top" Grid.Row="1"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region ScrollBar-->
+    <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid x:Name="Grid">
+                        <Rectangle
+                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                            Width="Auto" Height="Auto"
+                            Fill="Transparent"/>
+                        <Border 
+                            x:Name="Rectangle1"
+                            CornerRadius="10 0 0 10"
+                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                            Width="Auto" Height="Auto" 
+                            Background="{TemplateBinding Background}"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Tag" Value="Horizontal">
+                            <Setter TargetName="Rectangle1" Property="Width" Value="Auto"/>
+                            <Setter TargetName="Rectangle1" Property="Height" Value="7"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ScrollBar}">
+        <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+        <Setter Property="Foreground" Value="{StaticResource ThemeBrushBlue}"/>
+        <Setter Property="Background" Value="DarkGray"/>
+        <Setter Property="Width" Value="10"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollBar}">
+                    <Grid x:Name="GridRoot" Width="10" Background="{x:Null}">
+                        <Track
+                            x:Name="PART_Track" Grid.Row="0"
+                            IsDirectionReversed="true"  Focusable="False">
+                            <Track.Thumb>
+                                <Thumb 
+                                    x:Name="Thumb"
+                                    Background="{TemplateBinding Foreground}" 
+                                    Style="{DynamicResource ScrollThumbs}"/>
+                            </Track.Thumb>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton
+                                    x:Name="PageUp"
+                                    Command="ScrollBar.PageDownCommand"
+                                    Opacity="0" Focusable="False"/>
+                            </Track.IncreaseRepeatButton>
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton
+                                    x:Name="PageDown"
+                                    Command="ScrollBar.PageUpCommand"
+                                    Opacity="0" Focusable="False"/>
+                            </Track.DecreaseRepeatButton>
+                        </Track>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger SourceName="Thumb" Property="IsMouseOver" Value="true">
+                            <Setter 
+                                Value="{DynamicResource ButtonSelectBrush}" 
+                                TargetName="Thumb" Property="Background"/>
+                        </Trigger>
+
+                        <Trigger SourceName="Thumb" Property="IsDragging" Value="true">
+                            <Setter
+                                Value="{DynamicResource DarkBrush}"
+                                TargetName="Thumb" Property="Background"/>
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter 
+                                TargetName="Thumb" 
+                                Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+
+                        <Trigger Property="Orientation" Value="Horizontal">
+                            <Setter TargetName="GridRoot" Property="LayoutTransform">
+                                <Setter.Value>
+                                    <RotateTransform Angle="-90"/>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter TargetName="PART_Track" Property="LayoutTransform">
+                                <Setter.Value>
+                                    <RotateTransform Angle="-90"/>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Width" Value="Auto"/>
+                            <Setter Property="Height" Value="12"/>
+                            <Setter TargetName="Thumb" Property="Tag" Value="Horizontal"/>
+                            <Setter TargetName="PageDown" Property="Command" Value="ScrollBar.PageLeftCommand"/>
+                            <Setter TargetName="PageUp" Property="Command" Value="ScrollBar.PageRightCommand"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region TextBlock-->
+    <Style x:Key="ProfileSettingsSummary" TargetType="TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Padding" Value="0,10,0,10"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <Style x:Key="ThemeTextBlock" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="25"/>
+        <Setter Property="FontFamily" Value="Verdana"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect
+                    ShadowDepth="0" BlurRadius="10"
+                    Color="Black" Opacity="0.5"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region ToggleButton-->
+    <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="20"/>
+            </Grid.ColumnDefinitions>
+            <Border 
+            x:Name="Border" 
+            CornerRadius="3" 
+            BorderThickness="1" 
+            Grid.ColumnSpan="2"
+            Background="#80AB1B19"
+            BorderBrush="{DynamicResource ThemeGradientPinkToOrange}"/>
+            <Border 
+            Grid.Column="0"
+            Margin="1" 
+            BorderThickness="0,0,1,0" 
+            CornerRadius="6"
+            Background="#40AB1B19" 
+            BorderBrush="#60AB1B19"/>
+            <Path 
+            x:Name="Arrow" 
+            Grid.Column="1"     
+            Fill="{DynamicResource ThemeBrushLightBlue}"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Data="M0,0 L0,2 L4,6 L8,2 L8,0 L4,4 z"/>
+        </Grid>
+
+        <ControlTemplate.Triggers>
+            
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Border" Property="Background" Value="#90B32321"/>
+                
+                <Setter TargetName="Border" Property="BorderBrush" Value="#B32321"/>
+                
+                <Setter TargetName="Arrow" Property="Fill" Value="#450909"/>
+                
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Border" Property="Background" Value="Gray"/>
+                <Setter TargetName="Arrow" Property="Fill" Value="DarkGray"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="ComboBoxBrowserToggleButton" TargetType="{x:Type ToggleButton}">
+        <Grid>
+            <Border Height="22" Width="22" Style="{StaticResource BorderForBrowserButtons}">
+                <Image 
+                    Margin="-8,0,0,0"
+                    Width="13" Height="16"
+                    Source="{StaticResource DotsBrowserImage}"/>
+            </Border>
+        </Grid>
+    </ControlTemplate>
+    <!--#endregion-->
+
+    <!--#region ComboBox-->
+    <ControlTemplate x:Key="ComboBoxTextBox" TargetType="{x:Type TextBox}">
+        <Border
+            x:Name="PART_ContentHost"
+            Focusable="False" 
+            Background="{TemplateBinding Background}"/>
+    </ControlTemplate>
+
+    <Style x:Key="ThemeCombobox" TargetType="{x:Type ComboBox}">
+        <Setter Property="SnapsToDevicePixels" Value="true"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Height" Value="25"/>
+        <Setter Property="Margin" Value="10,0,10,0"/>
+        <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
+        <Setter Property="MinWidth" Value="20"/>
+        <Setter Property="MinHeight" Value="20"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ComboBox}">
+                    <Grid>
+                        <!-- ToggleButton for dropdown -->
+                        <ToggleButton 
+                        Name="ToggleButton" 
+                        Template="{StaticResource ComboBoxToggleButton}" 
+                        Grid.Column="2" 
+                        Focusable="false" 
+                        ClickMode="Press"
+                        IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay,
+                        RelativeSource={RelativeSource TemplatedParent}}"
+                        Background="#1e1e1e"
+                        BorderBrush="#f04441"
+                        BorderThickness="1"/>
+
+                        <!-- Content presenter -->
+                        <ContentPresenter 
+                        Name="ContentSite"
+                        IsHitTestVisible="False" 
+                        Content="{TemplateBinding SelectionBoxItem}"
+                        ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                        ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                        Margin="5,3,23,3"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                    />
+
+                        <!-- Editable TextBox when ComboBox is in edit mode -->
+                        <TextBox 
+                        x:Name="PART_EditableTextBox"
+                        Style="{x:Null}" 
+                        Template="{StaticResource ComboBoxTextBox}" 
+                        HorizontalAlignment="Left" 
+                        VerticalAlignment="Center" 
+                        Margin="3,3,23,3"
+                        Focusable="True" 
+                        Visibility="Hidden"
+                        IsReadOnly="{TemplateBinding IsReadOnly}"/>
+
+                        <!-- Popup for dropdown content -->
+                        <Popup 
+                        Name="Popup"
+                        Placement="Bottom"
+                        IsOpen="{TemplateBinding IsDropDownOpen}"
+                        AllowsTransparency="True" 
+                        Focusable="False"
+                        PopupAnimation="Slide">
+                            <Grid
+                            Name="DropDown"
+                            SnapsToDevicePixels="True"                
+                            MinWidth="{TemplateBinding ActualWidth}"
+                            MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                <Border 
+                                x:Name="DropDownBorder"
+                                Background="#1e1e1e"
+                                BorderThickness="1"
+                                BorderBrush="#f04441"
+                                CornerRadius="5"/>
+                                <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                    <StackPanel
+                                    IsItemsHost="True"
+                                    KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                </ScrollViewer>
+                            </Grid>
+                        </Popup>
+                    </Grid>
+
+                    <!-- ControlTemplate Triggers for different states -->
+                    <ControlTemplate.Triggers>
+                        <!-- When ComboBox is empty -->
+                        <Trigger Property="HasItems" Value="false">
+                            <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
+                        </Trigger>
+
+                        <!-- When ComboBox is disabled -->
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Foreground" Value="#888"/>
+                        </Trigger>
+
+                        <!-- When ComboBox is editable -->
+                        <Trigger Property="IsEditable" Value="true">
+                            <Setter Property="IsTabStop" Value="false"/>
+                            <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+                        </Trigger>
+
+                        <!-- Hover effect for ComboBox button -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ToggleButton" Property="Background" Value="#2e1c1c"/>
+                            <Setter TargetName="ToggleButton" Property="BorderBrush" Value="#f04441"/>
+                        </Trigger>
+
+                        <!-- Checked effect for dropdown open -->
+                        <Trigger Property="IsDropDownOpen" Value="True">
+                            <Setter TargetName="DropDownBorder" Property="Background" Value="#441e1e"/>
+                            <Setter TargetName="DropDownBorder" Property="BorderBrush" Value="#f04441"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <!--#endregion-->
+
+    <!--#region TextBox-->
+    <Style x:Key="ThemeTextbox" TargetType="TextBox">
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Margin" Value="10,0,10,0"/>
+        <Setter Property="Height" Value="22"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="5,0,0,0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Grid SnapsToDevicePixels="True">
+                        <Border 
+                        x:Name="root" 
+                        CornerRadius="3"
+                        Background="#60AB1B19" 
+                        BorderBrush="#f04441"
+                        BorderThickness="1">
+                            <Grid>
+                                <TextBlock 
+                                x:Name="PlaceholderTb" 
+                                Margin="5,0,0,0" 
+                                Text="{TemplateBinding Tag}" 
+                                VerticalAlignment="Center"
+                                Visibility="Visible" 
+                                Foreground="Gray"/>
+                            <ScrollViewer 
+                                x:Name="PART_ContentHost"
+                                TextElement.Foreground="White" 
+                                Background="{x:Null}"/>
+                        </Grid>
+                        </Border>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        
+                        <Trigger Property="Text" Value="">
+                            <Setter TargetName="PlaceholderTb" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="Text" Value="{x:Null}">
+                            <Setter TargetName="PlaceholderTb" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="DimGray"/>
+                        </Trigger>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter Property="Background" TargetName="root" Value="#70f04441"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" TargetName="root" Value="#90890505"/>
+                            <Setter Property="BorderBrush" TargetName="root" Value="#DD3835"/>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter Property="Background" TargetName="root" Value="#890505"/>
+                            <Setter Property="BorderBrush" TargetName="root" Value="#DD3835"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+
+
+
+
+
+
+
+    <Style x:Key="ThemeTextBoxInHistoryItem" TargetType="{x:Type TextBox}">
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Height" Value="22"/>
+        <Setter Property="MaxLength" Value="100"/>
+        <Setter Property="CaretBrush" Value="Transparent"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <Grid SnapsToDevicePixels="True">
+                        <Border 
+                            x:Name="root" CornerRadius="3"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            BorderThickness="1">
+                            <Grid>
+                                <ScrollViewer x:Name="PART_ContentHost"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region ListView-->
+    <Style x:Key="ThemeListViewItemBrowserHistory" TargetType="ListViewItem">
+        <Setter Property="SnapsToDevicePixels" Value="true"/>
+        <Setter Property="TextElement.Foreground" Value="White"/>
+        <Setter Property="TextElement.FontSize" Value="13"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListViewItem">
+                    <Border
+                        Name="Border"
+                        Background="Transparent"
+                        Padding="7"
+                        SnapsToDevicePixels="True">
+                        <WrapPanel
+                            IsItemsHost="False"
+                            MinHeight="17"
+                            HorizontalAlignment="Stretch"
+                            Orientation="Horizontal">
+                            <TextBox
+                                Style="{StaticResource ThemeTextBoxInHistoryItem}"
+                                Margin="60,0,70,0"
+                                Cursor="Arrow"
+                                Foreground="#5d6165"
+                                Text="{Binding Path=(listViewItemAttached:ListViewItemProperties.TimeHistory),
+                                RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListViewItem}}}"/>
+                            <TextBox
+                                Style="{StaticResource ThemeTextBoxInHistoryItem}"
+                                Cursor="Hand"
+                                textBoxAttached:TextBoxProperties.MaxLength="80"
+                                Text="{Binding Path=(listViewItemAttached:ListViewItemProperties.DescHistory),
+                                RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListViewItem}}}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                        <i:InvokeCommandAction 
+                                             Command="{Binding LoadHistoryLinkCommand}" 
+                                             CommandParameter="{Binding ElementName=tbDesc, Path=Tag}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </TextBox>
+                            <TextBox
+                                Style="{StaticResource ThemeTextBoxInHistoryItem}"
+                                x:Name="tbDesc"
+                                Cursor="Arrow"
+                                Foreground="#5d6165"
+                                Padding="40,0,0,0"
+                                Text="{Binding Path=(listViewItemAttached:ListViewItemProperties.LinkPreview),
+                                RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListViewItem}}}"
+                                Tag="{Binding Path=(listViewItemAttached:ListViewItemProperties.FullLink),
+                                RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListViewItem}}}"/>
+                        </WrapPanel>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="ListView.AlternationIndex" Value="0">
+                            <Setter TargetName="Border"  Property="Background" Value="#292a2d"/>
+                        </Trigger>
+                        <Trigger Property="ListView.AlternationIndex" Value="1">
+                            <Setter TargetName="Border"  Property="Background" Value="#292a2d"/>
+                        </Trigger>
+                        <Trigger Property="ListViewItem.IsSelected" Value="true">
+                            <Setter TargetName="Border" Property="Background" Value="Transparent"/>
+                        </Trigger>
+                        <Trigger Property="ListViewItem.IsMouseOver" Value="true">
+                            <Setter TargetName="Border" Property="Background" Value="#1a1a1a"/>
+                        </Trigger>
+                        <Trigger Property="ListViewItem.IsEnabled" Value="false">
+                            <Setter Property="Foreground" Value="LightGray"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ListView}">
+        <Setter Property="Background" Value="#292a2d"/>
+        <Setter Property="MaxWidth" Value="960"/>
+        <Setter Property="MinWidth" Value="560"/>
+        <Setter Property="Width" Value="Auto"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="MinHeight" Value="120"/>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource ThemeListViewItemBrowserHistory}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListView">
+                    <Border 
+                        Name="Border"
+                        BorderThickness="1"
+                        CornerRadius="5"
+                        Background="#292a2d"
+                        BorderBrush="#292a2d">
+                        <ScrollViewer 
+                            VerticalScrollBarVisibility="Auto" 
+                            HorizontalScrollBarVisibility="Hidden" 
+                            Margin="0"
+                            Focusable="false">
+                            <StackPanel Margin="2" IsItemsHost="True"/>
+                        </ScrollViewer>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--#endregion-->
+
+    <!--#region CheckBox-->
+    <Style x:Key="ThemeCheckbox" TargetType="{x:Type CheckBox}">
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <ControlTemplate.Resources>
+                        <Storyboard x:Key="OnChecking">
+                            <DoubleAnimationUsingKeyFrames
+                                BeginTime="00:00:00"
+                                Storyboard.TargetName="slider"
+                                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)">
+                                <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="22"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <ColorAnimation
+                                To="#0CA5EE"
+                                Storyboard.TargetName="slider" 
+                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" 
+                                Duration="0:0:0.1">
+                            </ColorAnimation>
+                            <ColorAnimation 
+                                To="{StaticResource ThemeColorGlowRed}"
+                                Storyboard.TargetName="bordermain" 
+                                Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" 
+                                Duration="0:0:0.1">
+                            </ColorAnimation>
+                            <DoubleAnimation 
+                                Storyboard.TargetProperty="(Border.Opacity)"
+                                To="1"
+                                Storyboard.TargetName="contentPresenter"
+                                Duration="0:0:0.1">
+                            </DoubleAnimation>
+                        </Storyboard>
+                        <Storyboard x:Key="OnUnchecking">
+                            <DoubleAnimationUsingKeyFrames
+                                BeginTime="00:00:00"
+                                Storyboard.TargetName="slider"
+                                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)">
+                                <SplineDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimation 
+                                Storyboard.TargetProperty="(Border.Opacity)"
+                                To="0.3"
+                                Storyboard.TargetName="contentPresenter"
+                                Duration="0:0:0.1">
+                            </DoubleAnimation>
+                            <ColorAnimation 
+                                To="{StaticResource ThemeColorLightRed}"
+                                Storyboard.TargetName="bordermain" 
+                                Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" 
+                                Duration="0:0:0.1">
+                            </ColorAnimation>
+                            <ColorAnimation 
+                                To="{StaticResource ThemeColorLightRed}"
+                                Storyboard.TargetName="slider" 
+                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" 
+                                Duration="0:0:0.1">
+                            </ColorAnimation>
+                        </Storyboard>
+                    </ControlTemplate.Resources>
+                    <Grid>
+                        <ContentPresenter
+                            VerticalAlignment="Center"  HorizontalAlignment="Left"
+                            Margin="10,0,0,0" x:Name="contentPresenter" Opacity="0.3">
+                            <ContentPresenter.Effect>
+                                <DropShadowEffect
+                                    ShadowDepth="0" BlurRadius="10"
+                                    Color="Black" Opacity="0.5"/>
+                            </ContentPresenter.Effect>
+                        </ContentPresenter>
+                        <Grid
+                            Width="38" Height="20" Margin="10,0,10,0"
+                            HorizontalAlignment="Right">
+                            <Border
+                                x:Name="bordermain" Height="12"
+                                CornerRadius="6" Margin="2" BorderThickness="1"
+                                Background="{DynamicResource ThemeBrushDarkGrayBlue}"
+                                BorderBrush="{DynamicResource ThemeBrushLightBlue}"/>
+                            <Border 
+                                x:Name="slider" CornerRadius="12"
+                                Background="{DynamicResource ThemeBrushLightBlue}"
+                                HorizontalAlignment="Left" Width="16" Height="16">
+                                <Border.Effect>
+                                    <DropShadowEffect 
+                                        ShadowDepth="0" BlurRadius="5"
+                                        Color="{DynamicResource ThemeColorLightRed}"/>
+                                </Border.Effect>
+                                <Border.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                        <SkewTransform AngleX="0" AngleY="0"/>
+                                        <RotateTransform Angle="0"/>
+                                        <TranslateTransform X="0" Y="0"/>
+                                    </TransformGroup>
+                                </Border.RenderTransform>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Trigger.ExitActions>
+                                <BeginStoryboard
+                                    Storyboard="{StaticResource OnUnchecking}" 
+                                    x:Name="OnUnchecking_BeginStoryboard"/>
+                            </Trigger.ExitActions>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard 
+                                    Storyboard="{StaticResource OnChecking}"
+                                    x:Name="OnChecking_BeginStoryboard"/>
+                            </Trigger.EnterActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--#endregion-->
+   
+</ResourceDictionary>
