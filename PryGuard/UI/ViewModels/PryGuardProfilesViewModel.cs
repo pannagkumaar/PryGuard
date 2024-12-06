@@ -79,8 +79,8 @@ namespace PryGuard.UI.ViewModels
             set => Set(ref _PryGuardBrowserViewModelVM, value);
         }
 
-        private Setting _setting;
-        public Setting Setting
+        private SettingsManager _setting;
+        public SettingsManager Setting
         {
             get => _setting;
             set => Set(ref _setting, value);
@@ -108,7 +108,7 @@ namespace PryGuard.UI.ViewModels
             ProfileTabs = new ObservableCollection<ProfileTab>();
             SavedProxies = new ObservableCollection<string>();
 
-            Setting = new Setting();
+            Setting = new SettingsManager();
 
             // Start asynchronous initialization
             InitializeAsync();
