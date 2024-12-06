@@ -486,6 +486,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
             if (_PryGuardProfile.IsLoadCacheInMemory && incognitoCache == null)
             {
                 _requestContextSettings.CachePath = _PryGuardProfile.CachePath; // Use profile-specific cache
+                var cachePath = _PryGuardProfile.CachePath;
                 _requestContextSettings.PersistSessionCookies = true;
             }
             else if (incognitoCache != null)

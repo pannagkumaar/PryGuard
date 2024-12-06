@@ -46,7 +46,7 @@ namespace PryGuard.UI.Views
 
         private void SetLightTheme()
         {
-            var lightTheme = new ResourceDictionary { Source = new Uri("/Services/UI/Themes/LightTheme.xaml", UriKind.Relative) };
+            var lightTheme = new ResourceDictionary { Source = new Uri("/UI/Themes/LightTheme.xaml", UriKind.Relative) };
             Resources.MergedDictionaries.Clear();
             Resources.MergedDictionaries.Add(lightTheme);
             _isDarkTheme = false;
@@ -54,7 +54,7 @@ namespace PryGuard.UI.Views
 
         private void SetDarkTheme()
         {
-            var darkTheme = new ResourceDictionary { Source = new Uri("/Services/UI/Themes/DarkTheme.xaml", UriKind.Relative) };
+            var darkTheme = new ResourceDictionary { Source = new Uri("/UI/Themes/DarkTheme.xaml", UriKind.Relative) };
             Resources.MergedDictionaries.Clear();
             Resources.MergedDictionaries.Add(darkTheme);
             _isDarkTheme = true;

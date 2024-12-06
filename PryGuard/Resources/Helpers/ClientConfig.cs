@@ -43,8 +43,8 @@ namespace PryGuard.Resources.Helpers
         /// </summary>
         private static void InitializePaths()
         {
-            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            AppDataPath = Path.Combine(localAppData, "PryGuard");
+            string currentDir = Environment.CurrentDirectory;
+            AppDataPath = Path.Combine(currentDir, "PryGuard");
             ChromeDataPath = Path.Combine(AppDataPath, "ChromiumData");
             ChromeCachePath = Path.Combine(ChromeDataPath, "Cache");
             AudioDataPath = Path.Combine(AppDataPath, "Audio");
