@@ -6,8 +6,8 @@ public sealed class MediaDevicesSettings : INotifyPropertyChanged
 {
     private bool _hide = true;
 
-    public AutoManualEnum _status;
-    public AutoManualEnum Status
+    public ControlMode _status;
+    public ControlMode Status
     {
         get => _status;
         set

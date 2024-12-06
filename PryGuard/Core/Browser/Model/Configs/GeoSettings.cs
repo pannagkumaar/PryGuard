@@ -5,8 +5,8 @@ namespace PryGuard.Core.Browser.Model.Configs;
 public class GeoSettings : INotifyPropertyChanged
 {
 
-    private AutoManualEnum _status;
-    public AutoManualEnum Status
+    private ControlMode _status;
+    public ControlMode Status
     {
         get => _status;
         set
@@ -41,7 +41,7 @@ public class GeoSettings : INotifyPropertyChanged
             OnPropertyChanged(nameof(Longitude));
         }
     }
-    public GeoSettings() { Status = AutoManualEnum.AUTO; }
+    public GeoSettings() { Status = ControlMode.Automatic; }
 
 
     public event PropertyChangedEventHandler PropertyChanged;

@@ -44,7 +44,7 @@ namespace PryGuard.UI.Views
                 var viewModel = this.DataContext as PryGuardProfileSettingsViewModel;
                 if (viewModel != null)
                 {
-                    EOSVersion selectedOSVersion;
+                    OSVersion selectedOSVersion;
                     if (Enum.TryParse(comboBox.SelectedItem.ToString(), out selectedOSVersion))
                     {
                         viewModel.PryGuardProf.FakeProfile.OsVersion = selectedOSVersion;
@@ -68,10 +68,10 @@ namespace PryGuard.UI.Views
                 var viewModel = this.DataContext as PryGuardProfileSettingsViewModel;
                 if (viewModel != null)
                 {
-                    EChromeLanguage selectedLanguage;
+                    BrowserLanguage selectedLanguage;
                     if (Enum.TryParse(comboBox.SelectedItem.ToString(), out selectedLanguage))
                     {
-                        viewModel.PryGuardProf.FakeProfile.ChromeLanguageInfo = EChromeLanguageHelper.GetFullInfo(selectedLanguage);
+                        viewModel.PryGuardProf.FakeProfile.ChromeLanguageInfo = BrowserLanguageHelper.GetFullInfo(selectedLanguage);
                     }
                 }
             }

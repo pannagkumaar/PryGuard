@@ -41,7 +41,7 @@ public class ResourceRequestHandler : IResourceRequestHandler
         if (request.Url.Contains("chrome-devtools://"))
             return CefReturnValue.Continue;
 
-        if (!_blockManager.IsBlock(request.Url, GetSafeMainFrameUrl(browser)))
+        if (!_blockManager.IsBlocked(request.Url, GetSafeMainFrameUrl(browser)))
         {
             // var ua = ((BotBrowser) chromiumWebBrowser).JsWorker.Bookmaker.FakeProfile.UserAgent;
             // request.SetHeaderByName("User-Agent", ua, true);
@@ -95,13 +95,13 @@ public class ResourceRequestHandler : IResourceRequestHandler
             return null;
         var lowerRequestUrl = request.Url.ToLower();
         if (lowerRequestUrl.Contains("true/app") && lowerRequestUrl.Contains("kooboo-resource"))
-            return new FindReplaceResponseFilter("$compileProvider.debugInfoEnabled(false);",
+            return new StringReplaceResponseFilter("$compileProvider.debugInfoEnabled(false);",
                 "$compileProvider.debugInfoEnabled(true);");
         if (lowerRequestUrl.Contains("static/js/olimp") && lowerRequestUrl.Contains(".js"))
-            return new FindReplaceResponseFilter("={sports:{getSports:",
+            return new StringReplaceResponseFilter("={sports:{getSports:",
                 "=window.zapi={sports:{getSports:");
         if (request.Url.ToLower().Contains("favbet") && request.Url.ToLower().Contains("main") && request.Url.ToLower().Contains(".js"))
-            return new FindReplaceResponseFilter("this.send=function(e)",
+            return new StringReplaceResponseFilter("this.send=function(e)",
                 "(window.wss?window.wss.push(this):window.wss=[],window.wss.push(this)),this.send=function(e)");
         return null;
     }

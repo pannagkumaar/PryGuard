@@ -30,16 +30,16 @@
             <converters:EnumToComboBoxItemConverter x:Key="EnumToComboBoxItemConverter" />
             <ObjectDataProvider MethodName="GetValues"
                             ObjectType="{x:Type sys:Enum}"
-                            x:Key="EOSVersionDataProvider">
+                            x:Key="OSVersionDataProvider">
                 <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="configs:EOSVersion" />
+                    <x:Type TypeName="configs:OSVersion" />
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
             <ObjectDataProvider MethodName="GetValues"
                             ObjectType="{x:Type sys:Enum}"
-                            x:Key="EChromeLanguageDataProvider">
+                            x:Key="BrowserLanguageDataProvider">
                 <ObjectDataProvider.MethodParameters>
-                    <x:Type TypeName="local:EChromeLanguage" />
+                    <x:Type TypeName="local:BrowserLanguage" />
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
             <BooleanToVisibilityConverter x:Key="b2v" />
@@ -437,7 +437,7 @@
                     HorizontalAlignment="Left"
                     Visibility="{Binding IsChecked, ElementName=rbScreen, Converter={StaticResource b2v}}"
                     SelectionChanged="ComboBoxOS_SelectionChanged"
-                    ItemsSource="{Binding Source={StaticResource EOSVersionDataProvider}}"
+                    ItemsSource="{Binding Source={StaticResource OSVersionDataProvider}}"
                     SelectedItem="{Binding PryGuardProf.FakeProfile.OsVersion, Mode=TwoWay}">
                 </ComboBox>
                 <!--#endregion-->
@@ -788,7 +788,7 @@
                     HorizontalAlignment="Center"
                     Visibility="{Binding IsChecked, ElementName=rbScreen, Converter={StaticResource b2v}}"
                     SelectionChanged="ComboBoxlang_SelectionChanged"
-                    ItemsSource="{Binding Source={StaticResource EChromeLanguageDataProvider}}"
+                    ItemsSource="{Binding Source={StaticResource BrowserLanguageDataProvider}}"
                     SelectedItem="{Binding Path=SelectedLanguage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                     <!--SelectedItem="{Binding Path=SelectedLanguage, Mode=TwoWay}">-->
                 </ComboBox>
@@ -813,7 +813,7 @@
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left"
                     IsChecked="{Binding PryGuardProf.FakeProfile.GeoSettings.Status,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=AUTO}"/>
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Automatic}"/>
                 <RadioButton 
                     Grid.Row="16"
                     x:Name="rbGeo"
@@ -824,7 +824,7 @@
                     HorizontalAlignment="Right"
                     Margin="0,10,114,0"
                     IsChecked="{Binding PryGuardProf.FakeProfile.GeoSettings.Status,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=MANUAL}"/>
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Manual}"/>
                 <TextBox
                     Grid.Row="16"
                     Height="22"
@@ -867,7 +867,7 @@
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left"
                     IsChecked="{Binding PryGuardProf.FakeProfile.CpuStatus,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=AUTO}"/>
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Automatic}"/>
                 <RadioButton 
                     Grid.Row="18"
                     x:Name="rbProc"
@@ -878,7 +878,7 @@
                     HorizontalAlignment="Right"
                     Margin="0,10,114,0"
                     IsChecked="{Binding PryGuardProf.FakeProfile.CpuStatus,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=MANUAL}"/>
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Manual}"/>
 
                 <!--#region StackPanel Cores-->
                 <StackPanel
@@ -982,7 +982,7 @@
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left"
                     IsChecked="{Binding PryGuardProf.FakeProfile.MemStatus,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=AUTO}"/>
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Automatic}"/>
                 <RadioButton 
                     Grid.Row="17"
                     Style="{StaticResource ThemeRadioBSettingsMainTheme}"
@@ -993,7 +993,7 @@
                     HorizontalAlignment="Right"
                     Margin="0,6,113,0"
                     IsChecked="{Binding PryGuardProf.FakeProfile.MemStatus,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=MANUAL}" Checked="rbMem_Checked"/>
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Manual}" Checked="rbMem_Checked"/>
 
                 <!--#region StackPanel Memory-->
                 <StackPanel
@@ -1102,7 +1102,7 @@
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left"
                     IsChecked="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.Status,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=AUTO}"/>
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Automatic}"/>
                 <RadioButton 
                     Grid.Row="20"
                     x:Name="rbMedia"
@@ -1113,7 +1113,7 @@
                     HorizontalAlignment="Right"
                     Margin="0,10,114,0"
                     IsChecked="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.Status,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=MANUAL}"/>
+                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Manual}"/>
                 <!--#region StackPanel Media-->
                 <StackPanel
                     Grid.Row="20"
@@ -1524,7 +1524,7 @@
                     Grid.Row="15"
                     Grid.Column="1"
                     Style="{StaticResource ProfileSettingsSummary}"
-                    Text="{Binding PryGuardProf.FakeProfile.ChromeLanguageInfo.Name}"/>
+                    Text="{Binding PryGuardProf.FakeProfile.ChromeLanguageInfo.DisplayName}"/>
                 <Line
                     Grid.Row="15"
                     Grid.ColumnSpan="2"

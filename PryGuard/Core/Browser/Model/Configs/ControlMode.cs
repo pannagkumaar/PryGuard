@@ -1,5 +1,5 @@
 ﻿namespace PryGuard.Core.Browser.Model.Configs;
-public enum AutoManualEnum
+public enum ControlMode
 {
-    AUTO, MANUAL
+    Automatic, Manual
 }

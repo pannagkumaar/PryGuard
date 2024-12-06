@@ -48,9 +48,9 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         }
     }
 
-    public EChromeLanguage SelectedLanguage
+    public BrowserLanguage SelectedLanguage
     {
-        get => PryGuardProf?.FakeProfile?.ChromeLanguageInfo?.Language ?? EChromeLanguage.EnUsa;
+        get => PryGuardProf?.FakeProfile?.ChromeLanguageInfo?.Language ?? BrowserLanguage.EnglishUS;
         set
         {
             if (PryGuardProf?.FakeProfile?.ChromeLanguageInfo != null && PryGuardProf.FakeProfile.ChromeLanguageInfo.Language != value)
@@ -361,7 +361,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
     {
         var a = PryGuardProf.Proxy.ProxyAddress;
         if (PryGuardProf.Proxy.ProxyAddress == "") return;
-        var result = await IpInfoClient.CheckClientProxy(PryGuardProf.Proxy);
+        var result = await IpInfoServiceClient.FetchProxyInfoAsync(PryGuardProf.Proxy);
         if (result == null)
         {
             TbProxyBrush = Brushes.Red;
@@ -369,7 +369,7 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
             TbProxyBrush = Brushes.White;
             return;
         }
-        if (result.Ip == PryGuardProf.Proxy.ProxyAddress)
+        if (result.IpAddress == PryGuardProf.Proxy.ProxyAddress)
         {
             TbProxyBrush = Brushes.Green;
             await Task.Delay(2000);

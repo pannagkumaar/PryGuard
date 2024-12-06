@@ -20,14 +20,14 @@ public class NativeSourceManager
     private void LoadFakeCode(string filename)
     {
         string resource =
-            LoadResource(new Uri("pack://application:,,,/Services/JsSource/Fake/" + filename, UriKind.Absolute));
+            LoadResource(new Uri("pack://application:,,,/Resources/JavaScript/Fake/" + filename, UriKind.Absolute));
         _codes[filename] = resource;
     }
 
     private void LoadJsCode(string filename)
     {
         string resource =
-            LoadResource(new Uri("pack://application:,,,/Services/JsSource/" + filename, UriKind.Absolute));
+            LoadResource(new Uri("pack://application:,,,/Resources/JavaScript/" + filename, UriKind.Absolute));
         _codes[filename] = resource;
     }
 

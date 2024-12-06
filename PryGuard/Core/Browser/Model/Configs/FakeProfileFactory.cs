@@ -15,10 +15,10 @@ using PryGuard.DataModels;
 namespace PryGuard.Core.Browser.Model.Configs;
 public class FakeProfileFactory
 {
-    private static readonly Dictionary<EOSVersion, string> OsVersions = new Dictionary<EOSVersion, string>()
+    private static readonly Dictionary<OSVersion, string> OsVersions = new Dictionary<OSVersion, string>()
         {
-            {EOSVersion.Win7, "Windows NT 6.1"}, {EOSVersion.Win8, "Windows NT 6.2"},
-            {EOSVersion.Win81, "Windows NT 6.3"}, {EOSVersion.Win10, "Windows NT 10.0"},
+            {OSVersion.Windows7, "Windows NT 6.1"}, {OSVersion.Windows8, "Windows NT 6.2"},
+            {OSVersion.Windows81, "Windows NT 6.3"}, {OSVersion.Windows10, "Windows NT 10.0"},{OSVersion.Windows11, "Windows NT 10.0.22000"}
         };
 
     private static readonly List<string> ChromeBuildVersion = new List<string>()
@@ -332,8 +332,8 @@ public class FakeProfileFactory
         bool isX64 = RandomNumber.Between(0, 2) == 0;
         FakeProfile result = new FakeProfile()
         {
-            BrowserTypeType = GetAllEnumValues<EBrowserType>(typeof(EBrowserType)).GetRandValue(),
-            OsVersion = GetAllEnumValues<EOSVersion>(typeof(EOSVersion)).GetRandValue(),
+            BrowserTypeType = GetAllEnumValues<BrowserType>(typeof(BrowserType)).GetRandValue(),
+            OsVersion = GetAllEnumValues<OSVersion>(typeof(OSVersion)).GetRandValue(),
             IsX64 = isX64
         };
         result.IsSendDoNotTrack = true;
@@ -350,7 +350,7 @@ public class FakeProfileFactory
         result.ChannelDataIndexDelta = GenerateRandomDouble();
         result.FloatFrequencyDataDelta = GenerateRandomDouble();
         result.FloatFrequencyDataIndexDelta = GenerateRandomDouble();
-        result.ChromeLanguageInfo = EChromeLanguageHelper.GetFullInfo(EChromeLanguageExtensions.GetValue(GenerateRandomInt(1, 2)));
+        result.ChromeLanguageInfo = BrowserLanguageHelper.GetFullInfo(BrowserLanguageExtensions.GetValue(GenerateRandomInt(1, 2)));
         result.ScreenSize = ScreenSizes[GenerateRandomInt(0, ScreenSizes.Count - 1)];
         result.Fonts = GenerateAvailableFonts(result.OsVersion);
         result.WebGL = WebGLFactory.Generate();
@@ -373,7 +373,7 @@ public class FakeProfileFactory
         return fakeProfile;
     }
 
-    private static List<string> GenerateAvailableFonts(EOSVersion winVersion)
+    private static List<string> GenerateAvailableFonts(OSVersion winVersion)
     {
         HashSet<string> source = new HashSet<string>();
         List<string> list = _allFonts.ToList();
@@ -407,7 +407,7 @@ public class FakeProfileFactory
     {
         string baseUserAgent;
 
-        if (fakeProfile.OsVersion == EOSVersion.Win10)
+        if (fakeProfile.OsVersion == OSVersion.Windows10)
         {
             baseUserAgent = "Mozilla/5.0 (" +
                 GetOSInfo(fakeProfile.OsVersion, fakeProfile.IsX64) +
@@ -435,7 +435,7 @@ public class FakeProfileFactory
         return "; Win64; x64";
     }
 
-    private static string GetOSInfo(EOSVersion osVersion, bool isX64)
+    private static string GetOSInfo(OSVersion osVersion, bool isX64)
     {
         return OsVersions[osVersion] + GetX64String(isX64);
     }

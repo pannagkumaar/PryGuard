@@ -46,7 +46,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
     private PryGuardProfile _PryGuardProfileToStart;
     //private Window _window;
     private PryGuardProfile _PryGuardProfile;
-    private IpInfoResult _proxyInfo;
+    private IpInformation _proxyInfo;
     private BlockManager _blockManager;
     private NativeSourceManager _nativeManager;
     private RequestHandler _requestHandler;
@@ -518,7 +518,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
 
                 if (_PryGuardProfile.Proxy.IsProxyAuth)
                 {
-                    _proxyInfo = await IpInfoClient.CheckClientProxy(_PryGuardProfile.Proxy);
+                    _proxyInfo = await IpInfoServiceClient.FetchProxyInfoAsync(_PryGuardProfile.Proxy);
                     _requestHandler.SetAuthCredentials(new ProxyAuthCredentials()
                     {
                         Login = _PryGuardProfile.Proxy.ProxyLogin,
@@ -527,7 +527,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
                 }
                 else
                 {
-                    _proxyInfo = await IpInfoClient.CheckClientProxy(_PryGuardProfile.Proxy);
+                    _proxyInfo = await IpInfoServiceClient.FetchProxyInfoAsync(_PryGuardProfile.Proxy);
                 }
             }
 
@@ -860,12 +860,12 @@ public class PryGuardBrowserViewModel : BaseViewModel
             || _PryGuardProfile.FakeProfile.GeoSettings.Longitude == null)
             return;
 
-        if (_PryGuardProfile.FakeProfile.GeoSettings.Status == AutoManualEnum.AUTO)
+        if (_PryGuardProfile.FakeProfile.GeoSettings.Status == ControlMode.Automatic)
         {
             if (!_PryGuardProfile.Proxy.IsProxyAuth)
                 return;
-            latitude = double.Parse(_proxyInfo.Loc.Split(',')[0], CultureInfo.InvariantCulture);
-            longitude = double.Parse(_proxyInfo.Loc.Split(',')[1], CultureInfo.InvariantCulture);
+            latitude = double.Parse(_proxyInfo.Location.Split(',')[0], CultureInfo.InvariantCulture);
+            longitude = double.Parse(_proxyInfo.Location.Split(',')[1], CultureInfo.InvariantCulture);
         }
         else
         {
@@ -961,7 +961,7 @@ public class PryGuardBrowserViewModel : BaseViewModel
                             return;
                         }
 
-                        await client.Emulation.SetTimezoneOverrideAsync(_proxyInfo.Timezone);
+                        await client.Emulation.SetTimezoneOverrideAsync(_proxyInfo.TimeZone);
                     }
                     if (_PryGuardProfile.Proxy.IsCustomProxy)
                     {
