@@ -1,0 +1,94 @@
+﻿<UserControl x:Class="PryGuard.UI.Views.BookmarkView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/UI/Themes/DarkTheme.xaml" />
+                <ResourceDictionary Source="/Services/UI/Styles/DrawImageStyles.xaml" />
+                <ResourceDictionary Source="/Services/UI/Styles/UIElementStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid Background="{DynamicResource BackgroundBrush}">
+        <ToggleButton x:Name="themeToggleButton" Content="Change Theme" 
+            Width="100" Height="30" 
+            HorizontalAlignment="Right" 
+            VerticalAlignment="Top" 
+            Margin="10"
+            Checked="OnThemeToggle_Checked"
+            Unchecked="OnThemeToggle_Unchecked"
+            Foreground="{DynamicResource ForegroundBrush}" 
+            Background="{DynamicResource BackgroundBrush}">
+        </ToggleButton>
+
+        <!-- Added Margin to the ScrollViewer to prevent overlap -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                      HorizontalScrollBarVisibility="Auto" 
+                      Margin="0,50,0,0">
+            <!-- Adjust top margin to create space -->
+            <StackPanel HorizontalAlignment="Center">
+                <TextBlock Text="Bookmarks" FontSize="24" FontWeight="Bold" Margin="20" 
+                           Foreground="{DynamicResource ForegroundBrush}" HorizontalAlignment="Center" />
+                <ItemsControl ItemsSource="{Binding Bookmarks}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border CornerRadius="8" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" 
+                                    Background="{DynamicResource BackgroundBrush}" Margin="10" Padding="10">
+                                <Grid Width="1500">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1.5*" />
+                                        <ColumnDefinition Width="3*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Title of the bookmark -->
+                                    <TextBlock Text="{Binding Title}" 
+                                               FontSize="14" 
+                                               FontWeight="SemiBold" 
+                                               Foreground="{DynamicResource ForegroundBrush}" 
+                                               Margin="5,0" 
+                                               VerticalAlignment="Center"
+                                               Grid.Column="0" />
+
+                                    <!-- URL of the bookmark -->
+                                    <TextBlock Text="{Binding URL}" 
+                                               FontSize="14" 
+                                               Foreground="#1e90ff" 
+                                               Cursor="Hand" 
+                                               TextDecorations="Underline" 
+                                               VerticalAlignment="Center"
+                                               Grid.Column="1"
+                                               MaxWidth="300"
+                                               TextTrimming="CharacterEllipsis"
+                                               PreviewMouseLeftButtonDown="OnLinkClick" />
+
+                                    <!-- Trash can icon as the remove button -->
+                                    <!-- BookmarkDeleteButton.xaml or within your Bookmark ItemTemplate -->
+                                    <Button Grid.Column="2" 
+        Command="{Binding DataContext.RemoveBookmarkCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+        CommandParameter="{Binding}" 
+        Background="Transparent" 
+        BorderThickness="0"
+        ToolTip="Delete Bookmark">
+                                        <Image Source="{DynamicResource DeleteIcon}" 
+           Width="16" 
+           Height="16" />
+                                    </Button>
+
+
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

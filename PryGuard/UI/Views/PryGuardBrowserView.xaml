@@ -1,0 +1,615 @@
+﻿<Window x:Class="PryGuard.UI.Views.PryGuardBrowserView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:panel="clr-namespace:PryGuard.UI.Controls.Panels"
+        xmlns:vm="clr-namespace:PryGuard.UI.ViewModels"
+        xmlns:views="clr-namespace:PryGuard.UI.Views"
+        xmlns:conv="clr-namespace:PryGuard.UI.Converters"
+
+        mc:Ignorable="d"
+        Background="White"
+        Title="PryGuard" 
+        MinWidth="500" 
+        MinHeight="115"
+        Width="1080"
+        Height="450"
+        BorderThickness="1" 
+        BorderBrush="#3F3F3F"
+        UseLayoutRounding="True"
+        WindowStartupLocation="CenterScreen"
+        WindowState="{Binding CurWindowState, Mode=TwoWay}"
+        ResizeMode="CanResize"  >
+    <!--#region DataContext & Resources & WindowChrome-->
+    <Window.DataContext>
+        <vm:PryGuardBrowserViewModel/>
+    </Window.DataContext>
+    <Window.InputBindings>
+        <KeyBinding Key="W" Modifiers="Control" Command="{Binding CloseTabCommand}" />
+        <KeyBinding Key="T" Modifiers="Control" Command="{Binding AddTabCommand}" />
+        <KeyBinding Key="F" Modifiers="Control" Command="{Binding ShowFindBarCommand}" />
+        <KeyBinding Key="H" Modifiers="Control" Command="{Binding OpenHistoryCommand}"/>
+        <KeyBinding Key="B" Modifiers="Control" Command="{Binding AddBookmarkTabCommand }"/>
+        <KeyBinding Key="J" Modifiers="Control" Command="{Binding AddDownloadTabCommand}"/>
+    </Window.InputBindings>
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Services/UI/Styles/DrawImageStyles.xaml" />
+                <ResourceDictionary Source="/Services/UI/Styles/UIElementStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <DataTemplate x:Key="BookmarkTemplate">
+                <Button
+                Style="{StaticResource LatchesBrowserStyle}"
+                Content="{Binding Title}">
+                    <Button.InputBindings>
+                        <!--Left mouse button click for opening the bookmark-->
+                        <MouseBinding 
+                                Gesture="LeftClick"
+                                Command="{Binding DataContext.OpenBookmarkCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{Binding}" />
+                        <!--Right mouse button click for removing the bookmark-->
+                        <MouseBinding 
+                                Gesture="RightClick"
+                                Command="{Binding DataContext.RemoveBookmarkCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{Binding}" />
+                    </Button.InputBindings>
+                </Button>
+            </DataTemplate>
+            <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome 
+            CaptionHeight="0" 
+            
+            GlassFrameThickness="10"/>
+    </WindowChrome.WindowChrome>
+    <!--#endregion-->
+
+    <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Existing row for tab buttons -->
+            <RowDefinition Height="Auto"/>
+            <!-- Existing row for browser buttons -->
+            <!-- New RowDefinition for the search bar -->
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <!-- Existing row for content -->
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="160" />
+        </Grid.ColumnDefinitions>
+
+        <i:Interaction.Triggers>
+            <i:EventTrigger EventName="MouseMove">
+                <i:InvokeCommandAction 
+                        Command="{Binding NormalStateWindowCommand}" 
+                        PassEventArgsToCommand="True"/>
+            </i:EventTrigger>
+        </i:Interaction.Triggers>
+
+        <!--#region ItemsControl - AutoStackPanel -->
+        <ItemsControl ItemsSource="{Binding TabBtnsAndAddTabBtn}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <panel:AutoStackPanel 
+                        Orientation="Horizontal" 
+                        Background="#3C4043"
+                        MarginBetweenChildren="1"
+                        Height="47"
+                        MaxChildWidth="238" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+        <!--#endregion -->
+
+        <!--#region Minimize/Full/Close Btns Grid-->
+        <Grid
+            Background="#3C4043"
+            Grid.Row="0"
+            Grid.Column="1">
+            <StackPanel 
+                Margin="0,-1,90,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Height="30" Width="45">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                        <i:InvokeCommandAction Command="{Binding MinimizeWindowCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <Border Style="{StaticResource BorderForWinButtons}" Height="30">
+                    <Image 
+                        Margin="-2,-5,0,0"
+                        Width="12" Height="14"
+                        Source="{StaticResource MinimizeWindowDrawingImage}"/>
+                </Border>
+            </StackPanel>
+            <StackPanel 
+                Grid.Column="1"
+                Margin="0,-1,45,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Height="30" Width="45">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                        <i:InvokeCommandAction Command="{Binding MaximizeWindowCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <Border Style="{StaticResource BorderForWinButtons}">
+                    <Image 
+                        Margin="-1,0,0,0"
+                        Width="10" Height="28"
+                        Source="{StaticResource MaximizeWindowDrawingImage}"/>
+                </Border>
+            </StackPanel>
+            <StackPanel 
+                Grid.Column="3"
+                Margin="0,-1,-1,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Height="30" Width="45">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                        <i:InvokeCommandAction Command="{Binding CloseCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <Border Style="{StaticResource BorderForWinButtons}">
+                    <Image 
+                        Margin="-1,0,0,0"
+                        Width="10" Height="28"
+                        Source="{StaticResource CloseWindowDrawingImage}"/>
+                </Border>
+            </StackPanel>
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Main Browser Buttons(Stackpanels) Grid-->
+        <Grid
+            Background="#35363A"
+            Grid.Row="1"
+            Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MaxWidth="30"/>
+                <ColumnDefinition MaxWidth="30"/>
+                <ColumnDefinition MaxWidth="30"/>
+                <ColumnDefinition/>
+                <ColumnDefinition MaxWidth="32"/>
+                <ColumnDefinition MaxWidth="30"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            
+
+            <!--Button "Back"-->
+            <StackPanel 
+                Grid.Column="0"
+                Height="22" Width="22">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                        <i:InvokeCommandAction Command="{Binding BackCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <Border Style="{StaticResource BorderForBrowserButtons}">
+                    <Image
+                        Width="20" Height="20"
+                        Source="{StaticResource ArrowBackTab}"/>
+                </Border>
+            </StackPanel>
+
+            <!--Button "Forward"-->
+            <StackPanel
+                Grid.Column="1"
+                Height="22" Width="22">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                        <i:InvokeCommandAction Command="{Binding ForwardCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <Border Style="{StaticResource BorderForBrowserButtons}">
+                    <Image
+                        Margin="-1,0,0,0"
+                        Width="20" Height="20"
+                        Source="{StaticResource ArrowNextTab}"/>
+                </Border>
+            </StackPanel>
+
+            <!--Button "Refresh"-->
+            <StackPanel
+                Grid.Column="2"
+                Margin="0,0,0,0"
+                Height="22" Width="22">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                        <i:InvokeCommandAction Command="{Binding RefreshCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <Border
+                    Style="{StaticResource BorderForBrowserButtons}">
+                    <Image
+                        Margin="-2,0,0,0"
+                        Width="16" Height="20"
+                        Source="{StaticResource ReloadPage}"/>
+                </Border>
+            </StackPanel>
+
+            <!--Textbox "Address"-->
+            <TextBox
+                Height="26"
+                Grid.Column="3"
+                Text="{Binding Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                HorizontalAlignment="Stretch">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="KeyDown">
+                        <i:InvokeCommandAction 
+                            Command="{Binding AddressOnKeyDownCommand}" 
+                            PassEventArgsToCommand="True"  />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <TextBox.Style>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Margin" Value="10,0,10,0"/>
+                        <Setter Property="Height" Value="22"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        <Setter Property="Padding" Value="5,0,0,0"/>
+                        <Setter Property="CaretBrush" Value="White"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="TextBox">
+                                    <Grid SnapsToDevicePixels="True">
+                                        <Border 
+                                            x:Name="root" CornerRadius="10"
+                                            Background="#202124"
+                                            BorderBrush="#202124"
+                                            BorderThickness="1">
+                                            <Grid>
+                                                <ScrollViewer 
+                                                    x:Name="PART_ContentHost"
+                                                    Background="{x:Null}">
+                                                </ScrollViewer>
+                                                <Border 
+                                                    Height="24" 
+                                                    Width="24"
+                                                    HorizontalAlignment="Right"
+                                                    Style="{StaticResource BorderForBrowserButtons}">
+                                                    <Image
+                                                        Margin="0,0,0,0"
+                                                        Width="15" Height="15"
+                                                        Source="{StaticResource AddBookmarkBrowserStarSel}">
+                                                        <i:Interaction.Triggers>
+                                                            <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                                                <i:InvokeCommandAction Command="{Binding AddBookmarkCommand}" />
+                                                                <i:ChangePropertyAction PropertyName="Source" Value="{StaticResource AddBookmarkBrowserStarSel}"/>
+                                                            </i:EventTrigger>
+                                                        </i:Interaction.Triggers>
+                                                    </Image>
+
+                                                </Border>
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="Text" Value=""/>
+                                            </MultiTrigger.Conditions>
+                                        </MultiTrigger>
+                                        <Trigger Property="IsFocused" Value="True">
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                        <Trigger Property="IsFocused" Value="False">
+                                            <Setter Property="Foreground" Value="Gray"/>
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+
+            <!--Button "Extension"-->
+            <StackPanel 
+                Grid.Column="4"
+                Height="24" Width="24">
+
+                <Border Height="24" Width="24" Style="{StaticResource BorderForBrowserButtons}">
+                    <Image 
+                        Margin="-1,1,0,0"
+                        Width="16" Height="16"
+                        Source="{StaticResource ExtensionBrowserImage}"/>
+                </Border>
+            </StackPanel>
+
+            <!--Button "Settings"-->
+            <StackPanel 
+                Grid.Column="5"
+                Height="24" Width="24"
+                x:Name="sTBrowsSettings">
+                <StackPanel.ContextMenu>
+                    <ContextMenu
+                        Style="{StaticResource ThemeContextMenu}"
+                        DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding OpenHistoryCommand}">
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image
+                            Margin="0,0,8,0"
+                            Width="16" Height="16"
+                            Source="{StaticResource HistoryBrowserIcon}"/>
+                                    <TextBlock Text="History"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding ToggleIncognitoModeCommand}">
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image
+                            Margin="0,0,8,0"
+                            Width="16" Height="16"
+                            Source="{StaticResource IncognitoIcon}"/>
+                                    <TextBlock Text="{Binding IncognitoModeText}"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding AddTabCommand}">
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image 
+                            Margin="0,0,8,0"
+                            Width="16" Height="16"
+                            Source="{StaticResource NewTabBrowserIcon}"/>
+                                    <TextBlock Text="Add Tab"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding OpenEmailCommand}">
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image
+                            Margin="0,0,8,0"
+                            Width="16" Height="16"
+                            Source="{StaticResource PasswordManagerIcon}"/>
+                                    <TextBlock Text="Email-Password Manager"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding AddBookmarkTabCommand}">
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image
+                                        Margin="0,0,8,0"
+                                        Width="16" Height="16"
+                                        Source="{StaticResource BookmarkIcon}"/>
+                                    <TextBlock Text="Bookmark"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding DeleteHistoryCommand}">
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image
+                            Margin="0,0,8,0"
+                            Width="16" Height="16"
+                            Source="{StaticResource DeleteIcon}"/>
+                                    <TextBlock Text="Delete Browsing History"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding OpenDevToolsCommand}">
+                            <!-- New MenuItem -->
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image
+                        Margin="0,0,8,0"
+                        Width="16" Height="16"
+                        Source="{StaticResource CodeIcon}"/>
+                                    <!-- Replace with your DevTools icon -->
+                                    <TextBlock Text="Developer Tools"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem><MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding AddDownloadTabCommand}">
+                            <!-- New MenuItem -->
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image
+                        Margin="0,0,8,0"
+                        Width="16" Height="16"
+                        Source="{StaticResource DownloadIcon}"/>
+                                   
+                                    <TextBlock Text="Downloads Page"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding ToggleAutoSuspendCommand}">
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image
+                            Margin="0,0,8,0"
+                            Width="16" Height="16"
+                            Source="{StaticResource SuspendIcon}"/>
+                                    <TextBlock Text="{Binding SmartTabSuspensionText}"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem Style="{StaticResource ThemeMenuItem}" Command="{Binding CloseCommand}">
+                            <MenuItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image
+                            Margin="0,0,8,0"
+                            Width="16" Height="16"
+                            Source="{StaticResource ExitIcon}"/>
+                                    <TextBlock Text="Exit"/>
+                                </StackPanel>
+                            </MenuItem.Header>
+                        </MenuItem>
+                    </ContextMenu>
+                </StackPanel.ContextMenu>
+
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                        <i:InvokeCommandAction
+                Command="{Binding OpenContextMenuSettingsCommand}" 
+                CommandParameter="{Binding ElementName=sTBrowsSettings}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+
+                <Border Height="24" Width="24" Style="{StaticResource BorderForBrowserButtons}">
+                    <Image 
+                        Margin="0,1,8,0"
+                        Width="16" Height="16"
+                        Source="{StaticResource DotsBrowserImage}"/>
+                </Border>
+            </StackPanel>
+
+
+            <!--StackPanel for "Bookmarks"-->
+            <ItemsControl
+            Grid.Row="1"
+            Grid.ColumnSpan="5"
+            Height="30"
+            ItemsSource="{Binding Bookmarks}"
+            ItemTemplate="{StaticResource BookmarkTemplate}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </Grid>
+        <!--#endregion-->
+        <Grid
+    Grid.Row="2"
+    Grid.ColumnSpan="2"
+    Background="#35363A"
+    Visibility="{Binding IsFindBarVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+    Margin="0"
+    Height="24">
+            <!-- Reduced height from 30 to 24 -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <!-- Remove or adjust buttons as needed -->
+                <!-- If you decide to keep the buttons, make them smaller -->
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Search TextBox -->
+            <TextBox
+    x:Name="findTextBox"
+    Grid.Column="0"
+    Margin="10,0,0,0"
+    VerticalAlignment="Center"
+    Height="20" 
+    Padding="5,0,5,0"
+    VerticalContentAlignment="Center"
+    Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
+                <TextBox.Style>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Background" Value="#202124"/>
+                        <Setter Property="BorderBrush" Value="#202124"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Setter Property="CaretBrush" Value="White"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsFindBarVisible}" Value="True">
+                                <Setter Property="FocusManager.FocusedElement" Value="{Binding RelativeSource={RelativeSource Self}}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+
+            <!-- Optionally remove the "Next" and "Previous" buttons if they are no longer needed -->
+            <!-- Or keep them but adjust their size -->
+            <!-- Find Next Button -->
+            <Button
+        Grid.Column="1"
+        Content="Next"
+        Command="{Binding FindNextCommand}"
+        Margin="5,0,0,0"
+        VerticalAlignment="Center"
+        Height="20"
+        Width="40" />
+            <!-- Reduced size -->
+
+            <!-- Find Previous Button -->
+            <Button
+        Grid.Column="2"
+        Content="Prev"
+        Command="{Binding FindPreviousCommand}"
+        Margin="5,0,0,0"
+        VerticalAlignment="Center"
+        Height="20"
+        Width="40" />
+            <!-- Reduced size -->
+
+            <!-- Close Search Bar Button -->
+            <Button
+        Grid.Column="3"
+        Content="Close"
+        Command="{Binding CloseFindBarCommand}"
+        Margin="5,0,10,0" 
+                VerticalAlignment="Center"
+        Height="20"
+        Width="40" />
+                <!-- Reduced size -->
+        </Grid>
+        <!--#region Browser TabControl-->
+        <TabControl
+            Grid.Row="3"
+            Grid.ColumnSpan="2"
+            Background="#35363A" 
+            SelectedItem="{Binding CurrentTabItem}"
+            ItemsSource="{Binding Tabs}">
+            <TabControl.Resources>
+                <Style TargetType="{x:Type TabControl}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type TabControl}">
+                                <Grid KeyboardNavigation.TabNavigation="Local">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="659*"/>
+                                        <ColumnDefinition Width="23*"/>
+                                        <ColumnDefinition Width="395*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <TabPanel
+                                        Grid.Row="0"
+                                        Panel.ZIndex="1"
+                                        Margin="0,0,0,325"
+                                        IsItemsHost="True" Grid.ColumnSpan="3" Grid.RowSpan="2"/>
+                                    <Border
+                                        Grid.Row="1"
+                                        BorderBrush="Transparent"
+                                        BorderThickness="0"
+                                        Background="{TemplateBinding Background}" Grid.ColumnSpan="3">
+                                        <ContentPresenter ContentSource="SelectedContent"/>
+                                    </Border>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+        </TabControl>
+        <!--#endregion-->
+    </Grid>
+</Window>

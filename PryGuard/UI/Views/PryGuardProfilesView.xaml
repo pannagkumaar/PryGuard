@@ -1,0 +1,317 @@
+﻿<Window x:Class="PryGuard.UI.Views.PryGuardProfilesView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:panel="clr-namespace:PryGuard.UI.Controls.Panels"
+        xmlns:vm="clr-namespace:PryGuard.UI.ViewModels"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        mc:Ignorable="d"
+        Title="PryGuardProfilesWindow" 
+        Height="600" Width="1110"
+        Background="#1E1E1E"
+        UseLayoutRounding="True"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        MouseLeftButtonDown="Window_MouseDown"
+        WindowState="{Binding WindowState}"
+        BorderBrush="#d8281b"
+        BorderThickness="1">
+    <Window.DataContext>
+        <vm:PryGuardProfilesViewModel/>
+    </Window.DataContext>
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Services/UI/Styles/DrawImageStyles.xaml" />
+                <ResourceDictionary Source="/Services/UI/Styles/UIElementStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <panel:AutoStackPanel 
+        Orientation="Vertical"
+        MarginBetweenChildren="1">
+        <!--#region Windows panels & borders-->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MinWidth="900" Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel 
+                Grid.Column="0"
+                HorizontalAlignment="Left" 
+                VerticalAlignment="Center" 
+                Orientation="Horizontal" Width="900">
+                <TextBlock
+                    Text="PryGuard" 
+                    FontFamily="Roboto"
+                    Margin="5,3,955,0"
+                    VerticalAlignment="Center"
+                    FontSize="20"
+                    Height="25">
+                    <TextBlock.Foreground>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <LinearGradientBrush.RelativeTransform>
+                                <TransformGroup>
+                                    <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                    <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                    <RotateTransform CenterY="0.5" CenterX="0.5" Angle="45"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </LinearGradientBrush.RelativeTransform>
+                            <GradientStop x:Name="GradientStop11" Color="#7d3328"/>
+                            <GradientStop Offset="1" x:Name="GradientStop21" Color="#d8281b"/>
+                        </LinearGradientBrush>
+                    </TextBlock.Foreground>
+                </TextBlock>
+            </StackPanel>
+            <StackPanel 
+                Grid.Column="1"
+                HorizontalAlignment="Right" 
+                VerticalAlignment="Center" 
+                Orientation="Horizontal">
+                <Border 
+                    Height="16" Width="16"
+                    CornerRadius="8"  Margin="5"
+                    Background="{StaticResource ThemeBrushGreen}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseDown">
+                            <i:InvokeCommandAction Command="{Binding ChangeWindowStateCommand}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0" Color="{StaticResource ThemeColorGreen}"/>
+                    </Border.Effect>
+                </Border>
+                <Border 
+                    Height="16" Width="16"
+                    CornerRadius="8"  Margin="5"
+                    Background="{StaticResource ThemeBrushYellow}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseDown">
+                            <i:InvokeCommandAction Command="{Binding ToggleWindowStateCommand}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0" Color="{StaticResource ThemeColorYellow}"/>
+                    </Border.Effect>
+                </Border>
+                <Border
+                    Height="16" Width="16"
+                    CornerRadius="8" Margin="5"
+                    Background="{StaticResource ThemeBrushRed}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseDown">
+                            <i:InvokeCommandAction Command="{Binding CloseAppCommand}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0" Color="{StaticResource ThemeColorRed}"/>
+                    </Border.Effect>
+                </Border>
+            </StackPanel>
+        </Grid>
+        <!--#region Helper-->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.76*"/>
+                <ColumnDefinition Width="0.24*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0"/>
+            <panel:AutoStackPanel 
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                MarginBetweenChildren="20"
+                Grid.Column="1" 
+                Background="#1c1c1c">
+                <Button
+                    Width="25"
+                    Height="25"
+                    Style="{StaticResource ThemeButtonProfilesWork}" 
+                    Command="{Binding CreateProfileCommand}">
+                    <Image 
+                        Margin="0,0,0,0"
+                        Source="{StaticResource PlusCreateProfile}"
+                        Height="21" Width="21"/>
+                </Button>
+                <TextBox
+                    Style="{StaticResource ThemeTextbox}"
+                    Width="190"
+                    Height="22"
+                    Margin="0,3,5,0"
+                    Tag="Search Profile"
+                    Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"/>
+            </panel:AutoStackPanel>
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Header-->
+
+        <!--#endregion-->
+
+        <!--#region Profiles-->
+        <ScrollViewer
+            VerticalScrollBarVisibility="Auto"
+            HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding ProfileTabs}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel IsItemsHost="True" Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border
+                            Width="200" Height="160"
+                            Margin="10"
+                            Background="#2E2E2E"
+                            CornerRadius="10"
+                            BorderThickness="1"
+                            BorderBrush="{StaticResource ThemeGradientPinkToOrange}"
+                            Padding="10"
+                            x:Name="ProfileBorder"
+                            AllowDrop="True"
+                            PreviewMouseDown="ProfileBorder_MouseDown"
+                            PreviewMouseMove="ProfileBorder_MouseMove"
+                            Drop="ProfileBorder_Drop">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition MinHeight="20" Height="Auto"/>
+                                    <RowDefinition MinHeight="20" Height="Auto"/>
+                                    <RowDefinition MinHeight="20" Height="Auto"/>
+                                    <RowDefinition MinHeight="20" Height="Auto"/>
+                                    <RowDefinition MinHeight="20" Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Profile Info -->
+                                <TextBlock 
+                Grid.Row="0"
+                FontSize="16" 
+                FontWeight="Bold" 
+                Foreground="White"
+                Margin="0,0,0,5">
+                <Run Text="Name: "/>
+                <Run Text="{Binding Name}"/>
+                                </TextBlock>
+                                <TextBlock 
+                Grid.Row="1"
+                FontSize="12"
+                Foreground="White"
+                Margin="0,0,0,5">
+                <Run Text="Status: "/>
+                <Run Text="{Binding Status}"/>
+                                </TextBlock>
+                                <TextBlock 
+                Grid.Row="2"
+                FontSize="12"
+                Foreground="White"
+                Margin="0,0,0,5">
+                <Run Text="Tags: "/>
+                <Run Text="{Binding Tags}"/>
+                                </TextBlock>
+                                <TextBlock
+                Grid.Row="3"
+                FontSize="12"
+                Foreground="White"
+                Margin="0,0,0,5">
+                <Run Text="Proxy: "/>
+                <Run Text="{Binding ProxyHostPort}"/>
+                                </TextBlock>
+
+                                <!-- Buttons (Initially Hidden) -->
+                                <StackPanel
+                Grid.Row="4"
+                Visibility="Collapsed"
+                x:Name="ActionButtons"
+                HorizontalAlignment="Left"
+                                    Orientation="Horizontal">
+                                    <Button
+    Width="25"
+    Height="25"
+    Margin="30,0,0,0"                                    
+    Style="{StaticResource ThemeButtonProfilesWork}" 
+    Command="{Binding DataContext.EditProfileCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+    CommandParameter="{Binding Id}">
+                                        <Image 
+        Margin="0,0,0,0"
+        Source="{StaticResource EditProfileImage}"
+        Height="21" Width="21"/>
+                                    </Button>
+
+                                    <Button
+                                        Width="25"
+                                        Height="25"
+                                        Style="{StaticResource ThemeButtonProfilesWork}" 
+                                        Command="{Binding ViewModel.DeleteProfileCommand}"
+                                        CommandParameter="{Binding Id}">
+                                        <Image 
+                                            Margin="-3,0,0,0"
+                                            Source="{StaticResource DeleteProfileImage}"
+                                            Height="21" Width="21"/>
+                                    </Button>
+                                    <Button
+                                        Grid.Row="5"
+                                        Content="Start"
+                                        Margin="5,0,10,0"
+                                        Visibility="Collapsed"
+                                        x:Name="StartButton"
+                                        Command="{Binding ViewModel.StartProfileCommand}"
+                                        CommandParameter="{Binding Id}"
+                                        Style="{StaticResource ButtonEnableDisableProfileStyle}">
+                                    </Button>
+                                </StackPanel>
+
+                            </Grid>
+
+                            <!-- Hover Triggers for Showing Buttons and Darkening -->
+                            <Border.Triggers>
+                                <EventTrigger RoutedEvent="MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <!-- Darken Background on Hover -->
+                                            <ColorAnimation Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                        Storyboard.TargetName="ProfileBorder"
+                                        To="#1C1C1C"
+                                        Duration="0:0:0.2"/>
+
+                                            <!-- Show Buttons on Hover -->
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="ActionButtons">
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="StartButton">
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <!-- Restore Original Background on Mouse Leave -->
+                                            <ColorAnimation Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                        Storyboard.TargetName="ProfileBorder"
+                                        To="#2E2E2E"
+                                        Duration="0:0:0.2"/>
+
+                                            <!-- Hide Buttons when Not Hovered -->
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="ActionButtons">
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Collapsed}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="StartButton">
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Collapsed}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Border.Triggers>
+                        </Border>
+                    </DataTemplate>
+
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        <!--#endregion-->
+    </panel:AutoStackPanel>
+</Window>

@@ -1,0 +1,101 @@
+﻿<!-- DownloadsPage.xaml -->
+<UserControl x:Class="PryGuard.UI.Views.DownloadPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:PryGuard.UI.Views"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+
+	<UserControl.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="/UI/Themes/DarkTheme.xaml" />
+				<ResourceDictionary Source="/Services/UI/Styles/DrawImageStyles.xaml" />
+				<ResourceDictionary Source="/Services/UI/Styles/UIElementStyles.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</UserControl.Resources>
+
+	<Grid Background="{DynamicResource BackgroundBrush}">
+		<ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Auto">
+			<StackPanel HorizontalAlignment="Center">
+				<TextBlock Text="Downloads" FontSize="24" FontWeight="Bold" Margin="20"
+                           Foreground="{DynamicResource ForegroundBrush}" HorizontalAlignment="Center" />
+				<ItemsControl ItemsSource="{Binding Downloads}">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<Border CornerRadius="8" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                                    Background="{DynamicResource BackgroundBrush}" Margin="10" Padding="10">
+								<Grid Width="1500">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="2*" />
+										<ColumnDefinition Width="3*" />
+										<ColumnDefinition Width="1*" />
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
+
+
+									<!-- File Name -->
+									<TextBlock Text="{Binding SuggestedFileName}"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource ForegroundBrush}"
+                                               Margin="5,0"
+                                               VerticalAlignment="Center"
+                                               Grid.Column="0" />
+
+									<!-- Progress Bar -->
+									<ProgressBar Minimum="0" Maximum="100"
+									 Value="{Binding PercentComplete}"
+									 Height="20" Margin="5,0"
+									 VerticalAlignment="Center"
+									 Foreground="White"  
+									Background="{DynamicResource BackgroundBrush}"  
+									Grid.Column="1" />
+
+									<!-- Status Text -->
+									<TextBlock Text="{Binding Status}"
+                                               FontSize="14"
+                                               Foreground="{DynamicResource ForegroundBrush}"
+                                               Margin="5,0"
+                                               VerticalAlignment="Center"
+                                               Grid.Column="2" />
+
+									
+
+									<!-- Cancel Button -->
+									<Button Grid.Column="3"
+											Command="{Binding CancelCommand}"
+											Background="Transparent"
+											BorderThickness="0"
+											VerticalAlignment="Center">
+										<Image Source="{StaticResource DeleteIcon}"
+											   Width="16"
+											   Height="16" />
+									</Button>
+
+									<!-- Open File Button -->
+									<Button Grid.Column="4"
+											Command="{Binding OpenFileCommand}"
+											CommandParameter="{Binding FullPath}"
+											Background="Transparent"
+											BorderThickness="0"
+											VerticalAlignment="Center">
+										<Image Source="{StaticResource OpenIcon}"
+											   Width="16"
+											   Height="16" />
+									</Button>
+								</Grid>
+							</Border>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</StackPanel>
+		</ScrollViewer>
+	</Grid>
+</UserControl>
