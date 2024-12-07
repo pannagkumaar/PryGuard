@@ -125,7 +125,7 @@
                 Content="{Binding SaveProfileButtonContent}"
                 Width="60"
                 Height="22"
-                Margin="0,0,0,0"
+                Margin="0,1,0,0"
                 Style="{StaticResource ButtonEnableDisableProfileStyle}"
                 Command="{Binding SaveProfileCommand}"/>
         </StackPanel>
@@ -441,738 +441,985 @@
                     SelectedItem="{Binding PryGuardProf.FakeProfile.OsVersion, Mode=TwoWay}">
                 </ComboBox>
                 <!--#endregion-->
+                <!--#region Adblock-->
+                <StackPanel Grid.Row="10" Orientation="Horizontal">
+                    <TextBlock
+        Style="{StaticResource ThemeTextBlock}"
+        Text="Adblock"
+        Margin="70,12,0,0"
+        VerticalAlignment="Top"
+        HorizontalAlignment="Left"
+        FontSize="13"/>
+                    <!-- Tooltip Icon -->
+                    <TextBlock
+        Width="16"
+        Height="17"
+        Margin="5,1,0,0"
+        Cursor="Help">
+                        <TextBlock.ToolTip>
+                            <ToolTip Width="160" Height="60">
+                                <StackPanel>
+                                    <TextBlock
+                        TextWrapping="Wrap"
+                        Text="Enable or disable the ad blocker to prevent unwanted advertisements from loading."/>
+                                </StackPanel>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+        <Image 
+            Source="{StaticResource ProxyInfoHelpImage}" 
+            Height="15" Width="15"/>
+    </TextBlock>
+                </StackPanel>
+                <RadioButton 
+    Grid.Row="10"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="OFF"
+    IsChecked="{Binding PryGuardProf.IsAdBlock,
+    Converter={StaticResource InverseBoolRadioConverter}}"
+    GroupName="IsAdblock"
+    Margin="210,10,0,0"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Left"/>
+                <RadioButton 
+    Grid.Row="10"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="ON"
+    IsChecked="{Binding PryGuardProf.IsAdBlock,
+    Converter={StaticResource BoolRadioConverter}}"
+    GroupName="IsAdblock"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Right"
+    Margin="0,10,114,0"/>
+                <!--#endregion-->
+
                 <!--#region Do not track -->
-                <TextBlock
-                    Grid.Row="7"
-                    Style="{StaticResource ThemeTextBlock}"
-                    Text="Do not track"
-                    Margin="70,12,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    FontSize="13"/>
+                <StackPanel Grid.Row="7" Orientation="Horizontal">
+                    <TextBlock
+        Style="{StaticResource ThemeTextBlock}"
+        Text="Do not track"
+        Margin="70,12,0,0"
+        VerticalAlignment="Top"
+        HorizontalAlignment="Left"
+        FontSize="13"/>
+                    <!-- Tooltip Icon -->
+                    <TextBlock
+        Width="16"
+        Height="17"
+        Margin="5,0,0,0"
+        Cursor="Help">
+                        <TextBlock.ToolTip>
+                            <ToolTip Width="160" Height="60">
+                                <StackPanel>
+                                    <TextBlock
+                        TextWrapping="Wrap"
+                        Text="Enable Do Not Track to prevent websites from tracking your browsing activities."/>
+                                </StackPanel>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+        <Image 
+            Source="{StaticResource ProxyInfoHelpImage}" 
+            Height="15" Width="15" RenderTransformOrigin="0.578,0.544"/>
+    </TextBlock>
+                </StackPanel>
                 <RadioButton 
-                    Grid.Row="7"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    IsChecked="{Binding PryGuardProf.FakeProfile.IsSendDoNotTrack,
-                    Converter={StaticResource InverseBoolRadioConverter}}"
-                    Content="OFF"
-                    GroupName="DoNotTrack"
-                    Margin="210,10,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"/>
+    Grid.Row="7"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    IsChecked="{Binding PryGuardProf.FakeProfile.IsSendDoNotTrack,
+    Converter={StaticResource InverseBoolRadioConverter}}"
+    Content="OFF"
+    GroupName="DoNotTrack"
+    Margin="210,10,0,0"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Left"/>
                 <RadioButton 
-                    Grid.Row="7"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="ON"
-                    IsChecked="{Binding PryGuardProf.FakeProfile.IsSendDoNotTrack,
-                    Converter={StaticResource BoolRadioConverter}}"
-                    GroupName="DoNotTrack"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Margin="0,10,114,0"/>
+    Grid.Row="7"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="ON"
+    IsChecked="{Binding PryGuardProf.FakeProfile.IsSendDoNotTrack,
+    Converter={StaticResource BoolRadioConverter}}"
+    GroupName="DoNotTrack"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Right"
+    Margin="0,10,114,0"/>
                 <!--#endregion-->
 
-                <!--#region IsLoadCacheInMemory-->
-                <TextBlock
-                    Grid.Row="8"
-                    Style="{StaticResource ThemeTextBlock}"
-                    Text="Save Cache"
-                    Margin="70,12,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    FontSize="13"/>
+                <!-- Repeat similar patterns for other sections -->
+
+                <!--#region Save Cache-->
+                <StackPanel Grid.Row="8" Orientation="Horizontal">
+                    <TextBlock
+        Style="{StaticResource ThemeTextBlock}"
+        Text="Save Cache"
+        Margin="70,12,0,0"
+        VerticalAlignment="Top"
+        HorizontalAlignment="Left"
+        FontSize="13"/>
+                    <!-- Tooltip Icon -->
+                    <TextBlock
+        Width="16"
+        Height="17"
+        Margin="5,0,0,0"
+        Cursor="Help">
+                        <TextBlock.ToolTip>
+                            <ToolTip Width="160" Height="60">
+                                <StackPanel>
+                                    <TextBlock
+                        TextWrapping="Wrap"
+                        Text="Choose whether to save cache data in memory for faster load times."/>
+                                </StackPanel>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+        <Image 
+            Source="{StaticResource ProxyInfoHelpImage}" 
+            Height="15" Width="15"/>
+    </TextBlock>
+                </StackPanel>
                 <RadioButton 
-                    Grid.Row="8"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="OFF"
-                    IsChecked="{Binding PryGuardProf.IsLoadCacheInMemory,
-                    Converter={StaticResource InverseBoolRadioConverter}}"
-                    GroupName="IsLoadCache"
-                    Margin="210,10,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"/>
+    Grid.Row="8"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="OFF"
+    IsChecked="{Binding PryGuardProf.IsLoadCacheInMemory,
+    Converter={StaticResource InverseBoolRadioConverter}}"
+    GroupName="IsLoadCache"
+    Margin="210,10,0,0"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Left"/>
                 <RadioButton 
-                    Grid.Row="8"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="ON"
-                    IsChecked="{Binding PryGuardProf.IsLoadCacheInMemory,
-                    Converter={StaticResource BoolRadioConverter}}"
-                    GroupName="IsLoadCache"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Margin="0,10,114,0"/>
+    Grid.Row="8"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="ON"
+    IsChecked="{Binding PryGuardProf.IsLoadCacheInMemory,
+    Converter={StaticResource BoolRadioConverter}}"
+    GroupName="IsLoadCache"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Right"
+    Margin="0,10,114,0"/>
                 <!--#endregion-->
 
-                <!--#region IsLoadImage-->
-                <TextBlock
-                    Grid.Row="9"
-                    Style="{StaticResource ThemeTextBlock}"
-                    Text="Load image"
-                    Margin="70,12,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    FontSize="13"/>
+                <!--#region Load Image-->
+                <StackPanel Grid.Row="9" Orientation="Horizontal">
+                    <TextBlock
+        Style="{StaticResource ThemeTextBlock}"
+        Text="Load image"
+        Margin="70,12,0,0"
+        VerticalAlignment="Top"
+        HorizontalAlignment="Left"
+        FontSize="13"/>
+                    <!-- Tooltip Icon -->
+                    <TextBlock
+        Width="16"
+        Height="17"
+        Margin="5,1,0,0"
+        Cursor="Help">
+                        <TextBlock.ToolTip>
+                            <ToolTip Width="160" Height="60">
+                                <StackPanel>
+                                    <TextBlock
+                        TextWrapping="Wrap"
+                        Text="Enable or disable the loading of images to improve page load performance."/>
+                                </StackPanel>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+        <Image 
+            Source="{StaticResource ProxyInfoHelpImage}" 
+            Height="15" Width="15"/>
+    </TextBlock>
+                </StackPanel>
                 <RadioButton 
-                    Grid.Row="9"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    IsChecked="{Binding PryGuardProf.IsLoadImage,
-                    Converter={StaticResource InverseBoolRadioConverter}}"
-                    Content="OFF"
-                    GroupName="IsLoadImage"
-                    Margin="210,10,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"/>
+    Grid.Row="9"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    IsChecked="{Binding PryGuardProf.IsLoadImage,
+    Converter={StaticResource InverseBoolRadioConverter}}"
+    Content="OFF"
+    GroupName="IsLoadImage"
+    Margin="210,10,0,0"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Left"/>
                 <RadioButton 
-                    Grid.Row="9"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="ON"
-                    IsChecked="{Binding PryGuardProf.IsLoadImage,
-                    Converter={StaticResource BoolRadioConverter}}"
-                    GroupName="IsLoadImage"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Margin="0,10,114,0"/>
-                <!--#endregion-->
-
-                <!--#region IsAdblock-->
-                <TextBlock
-                    Grid.Row="10"
-                    Style="{StaticResource ThemeTextBlock}"
-                    Text="Adblock"
-                    Margin="70,12,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    FontSize="13"/>
-                <RadioButton 
-                    Grid.Row="10"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="OFF"
-                    IsChecked="{Binding PryGuardProf.IsAdBlock,
-                    Converter={StaticResource InverseBoolRadioConverter}}"
-                    GroupName="IsAdblock"
-                    Margin="210,10,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"/>
-                <RadioButton 
-                    Grid.Row="10"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="ON"
-                    IsChecked="{Binding PryGuardProf.IsAdBlock,
-                    Converter={StaticResource BoolRadioConverter}}"
-                    GroupName="IsAdblock"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Margin="0,10,114,0"/>
+    Grid.Row="9"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="ON"
+    IsChecked="{Binding PryGuardProf.IsLoadImage,
+    Converter={StaticResource BoolRadioConverter}}"
+    GroupName="IsLoadImage"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Right"
+    Margin="0,10,114,0"/>
                 <!--#endregion-->
 
                 <!--#region Hide Canvas-->
-                <TextBlock
-                    Grid.Row="11"
-                    Style="{StaticResource ThemeTextBlock}"
-                    Text="Hide Canvas"
-                    Margin="70,12,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    FontSize="13"/>
+                <StackPanel Grid.Row="11" Orientation="Horizontal">
+                    <TextBlock
+        Style="{StaticResource ThemeTextBlock}"
+        Text="Hide Canvas"
+        Margin="70,12,0,0"
+        VerticalAlignment="Top"
+        HorizontalAlignment="Left"
+        FontSize="13"/>
+                    <!-- Tooltip Icon -->
+                    <TextBlock
+        Width="16"
+        Height="17"
+        Margin="5,1,0,0"
+        Cursor="Help">
+                        <TextBlock.ToolTip>
+                            <ToolTip Width="160" Height="60">
+                                <StackPanel>
+                                    <TextBlock
+                        TextWrapping="Wrap"
+                        Text="Toggle the visibility of the HTML5 Canvas to prevent fingerprinting."/>
+                                </StackPanel>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+        <Image 
+            Source="{StaticResource ProxyInfoHelpImage}" 
+            Height="15" Width="15"/>
+    </TextBlock>
+                </StackPanel>
                 <RadioButton 
-                    Grid.Row="11"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="OFF"
-                    IsChecked="{Binding PryGuardProf.FakeProfile.HideCanvas,
-                    Converter={StaticResource InverseBoolRadioConverter}}"
-                    GroupName="Canvas"
-                    Margin="210,10,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"/>
+    Grid.Row="11"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="OFF"
+    IsChecked="{Binding PryGuardProf.FakeProfile.HideCanvas,
+    Converter={StaticResource InverseBoolRadioConverter}}"
+    GroupName="Canvas"
+    Margin="210,10,0,0"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Left"/>
                 <RadioButton 
-                    Grid.Row="11"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="ON"
-                    IsChecked="{Binding PryGuardProf.FakeProfile.HideCanvas,
-                    Converter={StaticResource BoolRadioConverter}}"
-                    GroupName="Canvas"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Margin="0,10,114,0"/>
+    Grid.Row="11"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="ON"
+    IsChecked="{Binding PryGuardProf.FakeProfile.HideCanvas,
+    Converter={StaticResource BoolRadioConverter}}"
+    GroupName="Canvas"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Right"
+    Margin="0,10,114,0"/>
                 <!--#endregion-->
 
                 <!--#region WebRTC-->
-                <TextBlock
-                    Grid.Row="12"
-                    Style="{StaticResource ThemeTextBlock}"
-                    Text="WebRTC"
-                    Margin="70,12,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    FontSize="13"/>
+                <StackPanel Grid.Row="12" Orientation="Horizontal">
+                    <TextBlock
+        Style="{StaticResource ThemeTextBlock}"
+        Text="WebRTC"
+        Margin="70,12,0,0"
+        VerticalAlignment="Top"
+        HorizontalAlignment="Left"
+        FontSize="13"/>
+                    <!-- Tooltip Icon -->
+                    <TextBlock
+        Width="16"
+        Height="17"
+        Margin="5,1,0,0"
+        Cursor="Help">
+                        <TextBlock.ToolTip>
+                            <ToolTip Width="160" Height="60">
+                                <StackPanel>
+                                    <TextBlock
+                        TextWrapping="Wrap"
+                        Text="Control WebRTC settings to prevent IP leaks and enhance privacy."/>
+                                </StackPanel>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+        <Image 
+            Source="{StaticResource ProxyInfoHelpImage}" 
+            Height="15" Width="15"/>
+    </TextBlock>
+                </StackPanel>
                 <RadioButton 
-                    Grid.Row="12"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="OFF"
-                    GroupName="WebRTC"
-                    Margin="210,10,0,0"
-                    IsChecked="{Binding PryGuardProf.FakeProfile.WebRtcSettings.WebRtcStatus,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=OFF}"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"/>
+    Grid.Row="12"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="OFF"
+    GroupName="WebRTC"
+    Margin="210,10,0,0"
+    IsChecked="{Binding PryGuardProf.FakeProfile.WebRtcSettings.WebRtcStatus,
+    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=OFF}"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Left"/>
                 <RadioButton 
-                    Grid.Row="12"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="REAL"
-                    GroupName="WebRTC"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    IsChecked="{Binding PryGuardProf.FakeProfile.WebRtcSettings.WebRtcStatus,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=REAL}"
-                    Margin="0,10,114,0"/>
+    Grid.Row="12"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="REAL"
+    GroupName="WebRTC"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Right"
+    IsChecked="{Binding PryGuardProf.FakeProfile.WebRtcSettings.WebRtcStatus,
+    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=REAL}"
+    Margin="0,10,114,0"/>
                 <RadioButton 
-                    Grid.Row="12"
-                    IsEnabled="False"
-                    Visibility="Hidden"
-                    x:Name="rbWebRTC"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="MANUAL"
-                    GroupName="WebRTC"
-                    Margin="0,10,74,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    CommandParameter="MANUAL"/>
+    Grid.Row="12"
+    IsEnabled="False"
+    Visibility="Hidden"
+    x:Name="rbWebRTC"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="MANUAL"
+    GroupName="WebRTC"
+    Margin="0,10,74,0"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Right"
+    CommandParameter="MANUAL"/>
                 <TextBox
-                    Grid.Row="12"
-                    IsEnabled="False"
-                    Style="{StaticResource ThemeTextbox}"
-                    Width="239"
-                    Margin="96,40,0,10"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Center"
-                    Tag="IP Address"
-                    Text="{Binding PryGuardProf.FakeProfile.WebRtcSettings.PublicIp}"
-                    Visibility="{Binding IsChecked,ElementName=rbWebRTC,Converter={StaticResource b2v}}"/>
+    Grid.Row="12"
+    IsEnabled="False"
+    Style="{StaticResource ThemeTextbox}"
+    Width="239"
+    Margin="96,40,0,10"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Center"
+    Tag="IP Address"
+    Text="{Binding PryGuardProf.FakeProfile.WebRtcSettings.PublicIp}"
+    Visibility="{Binding IsChecked,ElementName=rbWebRTC,Converter={StaticResource b2v}}"/>
                 <!--#endregion-->
 
-
-
                 <!--#region WebGL-->
-                <TextBlock
-                    Grid.Row="13"
-                    Style="{StaticResource ThemeTextBlock}"
-                    Text="WebGL"
-                    Margin="70,12,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    FontSize="13"/>
+                <StackPanel Grid.Row="13" Orientation="Horizontal">
+                    <TextBlock
+        Style="{StaticResource ThemeTextBlock}"
+        Text="WebGL"
+        Margin="70,12,0,0"
+        VerticalAlignment="Top"
+        HorizontalAlignment="Left"
+        FontSize="13"/>
+                    <!-- Tooltip Icon -->
+                    <TextBlock
+        Width="16"
+        Height="17"
+        Margin="5,1,0,0"
+        Cursor="Help">
+                        <TextBlock.ToolTip>
+                            <ToolTip Width="160" Height="60">
+                                <StackPanel>
+                                    <TextBlock
+                        TextWrapping="Wrap"
+                        Text="Manage WebGL settings to control rendering and prevent fingerprinting."/>
+                                </StackPanel>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+        <Image 
+            Source="{StaticResource ProxyInfoHelpImage}" 
+            Height="15" Width="15"/>
+    </TextBlock>
+                </StackPanel>
                 <RadioButton 
-                    Grid.Row="13"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="OFF"
-                    GroupName="WebGL"
-                    Margin="210,10,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    IsChecked="{Binding PryGuardProf.FakeProfile.WebGL.Status,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=OFF}"/>
+    Grid.Row="13"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="OFF"
+    GroupName="WebGL"
+    Margin="210,10,0,0"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Left"
+    IsChecked="{Binding PryGuardProf.FakeProfile.WebGL.Status,
+    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=OFF}"/>
                 <RadioButton 
-                    Grid.Row="13"
-                    x:Name="rbWebGlNoise"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="NOISE"
-                    GroupName="WebGL"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Margin="0,10,114,0"
-                    IsChecked="{Binding PryGuardProf.FakeProfile.WebGL.Status,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=NOISE}"/>
+    Grid.Row="13"
+    x:Name="rbWebGlNoise"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="NOISE"
+    GroupName="WebGL"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Right"
+    Margin="0,10,114,0"
+    IsChecked="{Binding PryGuardProf.FakeProfile.WebGL.Status,
+    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=NOISE}"/>
                 <ComboBox
-                    Grid.Row="13"
-                    Style="{StaticResource ThemeCombobox}"
-                    Width="180"
-                    Height="22"
-                    SelectedIndex="0"
-                    Margin="65,40,0,10"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    Visibility="{Binding IsChecked,ElementName=rbWebGlNoise,Converter={StaticResource b2v}}">
+    Grid.Row="13"
+    Style="{StaticResource ThemeCombobox}"
+    Width="180"
+    Height="22"
+    SelectedIndex="0"
+    Margin="65,40,0,10"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Left"
+    Visibility="{Binding IsChecked,ElementName=rbWebGlNoise,Converter={StaticResource b2v}}">
                     <ComboBoxItem>Google inc.</ComboBoxItem>
                 </ComboBox>
                 <ComboBox
-                    Grid.Row="13"
-                    Style="{StaticResource ThemeCombobox}"
-                    Width="180"
-                    Height="22"
-                    SelectedIndex="0"
-                    Margin="0,40,55,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Visibility="{Binding IsChecked,ElementName=rbWebGlNoise,Converter={StaticResource b2v}}"
-                    ItemsSource="{Binding Renderers}"
-                    SelectedItem="{Binding Path=PryGuardProf.FakeProfile.WebGL.Renderer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-
+    Grid.Row="13"
+    Style="{StaticResource ThemeCombobox}"
+    Width="180"
+    Height="22"
+    SelectedIndex="0"
+    Margin="0,40,55,0"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Right"
+    Visibility="{Binding IsChecked,ElementName=rbWebGlNoise,Converter={StaticResource b2v}}"
+    ItemsSource="{Binding Renderers}"
+    SelectedItem="{Binding Path=PryGuardProf.FakeProfile.WebGL.Renderer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 </ComboBox>
                 <!--#endregion-->
 
                 <!--#region Timezone-->
-                <TextBlock
-                    Grid.Row="14"
-                    Style="{StaticResource ThemeTextBlock}"
-                    Text="Timezone"
-                    Margin="70,12,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    FontSize="13"/>
-                <RadioButton 
-                    Grid.Row="14"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="AUTO"
-                    IsChecked="True"
-                    GroupName="TimeZone"
-                    Margin="210,10,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"/>
-                <RadioButton 
-                    Grid.Row="14"
-                    x:Name="rbTimeZone"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="MANUAL"
-                    GroupName="TimeZone"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Margin="0,10,114,0"/>
-                <ComboBox
-                    Grid.Row="14"
-                    Style="{StaticResource ThemeCombobox}"
-                    Width="239"
-                    SelectedIndex="0"
-                    Margin="96,40,0,10"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Center"
-                    Visibility="{Binding IsChecked,ElementName=rbTimeZone,Converter={StaticResource b2v}}">
-                    <ComboBoxItem>Europe</ComboBoxItem>
-                </ComboBox>
-                <!--#endregion-->
-
-                <!--#region Language-->
-                <TextBlock
-                    Grid.Row="15"
-                    Style="{StaticResource ThemeTextBlock}"
-                    Text="Language"
-                    Margin="70,12,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    FontSize="13"/>
-                <RadioButton 
-                    Grid.Row="15"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="AUTO"
-                   
-                    GroupName="Lang"
-                    Margin="210,10,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"/>
-                <RadioButton 
-                    Grid.Row="15"
-                    x:Name="rbLang"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="MANUAL"
-                    IsChecked="True"
-                    GroupName="Lang"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Margin="0,10,114,0"/>
-                <ComboBox
-                    Grid.Row="15"
-                    Style="{StaticResource ThemeCombobox}"
-                    Width="140"
-                    SelectedIndex="0"
-                    Margin="96,40,0,10"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Center"
-                    Visibility="{Binding IsChecked, ElementName=rbScreen, Converter={StaticResource b2v}}"
-                    SelectionChanged="ComboBoxlang_SelectionChanged"
-                    ItemsSource="{Binding Source={StaticResource BrowserLanguageDataProvider}}"
-                    SelectedItem="{Binding Path=SelectedLanguage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                    <!--SelectedItem="{Binding Path=SelectedLanguage, Mode=TwoWay}">-->
-                </ComboBox>
-
-                <!--#endregion-->
-
-                <!--#region Geolocation-->
-                <TextBlock
-                    Grid.Row="16"
-                    Style="{StaticResource ThemeTextBlock}"
-                    Text="Geolocation"
-                    Margin="70,12,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    FontSize="13"/>
-                <RadioButton 
-                    Grid.Row="16"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="AUTO"
-                    GroupName="Geo"
-                    Margin="210,10,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    IsChecked="{Binding PryGuardProf.FakeProfile.GeoSettings.Status,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Automatic}"/>
-                <RadioButton 
-                    Grid.Row="16"
-                    x:Name="rbGeo"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="MANUAL"
-                    GroupName="Geo"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Margin="0,10,114,0"
-                    IsChecked="{Binding PryGuardProf.FakeProfile.GeoSettings.Status,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Manual}"/>
-                <TextBox
-                    Grid.Row="16"
-                    Height="22"
-                    Width="118"
-                    Margin="170,40,0,10"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    Tag="Latitude"
-                    Style="{StaticResource ThemeTextbox}"
-                    Visibility="{Binding IsChecked,ElementName=rbGeo,Converter={StaticResource b2v}}"
-                    Text="{Binding PryGuardProf.FakeProfile.GeoSettings.Latitude}"/>
-                <TextBox
-                    Grid.Row="16"
-                    Height="22"
-                    Width="118"
-                    Margin="0,40,73,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Tag="Longitude"
-                    Style="{StaticResource ThemeTextbox}"
-                    Visibility="{Binding IsChecked,ElementName=rbGeo,Converter={StaticResource b2v}}"
-                    Text="{Binding PryGuardProf.FakeProfile.GeoSettings.Longitude}"/>
-                <!--#endregion-->
-
-                <!--#region Processor-->
-                <TextBlock
-                    Grid.Row="18"
-                    Style="{StaticResource ThemeTextBlock}"
-                    Text="Processor"
-                    Margin="67,10,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    FontSize="13"/>
-                <RadioButton 
-                    Grid.Row="18"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="AUTO"
-                    GroupName="Proc"
-                    Margin="210,10,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    IsChecked="{Binding PryGuardProf.FakeProfile.CpuStatus,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Automatic}"/>
-                <RadioButton 
-                    Grid.Row="18"
-                    x:Name="rbProc"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="MANUAL"
-                    GroupName="Proc"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Margin="0,10,114,0"
-                    IsChecked="{Binding PryGuardProf.FakeProfile.CpuStatus,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Manual}"/>
-
-                <!--#region StackPanel Cores-->
-                <StackPanel
-                    Grid.Row="18"
-                    Width="180"
-                    Height="16"
-                    Orientation="Horizontal"
-                    Visibility="{Binding IsChecked,ElementName=rbProc,Converter={StaticResource b2v}}"
-                    Margin="96,40,0,10">
-                    <RadioButton 
-                        Grid.Row="18"
-                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                        Content="2"
-                        Height="16"
-                        Width="30"
-                        GroupName="Core"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Margin="0,0,0,0"
-                        IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
-                        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=2}"/>
-                    <RadioButton 
-                        Grid.Row="17"
-                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                        Content="4"
-                        Height="16"
-                        Width="30"
-                        GroupName="Core"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Margin="0,0,0,0"
-                        IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
-                        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=4}"/>
-                    <RadioButton 
-                        Grid.Row="17"
-                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                        Content="6"
-                        Height="16"
-                        Width="30"
-                        GroupName="Core"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Margin="0,0,0,0"
-                        IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
-                        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=6}"/>
-                    <RadioButton 
-                        Grid.Row="17"
-                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                        Content="8"
-                        Height="16"
-                        Width="30"
-                        GroupName="Core"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Margin="0,0,0,0"
-                        IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
-                        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=8}"/>
-                    <RadioButton 
-                        Grid.Row="17"
-                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                        Content="12"
-                        Height="16"
-                        Width="30"
-                        GroupName="Core"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Margin="0,0,0,0"
-                        IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
-                        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=12}"/>
-                    <RadioButton 
-                        Grid.Row="17"
-                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                        Content="16"
-                        Height="16"
-                        Width="30"
-                        GroupName="Core"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Margin="0,0,0,0"
-                        IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
-                        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=16}"/>
+                <StackPanel Grid.Row="14" Orientation="Horizontal">
+                    <TextBlock
+        Style="{StaticResource ThemeTextBlock}"
+        Text="Timezone"
+        Margin="70,12,0,0"
+        VerticalAlignment="Top"
+        HorizontalAlignment="Left"
+        FontSize="13"/>
+                    <!-- Tooltip Icon -->
+                    <TextBlock
+        Width="16"
+        Height="17"
+        Margin="5,12,0,0"
+        Cursor="Help">
+                        <TextBlock.ToolTip>
+                            <ToolTip Width="160" Height="60">
+                                <StackPanel>
+                                    <TextBlock
+                        TextWrapping="Wrap"
+                        Text="Select your timezone to ensure accurate time settings while browsing."/>
+                                </StackPanel>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+        <Image 
+            Source="{StaticResource ProxyInfoHelpImage}" 
+            Height="15" Width="15"/>
+    </TextBlock>
                 </StackPanel>
-                <!--#endregion-->
-                <!--#endregion-->
-
-                <!--#region Memory-->
-                <TextBlock
-                    Grid.Row="17"
-                    Style="{StaticResource ThemeTextBlock}"
-                    Text="Memory"
-                    Margin="70,12,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    FontSize="13"/>
                 <RadioButton 
-                    Grid.Row="17"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="AUTO"
-                    GroupName="Mem"
-                    Margin="210,6,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    IsChecked="{Binding PryGuardProf.FakeProfile.MemStatus,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Automatic}"/>
+    Grid.Row="14"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="AUTO"
+    IsChecked="True"
+    GroupName="TimeZone"
+    Margin="210,10,0,0"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Left"/>
                 <RadioButton 
-                    Grid.Row="17"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    x:Name="rbMem"
-                    Content="MANUAL"
-                    GroupName="Mem"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Margin="0,6,113,0"
-                    IsChecked="{Binding PryGuardProf.FakeProfile.MemStatus,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Manual}" Checked="rbMem_Checked"/>
-
-                <!--#region StackPanel Memory-->
-                <StackPanel
-                    Grid.Row="17"
-                    Width="90"
-                    Height="16"
-                    Orientation="Horizontal"
-                    Visibility="{Binding IsChecked,ElementName=rbMem,Converter={StaticResource b2v}}"
-                    Margin="96,40,0,10">
-                    <RadioButton 
-                        Grid.Row="17"
-                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                        Content="2"
-                        Height="16"
-                        Width="30"
-                        GroupName="MemSize"
-                        IsChecked="{Binding PryGuardProf.FakeProfile.MemoryAvailable,
-                        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=2}"/>
-                    <RadioButton 
-                        Grid.Row="17"
-                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                        Content="4"
-                        Height="16"
-                        Width="30"
-                        GroupName="MemSize"
-                        IsChecked="{Binding PryGuardProf.FakeProfile.MemoryAvailable,
-                        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=4}"/>
-                    <RadioButton 
-                        Grid.Row="17"
-                        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                        Content="8"
-                        Height="16"
-                        Width="30"
-                        GroupName="MemSize"
-                        IsChecked="{Binding PryGuardProf.FakeProfile.MemoryAvailable,
-                        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=8}"/>
-                </StackPanel>
-                <!--#endregion-->
-
-                <!--#endregion-->
-
-                <!--#region Screen-->
-                <TextBlock
-                    Grid.Row="19"
-                    Style="{StaticResource ThemeTextBlock}"
-                    Text="Screen"
-                    Margin="70,12,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    FontSize="13"/>
-                <RadioButton 
-                    Grid.Row="19"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="REAL"
-                    IsChecked="False"
-                    IsEnabled="False"
-                    GroupName="Screen"
-                    Margin="210,10,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left" Checked="RadioButton_Checked"/>
-                <RadioButton 
-                    Grid.Row="19"
-                    x:Name="rbScreen"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="MANUAL"
-                    IsChecked="True"
-                    GroupName="Screen"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Margin="0,10,114,0"/>
+    Grid.Row="14"
+    x:Name="rbTimeZone"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="MANUAL"
+    GroupName="TimeZone"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Right"
+    Margin="0,10,114,0"/>
                 <ComboBox
-                    Grid.Row="19"
-                    Style="{StaticResource ThemeCombobox}"
-                    Width="239"
-                    Margin="96,40,0,10"
-                    SelectedIndex="0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Center"
-                    Visibility="{Binding IsChecked,ElementName=rbScreen,Converter={StaticResource b2v}}"
-                    ItemsSource="{Binding ScreenSizes}"
-                    SelectedItem="{Binding PryGuardProf.FakeProfile.ScreenSize, Mode=TwoWay}">
+    Grid.Row="14"
+    Style="{StaticResource ThemeCombobox}"
+    Width="239"
+    SelectedIndex="0"
+    Margin="96,40,0,10"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Center"
+    Visibility="{Binding IsChecked,ElementName=rbTimeZone,Converter={StaticResource b2v}}"
+    ItemsSource="{Binding TimeZones}"
+    SelectedItem="{Binding PryGuardProf.FakeProfile.TimeZone, Mode=TwoWay}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding}" />
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
+                <!--#endregion-->
 
+                <!--#region Language-->
+                <StackPanel Grid.Row="15" Orientation="Horizontal">
+                    <TextBlock
+        Style="{StaticResource ThemeTextBlock}"
+        Text="Language"
+        Margin="70,12,0,0"
+        VerticalAlignment="Top"
+        HorizontalAlignment="Left"
+        FontSize="13"/>
+                    <!-- Tooltip Icon -->
+                    <TextBlock
+        Width="16"
+        Height="17"
+        Margin="5,12,0,0"
+        Cursor="Help">
+                        <TextBlock.ToolTip>
+                            <ToolTip Width="160" Height="60">
+                                <StackPanel>
+                                    <TextBlock
+                        TextWrapping="Wrap"
+                        Text="Select your preferred language for the application interface."/>
+                                </StackPanel>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+        <Image 
+            Source="{StaticResource ProxyInfoHelpImage}" 
+            Height="15" Width="15"/>
+    </TextBlock>
+                </StackPanel>
+                <RadioButton 
+    Grid.Row="15"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="AUTO"
+    GroupName="Lang"
+    Margin="210,10,0,0"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Left"/>
+                <RadioButton 
+    Grid.Row="15"
+    x:Name="rbLang"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="MANUAL"
+    IsChecked="True"
+    GroupName="Lang"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Right"
+    Margin="0,10,114,0"/>
+                <ComboBox
+    Grid.Row="15"
+    Style="{StaticResource ThemeCombobox}"
+    Width="140"
+    SelectedIndex="0"
+    Margin="96,40,0,10"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Center"
+    Visibility="{Binding IsChecked, ElementName=rbLang, Converter={StaticResource b2v}}"
+    SelectionChanged="ComboBoxlang_SelectionChanged"
+    ItemsSource="{Binding Source={StaticResource BrowserLanguageDataProvider}}"
+    SelectedItem="{Binding Path=SelectedLanguage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <!--SelectedItem="{Binding Path=SelectedLanguage, Mode=TwoWay}">-->
+                </ComboBox>
+                <!--#endregion-->
+
+                <!--#region Geolocation-->
+                <StackPanel Grid.Row="16" Orientation="Horizontal">
+                    <TextBlock
+        Style="{StaticResource ThemeTextBlock}"
+        Text="Geolocation"
+        Margin="70,12,0,0"
+        VerticalAlignment="Top"
+        HorizontalAlignment="Left"
+        FontSize="13"/>
+                    <!-- Tooltip Icon -->
+                    <TextBlock
+        Width="16"
+        Height="17"
+        Margin="5,1,0,0"
+        Cursor="Help">
+                        <TextBlock.ToolTip>
+                            <ToolTip Width="160" Height="60">
+                                <StackPanel>
+                                    <TextBlock
+                        TextWrapping="Wrap"
+                        Text="Set your geolocation coordinates or allow automatic detection."/>
+                                </StackPanel>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+        <Image 
+            Source="{StaticResource ProxyInfoHelpImage}" 
+            Height="15" Width="15"/>
+    </TextBlock>
+                </StackPanel>
+                <RadioButton 
+    Grid.Row="16"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="AUTO"
+    GroupName="Geo"
+    Margin="210,10,0,0"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Left"
+    IsChecked="{Binding PryGuardProf.FakeProfile.GeoSettings.Status,
+    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Automatic}"/>
+                <RadioButton 
+    Grid.Row="16"
+    x:Name="rbGeo"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="MANUAL"
+    GroupName="Geo"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Right"
+    Margin="0,10,114,0"
+    IsChecked="{Binding PryGuardProf.FakeProfile.GeoSettings.Status,
+    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Manual}"/>
+                <TextBox
+    Grid.Row="16"
+    Height="22"
+    Width="118"
+    Margin="170,40,0,10"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Left"
+    Tag="Latitude"
+    Style="{StaticResource ThemeTextbox}"
+    Visibility="{Binding IsChecked,ElementName=rbGeo,Converter={StaticResource b2v}}"
+    Text="{Binding PryGuardProf.FakeProfile.GeoSettings.Latitude}"/>
+                <TextBox
+    Grid.Row="16"
+    Height="22"
+    Width="118"
+    Margin="0,40,73,0"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Right"
+    Tag="Longitude"
+    Style="{StaticResource ThemeTextbox}"
+    Visibility="{Binding IsChecked,ElementName=rbGeo,Converter={StaticResource b2v}}"
+    Text="{Binding PryGuardProf.FakeProfile.GeoSettings.Longitude}"/>
+                <!--#endregion-->
+
+                <!--#region Processor-->
+                <StackPanel Grid.Row="18" Orientation="Horizontal">
+                    <TextBlock
+        Style="{StaticResource ThemeTextBlock}"
+        Text="Processor"
+        Margin="67,10,0,0"
+        VerticalAlignment="Top"
+        HorizontalAlignment="Left"
+        FontSize="13"/>
+                    <!-- Tooltip Icon -->
+                    <TextBlock
+        Width="16"
+        Height="17"
+        Margin="5,1,0,0"
+        Cursor="Help">
+                        <TextBlock.ToolTip>
+                            <ToolTip Width="160" Height="60">
+                                <StackPanel>
+                                    <TextBlock
+                        TextWrapping="Wrap"
+                        Text="Configure CPU settings to emulate different processor capabilities."/>
+                                </StackPanel>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+        <Image 
+            Source="{StaticResource ProxyInfoHelpImage}" 
+            Height="15" Width="15"/>
+    </TextBlock>
+                </StackPanel>
+                <RadioButton 
+    Grid.Row="18"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="AUTO"
+    GroupName="Proc"
+    Margin="210,10,0,0"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Left"
+    IsChecked="{Binding PryGuardProf.FakeProfile.CpuStatus,
+    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Automatic}"/>
+                <RadioButton 
+    Grid.Row="18"
+    x:Name="rbProc"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="MANUAL"
+    GroupName="Proc"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Right"
+    Margin="0,10,114,0"
+    IsChecked="{Binding PryGuardProf.FakeProfile.CpuStatus,
+    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Manual}"/>
+
+                <!--#region StackPanel Cores-->
+                <StackPanel
+    Grid.Row="18"
+    Width="180"
+    Height="16"
+    Orientation="Horizontal"
+    Visibility="{Binding IsChecked,ElementName=rbProc,Converter={StaticResource b2v}}"
+    Margin="96,40,0,10">
+                    <RadioButton 
+        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+        Content="2"
+        Height="16"
+        Width="30"
+        GroupName="Core"
+        IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
+        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=2}"/>
+                    <RadioButton 
+        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+        Content="4"
+        Height="16"
+        Width="30"
+        GroupName="Core"
+        IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
+        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=4}"/>
+                    <RadioButton 
+        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+        Content="6"
+        Height="16"
+        Width="30"
+        GroupName="Core"
+        IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
+        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=6}"/>
+                    <RadioButton 
+        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+        Content="8"
+        Height="16"
+        Width="30"
+        GroupName="Core"
+        IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
+        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=8}"/>
+                    <RadioButton 
+        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+        Content="12"
+        Height="16"
+        Width="30"
+        GroupName="Core"
+        IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
+        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=12}"/>
+                    <RadioButton 
+        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+        Content="16"
+        Height="16"
+        Width="30"
+        GroupName="Core"
+        IsChecked="{Binding PryGuardProf.FakeProfile.CpuConcurrency,
+        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=16}"/>
+                </StackPanel>
+                <!--#endregion-->
+                <!--#endregion-->
+
+                <!--#region Memory-->
+                <StackPanel Grid.Row="17" Orientation="Horizontal">
+                    <TextBlock
+        Style="{StaticResource ThemeTextBlock}"
+        Text="Memory"
+        Margin="70,12,0,0"
+        VerticalAlignment="Top"
+        HorizontalAlignment="Left"
+        FontSize="13"/>
+                    <!-- Tooltip Icon -->
+                    <TextBlock
+        Width="16"
+        Height="17"
+        Margin="5,1,0,0"
+        Cursor="Help">
+                        <TextBlock.ToolTip>
+                            <ToolTip Width="160" Height="60">
+                                <StackPanel>
+                                    <TextBlock
+                        TextWrapping="Wrap"
+                        Text="Adjust memory settings to simulate different memory capacities."/>
+                                </StackPanel>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+        <Image 
+            Source="{StaticResource ProxyInfoHelpImage}" 
+            Height="15" Width="15"/>
+    </TextBlock>
+                </StackPanel>
+                <RadioButton 
+    Grid.Row="17"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="AUTO"
+    GroupName="Mem"
+    Margin="210,6,0,0"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Left"
+    IsChecked="{Binding PryGuardProf.FakeProfile.MemStatus,
+    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Automatic}"/>
+                <RadioButton 
+    Grid.Row="17"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    x:Name="rbMem"
+    Content="MANUAL"
+    GroupName="Mem"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Right"
+    Margin="0,6,113,0"
+    IsChecked="{Binding PryGuardProf.FakeProfile.MemStatus,
+    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Manual}" Checked="rbMem_Checked"/>
+
+                <!--#region StackPanel Memory-->
+                <StackPanel
+    Grid.Row="17"
+    Width="90"
+    Height="16"
+    Orientation="Horizontal"
+    Visibility="{Binding IsChecked,ElementName=rbMem,Converter={StaticResource b2v}}"
+    Margin="96,40,0,10">
+                    <RadioButton 
+        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+        Content="2"
+        Height="16"
+        Width="30"
+        GroupName="MemSize"
+        IsChecked="{Binding PryGuardProf.FakeProfile.MemoryAvailable,
+        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=2}"/>
+                    <RadioButton 
+        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+        Content="4"
+        Height="16"
+        Width="30"
+        GroupName="MemSize"
+        IsChecked="{Binding PryGuardProf.FakeProfile.MemoryAvailable,
+        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=4}"/>
+                    <RadioButton 
+        Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+        Content="8"
+        Height="16"
+        Width="30"
+        GroupName="MemSize"
+        IsChecked="{Binding PryGuardProf.FakeProfile.MemoryAvailable,
+        Converter={StaticResource StringToIntParamConverter}, ConverterParameter=8}"/>
+                </StackPanel>
+                <!--#endregion-->
+                <!--#endregion-->
+
+                <!--#region Screen-->
+                <StackPanel Grid.Row="19" Orientation="Horizontal">
+                    <TextBlock
+        Style="{StaticResource ThemeTextBlock}"
+        Text="Screen"
+        Margin="70,12,0,0"
+        VerticalAlignment="Top"
+        HorizontalAlignment="Left"
+        FontSize="13"/>
+                    <!-- Tooltip Icon -->
+                    <TextBlock
+        Width="16"
+        Height="17"
+        Margin="5,12,0,0"
+        Cursor="Help">
+                        <TextBlock.ToolTip>
+                            <ToolTip Width="160" Height="60">
+                                <StackPanel>
+                                    <TextBlock
+                        TextWrapping="Wrap"
+                        Text="Select screen resolution settings to emulate different display sizes."/>
+                                </StackPanel>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+        <Image 
+            Source="{StaticResource ProxyInfoHelpImage}" 
+            Height="15" Width="15"/>
+    </TextBlock>
+                </StackPanel>
+                <RadioButton 
+    Grid.Row="19"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="REAL"
+    IsChecked="False"
+    IsEnabled="False"
+    GroupName="Screen"
+    Margin="210,10,0,0"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Left" Checked="RadioButton_Checked"/>
+                <RadioButton 
+    Grid.Row="19"
+    x:Name="rbScreen"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="MANUAL"
+    IsChecked="True"
+    GroupName="Screen"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Right"
+    Margin="0,10,114,0"/>
+                <ComboBox
+    Grid.Row="19"
+    Style="{StaticResource ThemeCombobox}"
+    Width="239"
+    Margin="96,40,0,10"
+    SelectedIndex="0"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Center"
+    Visibility="{Binding IsChecked,ElementName=rbScreen,Converter={StaticResource b2v}}"
+    ItemsSource="{Binding ScreenSizes}"
+    SelectedItem="{Binding PryGuardProf.FakeProfile.ScreenSize, Mode=TwoWay}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
                 <!--#endregion-->
 
                 <!--#region Media-->
-                <TextBlock
-                    Grid.Row="20"
-                    Style="{StaticResource ThemeTextBlock}"
-                    Text="Media"
-                    Margin="70,12,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    FontSize="13"/>
+                <StackPanel Grid.Row="20" Orientation="Horizontal">
+                    <TextBlock
+        Style="{StaticResource ThemeTextBlock}"
+        Text="Media"
+        Margin="70,12,0,0"
+        VerticalAlignment="Top"
+        HorizontalAlignment="Left"
+        FontSize="13"/>
+                    <!-- Tooltip Icon -->
+                    <TextBlock
+        Width="16"
+        Height="17"
+        Margin="5,12,0,0"
+        Cursor="Help">
+                        <TextBlock.ToolTip>
+                            <ToolTip Width="160" Height="60">
+                                <StackPanel>
+                                    <TextBlock
+                        TextWrapping="Wrap"
+                        Text="Configure media device settings to emulate different audio and video inputs/outputs."/>
+                                </StackPanel>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+        <Image 
+            Source="{StaticResource ProxyInfoHelpImage}" 
+            Height="15" Width="15"/>
+    </TextBlock>
+                </StackPanel>
                 <RadioButton 
-                    Grid.Row="20"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="AUTO"
-                    GroupName="Media"
-                    Margin="210,10,0,0"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
-                    IsChecked="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.Status,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Automatic}"/>
+    Grid.Row="20"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="AUTO"
+    GroupName="Media"
+    Margin="210,10,0,0"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Left"
+    IsChecked="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.Status,
+    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Automatic}"/>
                 <RadioButton 
-                    Grid.Row="20"
-                    x:Name="rbMedia"
-                    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
-                    Content="MANUAL"
-                    GroupName="Media"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Margin="0,10,114,0"
-                    IsChecked="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.Status,
-                    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Manual}"/>
+    Grid.Row="20"
+    x:Name="rbMedia"
+    Style="{StaticResource ThemeRadioBSettingsMainTheme}"
+    Content="MANUAL"
+    GroupName="Media"
+    VerticalAlignment="Top"
+    HorizontalAlignment="Right"
+    Margin="0,10,114,0"
+    IsChecked="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.Status,
+    Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Manual}"/>
                 <!--#region StackPanel Media-->
                 <StackPanel
-                    Grid.Row="20"
-                    Width="120"
-                    Height="60"
-                    Orientation="Vertical"
-                    Visibility="{Binding IsChecked,ElementName=rbMedia,Converter={StaticResource b2v}}"
-                    Margin="96,40,0,10">
+    Grid.Row="20"
+    Width="120"
+    Height="60"
+    Orientation="Vertical"
+    Visibility="{Binding IsChecked,ElementName=rbMedia,Converter={StaticResource b2v}}"
+    Margin="96,40,0,10">
                     <TextBlock
-                        Grid.Row="20"
-                        Style="{StaticResource ThemeTextBlock}"
-                        Text="Audio inputs"
-                        Margin="0,1,0,0"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        FontSize="10"/>
+        Style="{StaticResource ThemeTextBlock}"
+        Text="Audio inputs"
+        Margin="0,1,0,0"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top"
+        FontSize="10"/>
                     <TextBlock
-                        Grid.Row="20"
-                        Style="{StaticResource ThemeTextBlock}"
-                        Text="Audio outputs"
-                        Margin="0,8,0,0"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        FontSize="10"/>
+        Style="{StaticResource ThemeTextBlock}"
+        Text="Audio outputs"
+        Margin="0,8,0,0"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top"
+        FontSize="10"/>
                     <TextBlock
-                        Grid.Row="20"
-                        Style="{StaticResource ThemeTextBlock}"
-                        Text="Video inputs"
-                        Margin="0,7,0,0"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        FontSize="10"/>
+        Style="{StaticResource ThemeTextBlock}"
+        Text="Video inputs"
+        Margin="0,7,0,0"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top"
+        FontSize="10"/>
                     <TextBox
-                        x:Name="tbAudioIn"
-                        Grid.Row="20"
-                        Style="{StaticResource ThemeTextbox}"
-                        Width="30"
-                        Height="16"
-                        HorizontalAlignment="Right"
-                        Margin="0,-88,0,0"
-                        Text="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.AudioInputs,
-                        Converter={StaticResource StringToIntInputConverter}}"/>
+        x:Name="tbAudioIn"
+        Style="{StaticResource ThemeTextbox}"
+        Width="30"
+        Height="16"
+        HorizontalAlignment="Right"
+        Margin="0,-88,0,0"
+        Text="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.AudioInputs,
+        Converter={StaticResource StringToIntInputConverter}}"/>
                     <TextBox
-                        Grid.Row="20"
-                        Style="{StaticResource ThemeTextbox}"
-                        Width="30"
-                        Height="16"
-                        HorizontalAlignment="Right"
-                        Margin="0,-48,0,0"
-                        Text="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.AudioOutputs}"/>
+        Style="{StaticResource ThemeTextbox}"
+        Width="30"
+        Height="16"
+        HorizontalAlignment="Right"
+        Margin="0,-48,0,0"
+        Text="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.AudioOutputs}"/>
                     <TextBox
-                        Grid.Row="20"
-                        Style="{StaticResource ThemeTextbox}"
-                        Width="30"
-                        Height="16"
-                        HorizontalAlignment="Right"
-                        Margin="0,-13,0,0"
-                        Text="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.VideoInputs}"/>
-
+        Style="{StaticResource ThemeTextbox}"
+        Width="30"
+        Height="16"
+        HorizontalAlignment="Right"
+        Margin="0,-13,0,0"
+        Text="{Binding PryGuardProf.FakeProfile.MediaDevicesSettings.VideoInputs}"/>
                 </StackPanel>
                 <!--#endregion-->
                 <!--#endregion-->
