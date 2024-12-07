@@ -38,4 +38,4 @@ Contributions are welcome! Please refer to the `CONTRIBUTING.md` file for guidel
 
 ## License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
