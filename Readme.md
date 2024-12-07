@@ -14,6 +14,11 @@ PryGuard is a privacy-centric web browser designed to enhance online security an
 - **Customizable UI**: Offers themes, bookmarks, search history, downloads, and developer tools.
 - **Developer Tools**: Includes element inspection, JavaScript debugging, and resource monitoring tools for advanced users.
 
+## High Level Architecture
+
+![High Level Architecture](./Public/HighLevelArch.png)
+
+
 ## Comparison with Similar Browsers
 
 PryGuard stands out in the privacy-focused browser space by integrating multiple layers of protection and customization. While browsers like **Incogniton**, **Multilogin**, **Kameleo**, and **ixBrowser** provide specific functionalities, PryGuard combines these features with additional privacy measures like temporary email generation and cookie containerization. 
