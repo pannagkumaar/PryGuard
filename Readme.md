@@ -22,7 +22,7 @@ Our work has been inspired by **Invise**, a privacy-centric browser that paved t
 
 ## Installation
 
-1. Download the latest release from the [Releases](#) section.
+1. Download the latest release from the [Releases](https://github.com/pannagkumaar/PryGuard/releases) section.
 2. Extract the contents of the release archive.
 3. Run `PryGuard.exe` to start the browser.
 
