@@ -905,15 +905,16 @@
     Margin="96,40,0,10"
     VerticalAlignment="Top"
     HorizontalAlignment="Center"
-    Visibility="{Binding IsChecked, ElementName=rbTimeZone, Converter={StaticResource b2v}}"
+    Visibility="{Binding IsChecked,ElementName=rbTimeZone,Converter={StaticResource b2v}}"
     ItemsSource="{Binding TimeZones}"
-    SelectedItem="{Binding PryGuardProf.FakeProfile.TimezoneSetting, Mode=TwoWay, Converter={StaticResource TimezoneSettingConverter}}">
+    SelectedItem="{Binding PryGuardProf.FakeProfile.TimezoneSetting.CustomTimezone, Mode=TwoWay, Converter={StaticResource TimezoneSettingConverter}}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding}" />
+                            <TextBlock Text="{Binding StringPresent}" />
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
+
                 <!--#endregion-->
 
                 <!--#region Language-->
@@ -1753,7 +1754,7 @@
                     Grid.Row="14"
                     Grid.Column="1"
                     Style="{StaticResource ProfileSettingsSummary}"
-                    Text="AUTO"/>
+                    Text="{Binding PryGuardProf.FakeProfile.TimezoneSetting}"/>
                 <Line
                     Grid.Row="14"
                     Grid.ColumnSpan="2"

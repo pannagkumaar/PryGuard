@@ -481,35 +481,36 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Label">
                     <Border 
-                        Background="{TemplateBinding Background}"
-                        BorderThickness="1 0 0 0" CornerRadius="5">
+                    Background="{TemplateBinding Background}"
+                    BorderThickness="1 0 0 0" 
+                    CornerRadius="5">
                         <Grid>
                             <TextBlock 
-                                Text="{TemplateBinding Content}"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                TextAlignment="Left"
-                                Margin="20,0,40,0"/>
+                            Text="{TemplateBinding Content}"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            TextAlignment="Left"
+                            Margin="20,0,40,0"/>
 
                             <StackPanel
-                                Height="20"
-                                Width="14"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center"
-                                Margin="0,0,5,0">
+                            Height="20"
+                            Width="14"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Margin="0,0,5,0">
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="MouseLeftButtonDown">
                                         <i:InvokeCommandAction 
-                                            Command="{Binding CloseTabCommand}" 
-                                            PassEventArgsToCommand="True" />
+                                        Command="{Binding CloseTabCommand}" 
+                                        PassEventArgsToCommand="True" />
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
                                 <Border Style="{StaticResource BorderForBrowserButtons}">
                                     <TextBlock 
-                                        Width="6" Height="13" 
-                                        Margin="0,-3,0,3" 
-                                        Text="x"
-                                        Tag="{Binding RelativeSource={RelativeSource AncestorType={x:Type Label}}, Path=Tag}"/>
+                                    Width="6" Height="13" 
+                                    Margin="0,-3,0,3" 
+                                    Text="x"
+                                    Tag="{Binding RelativeSource={RelativeSource AncestorType={x:Type Label}}, Path=Tag}"/>
                                 </Border>
                             </StackPanel>
                         </Grid>
@@ -517,7 +518,15 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <!-- Add triggers to change the Background when the Tab is selected -->
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="True">
+                <Setter Property="Background" Value="#2D2E31"/>
+                <!-- Darker color for selected tab -->
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
+
     <!--#endregion-->
 
     <!--#region ContextMenu-->

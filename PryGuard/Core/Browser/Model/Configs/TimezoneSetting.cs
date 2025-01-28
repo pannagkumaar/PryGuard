@@ -25,6 +25,7 @@ public class TimezoneSetting : INotifyPropertyChanged
         set
         {
             _customTz = value;
+            
             OnPropertyChanged(nameof(StringPresent));
         }
     }
