@@ -18,6 +18,7 @@ using PryGuard.Resources.Helpers;
 
 using PryGuard.Core.Browser.Model.Configs;
 using PryGuard.UI.Views;
+using System;
 
 namespace PryGuard.UI.ViewModels;
 public class PryGuardProfileSettingsViewModel : BaseViewModel
@@ -95,6 +96,12 @@ public class PryGuardProfileSettingsViewModel : BaseViewModel
         get => _saveProfileButtonContent;
         set => Set(ref _saveProfileButtonContent, value);
     }
+
+    public ObservableCollection<string> TimeZones { get; } = new ObservableCollection<string>(
+    TimeZoneInfo.GetSystemTimeZones().Select(tz => tz.DisplayName)
+);
+
+
 
     public bool IsEdit { get; set; }
 

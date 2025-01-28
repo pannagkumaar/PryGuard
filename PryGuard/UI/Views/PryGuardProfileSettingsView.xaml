@@ -43,6 +43,7 @@
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
             <BooleanToVisibilityConverter x:Key="b2v" />
+            <converters:TimezoneSettingConverter x:Key="TimezoneSettingConverter"/>
             <converters:EnumBooleanConverter x:Key="EnumBooleanConverter" />
             <converters:ValueToStringConverter x:Key="ValueToStringConverter" />
             <converters:StringToDoubleConverter x:Key="StringToDoubleConverter" />
@@ -904,9 +905,9 @@
     Margin="96,40,0,10"
     VerticalAlignment="Top"
     HorizontalAlignment="Center"
-    Visibility="{Binding IsChecked,ElementName=rbTimeZone,Converter={StaticResource b2v}}"
+    Visibility="{Binding IsChecked, ElementName=rbTimeZone, Converter={StaticResource b2v}}"
     ItemsSource="{Binding TimeZones}"
-    SelectedItem="{Binding PryGuardProf.FakeProfile.TimeZone, Mode=TwoWay}">
+    SelectedItem="{Binding PryGuardProf.FakeProfile.TimezoneSetting, Mode=TwoWay, Converter={StaticResource TimezoneSettingConverter}}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding}" />

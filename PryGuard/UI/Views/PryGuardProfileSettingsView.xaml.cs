@@ -5,6 +5,7 @@ using PryGuard.Core.Browser.Settings;
 using PryGuard.UI.Views;
 using PryGuard.Core.Browser.Model.Configs;
 using PryGuard.UI.ViewModels;
+using PryGuard.UI.Converters;
 
 namespace PryGuard.UI.Views
 {
