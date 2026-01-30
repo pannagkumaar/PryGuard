@@ -2,6 +2,11 @@
 # PryGuard
 
 PryGuard is a privacy-centric web browser designed to enhance online security and anonymity. It provides robust defenses against advanced tracking techniques such as cross-site tracking, browser fingerprinting, and cookie containerization, offering a secure and customizable browsing experience.
+> **PryGuard: A Privacy-Preserving Browser Framework for Mitigating Advanced Web Tracking Techniques**  
+> *Proceedings of the ACM*  
+> DOI: https://dl.acm.org/doi/10.1145/3731806.3731843
+
+The paper details the framework used by PryGuard, including its anti-fingerprinting strategies, cookie isolation model, and experimental evaluation against real-world tracking techniques.
 
 ## Features
 
